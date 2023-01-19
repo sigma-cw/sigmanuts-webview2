@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 using Microsoft.Web.WebView2.Core;
+using System.Text.Json.Serialization;
+using System.Xml;
+using System.Diagnostics;
+using System.Threading;
 
 namespace sigmanuts_webview2
 {
@@ -22,43 +28,31 @@ namespace sigmanuts_webview2
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string javascript =
-            @"const callback = (mutationList, observer) => {
-                console.log(mutationList)
-                for (const mutation of mutationList) {
-                    //console.log(mutation)
-
-                    if (mutation.addedNodes.length == 0) {
-                        continue
-                    }
-
-                    var eventData = mutation.addedNodes[0]['$']
-                    //console.log(eventData)
-                    var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
-                    var message = eventData.content.childNodes[3].childNodes[0].data;
-
-                    var obj = JSON.stringify({
-                        username: authorName,
-                        message: message
-                    });
-
-                }
-            };
-
-            const observer = new MutationObserver(callback);
-            observer.observe(document.querySelector(""yt-live-chat-item-list-renderer #items""), { subtree: false, childList: true });";
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeAsync();
+
+            // Start the server
+            string folder = @"D:\Projects\SIGMANUTS\sigmanuts\widget";
+            SimpleHTTPServer myServer;
+            
+            Task.Run(() => myServer = new SimpleHTTPServer(folder, 6969));
         }
 
-        async void InitializeAsync()
+        private async void InitializeAsync()
         {
             await webView.EnsureCoreWebView2Async(null);
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
+            webView.CoreWebView2.WebMessageReceived += MessageReceived;
 
+        }
+
+        private void MessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs args)
+        {
+            String content = args.TryGetWebMessageAsString();
+            Debug.WriteLine(content);
         }
 
         private async void OnWebViewDOMContentLoaded(object sender, CoreWebView2DOMContentLoadedEventArgs arg)
@@ -67,8 +61,12 @@ namespace sigmanuts_webview2
 
             webView.Focus();
 
+            string pathToScript = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "script.js");
+            string contents = File.ReadAllText(pathToScript);
+
             // now execute your javascript
-            await webView.CoreWebView2.ExecuteScriptAsync(javascript);
+            await webView.CoreWebView2.ExecuteScriptAsync(contents);
         }
     }
 

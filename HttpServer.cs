@@ -1,94 +1,220 @@
-﻿// Filename:  HttpServer.cs        
-// Author:    Benjamin N. Summerton <define-private-public>        
-// License:   Unlicense (http://unlicense.org/)
+﻿// MIT License - Copyright (c) 2016 Can Güney Aksakalli
+// https://aksakalli.github.io/2014/02/24/simple-http-server-with-csparp.html
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 using System.Net;
-using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
+using System.Diagnostics;
 
-namespace HttpListenerExample
+
+class SimpleHTTPServer
 {
-    public class HttpServer
+    private readonly string[] _indexFiles = {
+        "index.html",
+        "index.htm",
+        "default.html",
+        "default.htm"
+    };
+
+    private static IDictionary<string, string> _mimeTypeMappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
+        #region extension to MIME type list
+        {".asf", "video/x-ms-asf"},
+        {".asx", "video/x-ms-asf"},
+        {".avi", "video/x-msvideo"},
+        {".bin", "application/octet-stream"},
+        {".cco", "application/x-cocoa"},
+        {".crt", "application/x-x509-ca-cert"},
+        {".css", "text/css"},
+        {".deb", "application/octet-stream"},
+        {".der", "application/x-x509-ca-cert"},
+        {".dll", "application/octet-stream"},
+        {".dmg", "application/octet-stream"},
+        {".ear", "application/java-archive"},
+        {".eot", "application/octet-stream"},
+        {".exe", "application/octet-stream"},
+        {".flv", "video/x-flv"},
+        {".gif", "image/gif"},
+        {".hqx", "application/mac-binhex40"},
+        {".htc", "text/x-component"},
+        {".htm", "text/html"},
+        {".html", "text/html"},
+        {".ico", "image/x-icon"},
+        {".img", "application/octet-stream"},
+        {".iso", "application/octet-stream"},
+        {".jar", "application/java-archive"},
+        {".jardiff", "application/x-java-archive-diff"},
+        {".jng", "image/x-jng"},
+        {".jnlp", "application/x-java-jnlp-file"},
+        {".jpeg", "image/jpeg"},
+        {".jpg", "image/jpeg"},
+        {".js", "application/x-javascript"},
+        {".mml", "text/mathml"},
+        {".mng", "video/x-mng"},
+        {".mov", "video/quicktime"},
+        {".mp3", "audio/mpeg"},
+        {".mpeg", "video/mpeg"},
+        {".mpg", "video/mpeg"},
+        {".msi", "application/octet-stream"},
+        {".msm", "application/octet-stream"},
+        {".msp", "application/octet-stream"},
+        {".pdb", "application/x-pilot"},
+        {".pdf", "application/pdf"},
+        {".pem", "application/x-x509-ca-cert"},
+        {".pl", "application/x-perl"},
+        {".pm", "application/x-perl"},
+        {".png", "image/png"},
+        {".prc", "application/x-pilot"},
+        {".ra", "audio/x-realaudio"},
+        {".rar", "application/x-rar-compressed"},
+        {".rpm", "application/x-redhat-package-manager"},
+        {".rss", "text/xml"},
+        {".run", "application/x-makeself"},
+        {".sea", "application/x-sea"},
+        {".shtml", "text/html"},
+        {".sit", "application/x-stuffit"},
+        {".swf", "application/x-shockwave-flash"},
+        {".tcl", "application/x-tcl"},
+        {".tk", "application/x-tcl"},
+        {".txt", "text/plain"},
+        {".war", "application/java-archive"},
+        {".wbmp", "image/vnd.wap.wbmp"},
+        {".wmv", "video/x-ms-wmv"},
+        {".xml", "text/xml"},
+        {".xpi", "application/x-xpinstall"},
+        {".zip", "application/zip"},
+        #endregion
+    };
+    private Thread _serverThread;
+    private string _rootDirectory;
+    private HttpListener _listener;
+    private int _port;
+
+    public int Port
     {
-        public static HttpListener listener;
-        public static string url = "http://localhost:6969/";
-        public static int pageViews = 0;
-        public static int requestCount = 0;
-        public static string pageData =
-            "<!DOCTYPE>" +
-            "<html>" +
-            "  <head>" +
-            "    <title>HttpListener Example</title>" +
-            "  </head>" +
-            "  <body>" +
-            "    <p>SIGMANUTS</p>" +
-            "  </body>" +
-            "</html>";
+        get { return _port; }
+        private set { }
+    }
 
+    /// <summary>
+    /// Construct server with given port.
+    /// </summary>
+    /// <param name="path">Directory path to serve.</param>
+    /// <param name="port">Port of the server.</param>
+    public SimpleHTTPServer(string path, int port)
+    {
+        this.Initialize(path, port);
+    }
 
-        public static async Task HandleIncomingConnections()
+    /// <summary>
+    /// Construct server with suitable port.
+    /// </summary>
+    /// <param name="path">Directory path to serve.</param>
+    public SimpleHTTPServer(string path)
+    {
+        //get an empty port
+        TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+        l.Start();
+        int port = ((IPEndPoint)l.LocalEndpoint).Port;
+        l.Stop();
+        this.Initialize(path, port);
+    }
+
+    /// <summary>
+    /// Stop server and dispose all functions.
+    /// </summary>
+    public void Stop()
+    {
+        _serverThread.Abort();
+        _listener.Stop();
+    }
+
+    private void Listen()
+    {
+        _listener = new HttpListener();
+        _listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
+        _listener.Start();
+        while (true)
         {
-            bool runServer = true;
-
-            // While a user hasn't visited the `shutdown` url, keep on handling requests
-            while (runServer)
+            try
             {
-                // Will wait here until we hear from a connection
-                HttpListenerContext ctx = await listener.GetContextAsync();
+                HttpListenerContext context = _listener.GetContext();
+                Process(context);
+            }
+            catch (Exception ex)
+            {
 
-                // Peel out the requests and response objects
-                HttpListenerRequest req = ctx.Request;
-                HttpListenerResponse resp = ctx.Response;
+            }
+        }
+    }
 
-                // Print out some info about the request
-                Console.WriteLine("Request #: {0}", ++requestCount);
-                Console.WriteLine(req.Url.ToString());
-                Console.WriteLine(req.HttpMethod);
-                Console.WriteLine(req.UserHostName);
-                Console.WriteLine(req.UserAgent);
-                Console.WriteLine();
+    private void Process(HttpListenerContext context)
+    {
+        string filename = context.Request.Url.AbsolutePath;
+        Console.WriteLine(filename);
+        filename = filename.Substring(1);
 
-                // If `shutdown` url requested w/ POST, then shutdown the server after serving the page
-                if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/shutdown"))
+        if (string.IsNullOrEmpty(filename))
+        {
+            foreach (string indexFile in _indexFiles)
+            {
+                if (File.Exists(Path.Combine(_rootDirectory, indexFile)))
                 {
-                    Console.WriteLine("Shutdown requested");
-                    runServer = false;
+                    filename = indexFile;
+                    break;
                 }
-
-                // Make sure we don't increment the page views counter if `favicon.ico` is requested
-                if (req.Url.AbsolutePath != "/favicon.ico")
-                    pageViews += 1;
-
-                // Write the response info
-                string disableSubmit = !runServer ? "disabled" : "";
-                byte[] data = Encoding.UTF8.GetBytes(String.Format(pageData, pageViews, disableSubmit));
-                resp.ContentType = "text/html";
-                resp.ContentEncoding = Encoding.UTF8;
-                resp.ContentLength64 = data.LongLength;
-
-                // Write out to the response stream (asynchronously), then close it
-                await resp.OutputStream.WriteAsync(data, 0, data.Length);
-                resp.Close();
             }
         }
 
+        filename = Path.Combine(_rootDirectory, filename);
 
-        public static void InitHttpServer()
+        if (File.Exists(filename))
         {
-            // Create a Http server and start listening for incoming connections
-            listener = new HttpListener();
-            listener.Prefixes.Add(url);
-            listener.Start();
-            Console.WriteLine("Listening for connections on {0}", url);
+            try
+            {
+                Stream input = new FileStream(filename, FileMode.Open);
 
-            // Handle requests
-            Task listenTask = HandleIncomingConnections();
-            listenTask.GetAwaiter().GetResult();
+                //Adding permanent http response headers
+                string mime;
+                context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
+                context.Response.ContentLength64 = input.Length;
+                context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+                context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
 
-            // Close the listener
-            listener.Close();
+                byte[] buffer = new byte[1024 * 16];
+                int nbytes;
+                while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
+                    context.Response.OutputStream.Write(buffer, 0, nbytes);
+                input.Close();
+
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.OutputStream.Flush();
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
+
         }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+
+        context.Response.OutputStream.Close();
     }
+
+    private void Initialize(string path, int port)
+    {
+        this._rootDirectory = path;
+        this._port = port;
+        _serverThread = new Thread(this.Listen);
+        _serverThread.Start();
+    }
+
+
 }

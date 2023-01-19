@@ -19,7 +19,8 @@ const callback = (mutationList, observer) => {
             message: message
         });
 
-        window.boundEvent.raiseEvent('onEventReceived', obj);
+        //window.boundEvent.raiseEvent('onEventReceived', obj);
+        window.chrome.webview.postMessage(obj);
     }
 };
 

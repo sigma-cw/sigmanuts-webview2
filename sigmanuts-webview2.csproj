@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="script.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="script.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
   </ItemGroup>
 

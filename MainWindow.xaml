@@ -9,7 +9,7 @@
         Title="MainWindow" Height="450" Width="800">
     <DockPanel>
         <wv2:WebView2 Name="webView"
-                  Source="https://www.youtube.com/live_chat?v=jfKfPfyJRdk"
+                  Source="https://www.youtube.com/live_chat?v=jfKfPfyJRdk" Height="339" Width="227"
    />
     </DockPanel>
 </Window>
