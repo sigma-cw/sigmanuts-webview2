@@ -11,6 +11,7 @@ using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using System.Threading;
 
 namespace sigmanuts_webview2
 {
@@ -30,8 +31,18 @@ namespace sigmanuts_webview2
             string folder = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             SimpleHTTPServer myServer;
 
-            Task.Run(() => myServer = new SimpleHTTPServer(folder, 6969));
-            Task.Run(() => InitSignalR());
+            //Task.Run(() => myServer = new SimpleHTTPServer(folder, 6969));
+            //Task.Run(() => InitSignalR());
+
+            new Thread(() => myServer = new SimpleHTTPServer(folder, 6969)) { IsBackground = true }.Start();
+            new Thread(() => InitSignalR()) { IsBackground = true }.Start();
+
+            Application.Current.Exit += CurrentOnExit;
+        }
+
+        private void CurrentOnExit(object sender, ExitEventArgs exitEventArgs)
+        {
+            Environment.Exit(0);
         }
 
         private async void InitializeAsync()
@@ -99,7 +110,7 @@ namespace sigmanuts_webview2
         }
 
 
-        private async void StopSignalR(object sender, RoutedEventArgs e)
+        private async void StopSignalR()
         {
             if (_host != null)
             {
