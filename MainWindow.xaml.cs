@@ -31,9 +31,6 @@ namespace sigmanuts_webview2
             string folder = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             SimpleHTTPServer myServer;
 
-            //Task.Run(() => myServer = new SimpleHTTPServer(folder, 6969));
-            //Task.Run(() => InitSignalR());
-
             new Thread(() => myServer = new SimpleHTTPServer(folder, 6969)) { IsBackground = true }.Start();
             new Thread(() => InitSignalR()) { IsBackground = true }.Start();
 
