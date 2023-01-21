@@ -145,7 +145,7 @@ class SimpleHTTPServer
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                //Debug.WriteLine(ex.ToString());
             }
         }
     }
@@ -153,7 +153,7 @@ class SimpleHTTPServer
     private void Process(HttpListenerContext context)
     {
         string filename = context.Request.Url.AbsolutePath;
-        Console.WriteLine(filename);
+        //Console.WriteLine(filename);
         filename = filename.Substring(1);
 
         if (string.IsNullOrEmpty(filename))

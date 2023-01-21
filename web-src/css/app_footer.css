@@ -1,0 +1,28 @@
+.footer {
+    background-color: var(--var-accent-color);
+    padding: 3px 16px;
+    display: flex;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    color: white;
+}
+
+.footer a {
+    color: white;
+}
+
+footer-button {
+    background-color: var(--var-accent-color);
+    padding: 1px 8px;
+    margin: 0px 1px;
+    cursor: default;
+    border-radius: 4px;
+    color: white;
+}
+
+footer-button:hover {
+    filter: brightness(1.3);
+}

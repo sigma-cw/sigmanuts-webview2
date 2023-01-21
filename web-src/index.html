@@ -9,7 +9,7 @@
 
 <body>
     <div class="container">
-        <ul id="discussion"></ul>
+        <ul id="discussion" style="display: flex; flex-direction: column-reverse;"></ul>
     </div>
     <!--Script references. -->
     <!--Reference the jQuery library. -->
@@ -38,9 +38,10 @@
             await start();
         });
 
-        connection.on("ReceiveMessage", function (user, message) {
-            $('#discussion').append(`<li>${user} : ${message}</li>`)
-            console.log(user, message)
+        connection.on("ReceiveMessage", function (obj) {
+            var evt = JSON.parse(obj);
+            console.log(evt)
+            $('#discussion').append(`<li>${evt.event.data.displayName} : ${evt.event.data.text}</li>`)
         });
 
         // Start the connection.

@@ -1,0 +1,19 @@
+.nav {
+    background-color: var(--var-foreground-color);
+    padding: 6px;
+    display: flex;
+    position: absolute;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+nav-button {
+    padding: 2px 8px;
+    margin: 0px 1px;
+    cursor: default;
+    border-radius: 4px;
+}
+
+nav-button:hover {
+    background-color: var(--var-nav-hover-color);
+}

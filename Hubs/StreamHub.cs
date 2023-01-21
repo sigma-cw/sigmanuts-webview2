@@ -5,9 +5,9 @@ namespace Sigma.Hubs
 {
     public class StreamHub : Hub
     {
-        public async Task SendMessage(string user, string message)
+        public async Task SendMessage(string obj)
         {
-            await Clients.Others.SendAsync("ReceiveMessage", user, message);
+            await Clients.Others.SendAsync("ReceiveMessage", obj);
         }
     }
 }
