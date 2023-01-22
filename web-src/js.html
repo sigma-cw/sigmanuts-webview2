@@ -1,0 +1,57 @@
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+
+<script type="text/javascript">
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:6970/stream")
+        .configureLogging(signalR.LogLevel.Information)
+        .withAutomaticReconnect()
+        .build();
+
+    async function start() {
+        try {
+            await connection.start();
+            console.log("SignalR Connected.");
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
+        }
+    };
+
+    connection.onclose(async () => {
+        await start();
+    });
+
+    connection.on("ReceiveMessage", function (obj) {
+        var evt = JSON.parse(obj);
+        console.log(evt)
+        const event = new CustomEvent('onEventReceived', {
+            detail: {
+                event: evt.event,
+                listener: evt.listener
+            }
+        });
+        window.dispatchEvent(event)
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        //const event = new CustomEvent('onWidgetLoad', data);
+        //window.dispatchEvent(data);
+        // Start the connection.
+        fetch('src/data.txt')
+            .then(response => response.text())
+            .then(text => {
+                const event = new CustomEvent('onWidgetLoad', {
+                    detail: {
+                        fieldData: JSON.parse(text)
+                    }
+                });
+
+                window.dispatchEvent(event)
+            })
+            .then(() => {
+                start();
+            })
+    });
+
+</script>

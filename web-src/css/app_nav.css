@@ -1,10 +1,19 @@
 .nav {
-    background-color: var(--var-foreground-color);
+    background-color: var(--var-preview-bg-color);
     padding: 6px;
     display: flex;
+    justify-content: space-between;
     position: absolute;
     width: 100vw;
     box-sizing: border-box;
+}
+
+.nav .left {
+    display: flex;
+}
+
+.nav .right {
+    display: flex;
 }
 
 nav-button {
@@ -15,5 +24,43 @@ nav-button {
 }
 
 nav-button:hover {
-    background-color: var(--var-nav-hover-color);
+    background-color: var(--var-background-color);
+}
+
+.ui-button {
+    padding: 0.2em 1em !important;
+}
+
+.ui-state-active, .ui-widget-content 
+.ui-state-active, .ui-widget-header 
+.ui-state-active, a.ui-button:active, 
+.ui-button:active, .ui-button.ui-state-active:hover {
+    border: 1px solid var(--var-accent-color) !important;
+    background: var(--var-accent-color) !important;
+    font-weight: normal;
+    color: #fff;
+}
+
+.ui-state-default, .ui-widget-content 
+.ui-state-default, .ui-widget-header 
+.ui-state-default, .ui-button, 
+html .ui-button.ui-state-disabled:hover, 
+html .ui-button.ui-state-disabled:active {
+    border: 1px solid var(--var-background-color) !important;
+    background: var(--var-background-color) !important;
+    font-weight: normal;
+    color: var(--var-text-color) !important;
+}
+
+.ui-widget-content {
+    --var-background-color: #181818;
+    --var-foreground-color: #202020;
+    --var-preview-bg-color: #101010;
+    --var-nav-hover-color: #292929;
+    --var-text-color: #e9e9e9;
+    --var-accent-color: #dd7f2f;
+    --var-accent-color-transparent: #da7e2e2e;
+    border: 1px solid var(--var-background-color) !important;
+    background: var(--var-background-color) !important;
+    color: var(--var-text-color) !important;
 }

@@ -9,44 +9,9 @@
 
 <body>
     <div class="container">
-        <ul id="discussion" style="display: flex; flex-direction: column-reverse;"></ul>
+        <h1>Available widgets</h1>
+        <a href="widgets/widget1/widget.html">Widget1</a>
     </div>
-    <!--Script references. -->
-    <!--Reference the jQuery library. -->
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
-    <!--Reference the SignalR library. -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-
-    <script type="text/javascript">
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:6970/stream")
-            .configureLogging(signalR.LogLevel.Information)
-            .withAutomaticReconnect()
-            .build();
-
-        async function start() {
-            try {
-                await connection.start();
-                console.log("SignalR Connected.");
-            } catch (err) {
-                console.log(err);
-                setTimeout(start, 5000);
-            }
-        };
-
-        connection.onclose(async () => {
-            await start();
-        });
-
-        connection.on("ReceiveMessage", function (obj) {
-            var evt = JSON.parse(obj);
-            console.log(evt)
-            $('#discussion').append(`<li>${evt.event.data.displayName} : ${evt.event.data.text}</li>`)
-        });
-
-        // Start the connection.
-        start();
-    </script>
 </body>
 
 </html>

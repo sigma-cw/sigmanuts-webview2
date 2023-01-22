@@ -34,7 +34,7 @@ body {
     --var-background-color: #181818;
     --var-foreground-color: #202020;
     --var-preview-bg-color: #101010;
-    --var-nav-hover-color: #1f1f1f;
+    --var-nav-hover-color: #292929;
     --var-text-color: #e9e9e9;
     --var-accent-color: #dd7f2f;
     --var-accent-color-transparent: #da7e2e2e;
@@ -47,7 +47,7 @@ body {
 .ui-wrapper {
     display: grid;
     grid-template-columns: 50% 50%;
-    padding: 56px 56px 92px 56px;
+    padding: 92px 56px 92px 56px;
     height: 100%;
     box-sizing: border-box;
     min-height: 100vh;

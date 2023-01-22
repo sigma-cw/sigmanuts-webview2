@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:sigmanuts_webview2"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        
+        Name="window"
         Title="SIGMANUTS" Height="700" Width="1100">
 
     <!--Add the WindowChrome object-->
@@ -158,10 +158,11 @@
 
             <!--App content-->
             <Grid Grid.Row="1" x:Name="AppArea">
-                <wv2:WebView2 x:Name="webView"
-                  Source="https://www.youtube.com/live_chat?v=jfKfPfyJRdk" DockPanel.Dock="Bottom" Visibility="Visible"  Height="0"/>
-                <wv2:WebView2 Grid.RowSpan="1" x:Name="appView"
-                  Source="http://localhost:6969/app.html" DockPanel.Dock="Top" Visibility="Visible" />
+                <wv2:WebView2 x:Name="webView" Visibility="Visible" Height="0" Margin="0,5,0,0">
+                </wv2:WebView2>
+                
+                <wv2:WebView2 Grid.RowSpan="1" x:Name="appView" Visibility="Visible">
+                </wv2:WebView2>
             </Grid>
 
         </Grid>

@@ -347,6 +347,7 @@ function startStream() {
                         }
                     }
                 }
+
                 connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
                     return console.error(err.toString());
                 });

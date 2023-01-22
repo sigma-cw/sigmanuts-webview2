@@ -26,10 +26,13 @@
     <None Remove="web-src\css\app.css" />
     <None Remove="web-src\css\app_footer.css" />
     <None Remove="web-src\css\app_nav.css" />
+    <None Remove="web-src\css\jquery-ui.min.css" />
     <None Remove="web-src\index.html" />
+    <None Remove="web-src\js.html" />
     <None Remove="web-src\js\app.js" />
     <None Remove="web-src\js\FileSaver.js" />
     <None Remove="web-src\js\jquery-3.6.3.min.js" />
+    <None Remove="web-src\js\jquery-ui.min.js" />
     <None Remove="web-src\js\jszip.min.js" />
     <None Remove="web-src\js\script.js" />
   </ItemGroup>
@@ -53,7 +56,13 @@
     <Content Include="web-src\css\app_nav.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\css\jquery-ui.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\js.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\js\app.js">
@@ -65,6 +74,9 @@
     <Content Include="web-src\js\jquery-3.6.3.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\js\jquery-ui.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\js\jszip.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -74,9 +86,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
 	<FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
 </Project>
