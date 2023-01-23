@@ -54,7 +54,7 @@ function updateData(widget) {
 
 async function updateUI() {
     console.log(activeWidget)
-    fetch(`widgets/${activeWidget}/src/fields.txt`)
+    fetch(`widgets/${activeWidget}/src/fields.json`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -135,7 +135,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2]
                     widgetData[key] = $(evt.currentTarget).val()
                     updateData(activeWidget);
-                    $('iframe').attr( 'src', function ( i, val ) { return val; });
+                    $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
 
@@ -156,15 +156,6 @@ function handleFieldSettings(data) {
 
         }
     }
-}
-
-function loadIframe(iframeName, url) {
-    var $iframe = $('#' + iframeName);
-    if ($iframe.length) {
-        $iframe.attr('src',url);
-        return false;
-    }
-    return true;
 }
 
 const connection = new signalR.HubConnectionBuilder()
@@ -205,6 +196,15 @@ $('#ytchat').click(() => {
     window.chrome.webview.postMessage(obj);
 });
 
+$('#fullscreen').click(() => {
+    console.log('toggling fullscreen');
+    var obj = JSON.stringify({
+        "listener": "toggle-fullscreen",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
+});
+
 $('#search').click(() => {
     var url = $('#link-input').val();
     var obj = JSON.stringify({
@@ -214,7 +214,65 @@ $('#search').click(() => {
     window.chrome.webview.postMessage(obj);
 });
 
-$('#widget-select').selectmenu()
+$('#refresh-widget').click(() => {
+    var obj = JSON.stringify({
+        "listener": "refresh-widget",
+        "name": activeWidget
+    })
+
+    $('#settings__editor').remove();
+    $('.editor').append('<div id="settings__editor"></div>')
+
+    groupList = [];
+    widgetData = {};
+
+    window.chrome.webview.postMessage(obj);
+
+    setTimeout(() => {
+        $('iframe')[0].contentWindow.location.reload('true');
+    }, 1000)
+
+    /* connection.on("ReceiveMessage", function (obj) {
+        var evt = JSON.parse(obj);
+        console.log(evt)
+    
+        if (evt.listener === "request-data") {
+            $('iframe')[0].contentWindow.location.reload('true');
+            connection.D.receivemessage[1] = null;
+            return
+        }
+    }); */
+});
+
+$('#remove').click(() => {
+    if (activeWidget === "Select widget") {
+        return
+    }
+
+    $(`#${activeWidget.replace(/(\r\n|\n|\r)/gm, "")}`).remove();
+    $('#widget-select').selectmenu("refresh");
+
+    $('#widget-select').val('idle')
+    $('#widget-select').selectmenu("refresh");
+
+    var obj = JSON.stringify({
+        "listener": "delete-widget",
+        "name": activeWidget.replace(/(\r\n|\n|\r)/gm, "")
+    })
+
+    $('#settings__editor').remove();
+    $('.editor').append('<div id="settings__editor"></div>')
+
+    groupList = [];
+    widgetData = {};
+
+    window.chrome.webview.postMessage(obj);
+    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+    retrieveData()
+        .then(updateUI())
+});
+
+$('#widget-select').selectmenu();
 
 window.addEventListener('DOMContentLoaded', () => {
     // Start the connection.
@@ -228,7 +286,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 lines.forEach(element => {
                     if (element !== "") {
                         var name = element.split("\\")
-                        name = name[name.length - 1]
+                        name = name[name.length - 1].replace(/(\r\n|\n|\r)/gm, "")
 
                         $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
                     }
@@ -249,22 +307,45 @@ window.addEventListener('DOMContentLoaded', () => {
                 activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
-                retrieveData()
-                    .then(() => {
-                        updateUI()
-                            .then(() => {
-                                start()
-                                    .then(() => {
-                                        updateData("all")
-                                        $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
-                                    })
-                            });
-                    });
+                start()
             });
     }, 1100);
 });
 
-$('#widget-select').on('selectmenuchange', () => {
+$('#widget-select').on('selectmenuchange', (obj) => {
+
+    if (obj.currentTarget.value === "add") {
+        $('.backdrop-wrapper').show('fast');
+        $('#name').click(() => {
+            if ($('#name-input').val() != "") {
+                var name = $('#name-input').val();
+                var obj = JSON.stringify({
+                    "listener": "create-widget",
+                    "name": name
+                })
+                $('#add').remove();
+                $('#widget-select').selectmenu('refresh')
+                $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`).selectmenu("refresh");
+                $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`).selectmenu("refresh");
+
+                $('#widget-select').val(`${name}`)
+                $('#widget-select').selectmenu('refresh')
+
+                $('.backdrop-wrapper').hide('fast');
+                $('#name-input').val("");
+                window.chrome.webview.postMessage(obj);
+
+                activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+                var obj = JSON.stringify({
+                    "listener": "change-widget",
+                    "value": $(`#widget-select-button .ui-selectmenu-text`).text().replace(/(\r\n|\n|\r)/gm, "")
+                })
+                window.chrome.webview.postMessage(obj);
+                return
+            }
+        });
+    }
+
     $('#settings__editor').remove();
     $('.editor').append('<div id="settings__editor"></div>')
 
