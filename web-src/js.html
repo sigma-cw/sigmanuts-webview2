@@ -2,6 +2,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
 
 <script type="text/javascript">
+    var widgetName = window.location.pathname.split("/")[2];
+
+    function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+
+    function requestData() {
+        var obj = JSON.stringify({
+            "listener": "request-data",
+            "name": widgetName
+        })
+
+        connection.invoke("SendMessage", obj).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("http://localhost:6970/stream")
         .configureLogging(signalR.LogLevel.Information)
@@ -25,31 +44,32 @@
     connection.on("ReceiveMessage", function (obj) {
         var evt = JSON.parse(obj);
         console.log(evt)
-        const event = new CustomEvent('onEventReceived', {
-            detail: {
-                event: evt.event,
-                listener: evt.listener
-            }
-        });
-        window.dispatchEvent(event)
+
+        if (evt.listener === "widget-load" && (evt.name === widgetName || evt.name === "all")) {
+            console.log('pog')
+            const event = new CustomEvent('onWidgetLoad', {
+                detail: {
+                    fieldData: JSON.parse(evt.value)
+                }
+            });
+            window.dispatchEvent(event)
+        } else {
+            evt.event.data.text = decodeHtml(evt.event.data.text)
+            const event = new CustomEvent('onEventReceived', {
+                detail: {
+                    event: evt.event,
+                    listener: evt.listener
+                }
+            });
+            window.dispatchEvent(event)
+        }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-        // Start the connection.
-        fetch('src/data.txt')
-            .then(response => response.text())
-            .then(text => {
-                const event = new CustomEvent('onWidgetLoad', {
-                    detail: {
-                        fieldData: JSON.parse(text)
-                    }
-                });
-
-                window.dispatchEvent(event)
-            })
+    window.addEventListener('DOMContentLoaded', function(obj) {
+        start()
             .then(() => {
-                start();
-            })
-    });
+                requestData();
+            });
+    })
 
 </script>

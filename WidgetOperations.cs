@@ -16,12 +16,16 @@ namespace sigmanuts_webview2
         {
             string fileToCopy = Path.Combine(CacheFolderPath, @$".\localserver\js.html");
             string widgetDirectory = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{widgetName}");
+            string srcDirectory = Path.Combine(widgetDirectory, "src");
 
             Directory.CreateDirectory(widgetDirectory);
-            if (!File.Exists(Path.Combine(widgetDirectory, "js.html")))
+            Directory.CreateDirectory(srcDirectory);
+            if (File.Exists(Path.Combine(widgetDirectory, "js.html")))
             {
-                File.Copy(fileToCopy, Path.Combine(widgetDirectory, "js.html"));
+                File.Delete(Path.Combine(widgetDirectory, "js.html"));
             }
+
+            File.Copy(fileToCopy, Path.Combine(widgetDirectory, "js.html"));
 
             string PathToHTML = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{widgetName}\src\html.txt");
             string PathToCSS = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{widgetName}\src\css.txt");
@@ -49,6 +53,7 @@ namespace sigmanuts_webview2
 
             string widgetHTML = $"<html>" +
                 $"<head>" +
+                $"<meta http-equiv=\"Cache-control\" content=\"no-cache\">" +
                 $"<style>" +
                 $"{CSS}" +
                 $"</style>" +
