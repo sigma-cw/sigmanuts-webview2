@@ -3,9 +3,10 @@
     padding: 6px;
     display: flex;
     justify-content: space-between;
-    position: absolute;
+    position: fixed;
     width: 100vw;
     box-sizing: border-box;
+    z-index: 9999;
 }
 
 .nav .left {
@@ -27,32 +28,32 @@ nav-button:hover {
     background-color: var(--var-background-color);
 }
 
-.ui-button {
+.nav .ui-button {
     padding: 0.2em 1em !important;
 }
 
-.ui-state-active, .ui-widget-content 
-.ui-state-active, .ui-widget-header 
-.ui-state-active, a.ui-button:active, 
-.ui-button:active, .ui-button.ui-state-active:hover {
+.nav .ui-state-active, .nav .ui-widget-content 
+.nav .ui-state-active, .nav .ui-widget-header 
+.nav .ui-state-active, .nav a.ui-button:active, 
+.nav .ui-button:active, .nav .ui-button.ui-state-active:hover {
     border: 1px solid var(--var-accent-color) !important;
     background: var(--var-accent-color) !important;
     font-weight: normal;
     color: #fff;
 }
 
-.ui-state-default, .ui-widget-content 
-.ui-state-default, .ui-widget-header 
-.ui-state-default, .ui-button, 
-html .ui-button.ui-state-disabled:hover, 
-html .ui-button.ui-state-disabled:active {
+.nav .ui-state-default, .nav .ui-widget-content 
+.nav .ui-state-default, .nav .ui-widget-header 
+.nav .ui-state-default, .nav .ui-button, 
+html .nav .ui-button.ui-state-disabled:hover, 
+html .nav .ui-button.ui-state-disabled:active {
     border: 1px solid var(--var-background-color) !important;
     background: var(--var-background-color) !important;
     font-weight: normal;
     color: var(--var-text-color) !important;
 }
 
-.ui-widget-content {
+.nav .ui-widget-content {
     --var-background-color: #181818;
     --var-foreground-color: #202020;
     --var-preview-bg-color: #101010;

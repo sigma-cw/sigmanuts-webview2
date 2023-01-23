@@ -213,6 +213,4 @@ class SimpleHTTPServer
         _serverThread = new Thread(this.Listen);
         _serverThread.Start();
     }
-
-
 }

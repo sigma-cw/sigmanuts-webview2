@@ -3,6 +3,7 @@
 
 <script type="text/javascript" src="js/jquery-3.6.3.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
 
 <head>
     <!-- App UI styles -->
@@ -33,7 +34,7 @@
                 </div>
 
                 <div class="right">
-                    <select name="cars" id="cars">
+                    <select name="widget-select" id="widget-select">
                         <!-- Widget options will be appended here -->
                     </select>
                 </div>
@@ -67,8 +68,11 @@
                         <div class="upload-area" style="display: none">
                             Alternatively, drop widget ZIP here
                         </div>
-                        <!-- Fields will be appended here -->
-                        <div id="display_settings" class="field-group">
+                        <div id="settings__editor">
+                            <!-- Fields will be appended here -->
+                        </div>
+                        
+                        <!-- <div id="display_settings" class="field-group">
                             <div class="field-group__dropdown">
                                 <span>Display Settings</span>
                                 <span class="material-symbols-outlined">
@@ -97,7 +101,7 @@
                                     expand_more
                                 </span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -116,7 +120,7 @@
                     </div>
 
                     <div class="chat-container">
-                        <!-- Preview chat will be appended here -->
+                        <iframe id="preview__iframe" name="preview__iframe" sandbox="allow-scripts allow-same-origin"></iframe>
                     </div>
 
                 </div>
