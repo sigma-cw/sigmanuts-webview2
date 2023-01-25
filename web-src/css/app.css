@@ -388,3 +388,12 @@ iframe {
     border-radius: 100px;
     transition: outline 0.5s ease;
 }
+
+.fullscreen {
+    height: 100vh;
+    top: 0px;
+    position: absolute;
+    width: 100vw;
+    background: var(--var-preview-bg-color);
+    display: none;
+}

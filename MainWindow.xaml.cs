@@ -43,29 +43,44 @@ namespace sigmanuts_webview2
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
+            try
             {
-                string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
-                string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
+                InitializeComponent();
+                Directory.CreateDirectory(Path.Combine(CacheFolderPath, @".\localserver\widgets"));
 
-                DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
-                DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+                if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver")))
+                {
+                    string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
+                    string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
 
-                CopyDir.CopyAll(diSource, diTarget);
+                    DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+                    DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+
+                    CopyDir.CopyAll(diSource, diTarget);
+                }
+
+                HandleWidgets();
+
+                Debug.WriteLine("Running...");
+
+                new Thread(() => InitSignalR()) { IsBackground = true }.Start();
+
+                // Start the server
+                string folder = Path.Combine(CacheFolderPath, @".\localserver");
+                myServer = new SimpleHTTPServer(folder, 6969);
+                currentWidget = "";
+
+                Application.Current.Exit += CurrentOnExit;
             }
+            catch (Exception ex)
+            {
+                Directory.CreateDirectory(Path.Combine(CacheFolderPath, @".\crash-logs"));
+                string[] exception =
+                {
+                    ex.Message };
 
-            HandleWidgets();
-
-            new Thread(() => InitSignalR()) { IsBackground = true }.Start();
-
-            // Start the server
-            string folder = Path.Combine(CacheFolderPath, @".\localserver");
-            myServer = new SimpleHTTPServer(folder, 6969);
-            currentWidget = "";
-
-            Application.Current.Exit += CurrentOnExit;
+                File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\crash-logs\latest.log"), exception);
+            }
         }
 
         protected override async void OnInitialized(EventArgs e)
@@ -88,6 +103,7 @@ namespace sigmanuts_webview2
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
             widgetView.Source = new UriBuilder(widgetUrl).Uri;
+            widgetView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
@@ -274,7 +290,7 @@ namespace sigmanuts_webview2
             }
         }
 
-        private void ToggleFullscreen()
+        private async void ToggleFullscreen()
         {
             /// Simple function to toggle fullscreen preview visibility on and off.
             /// 
@@ -304,6 +320,8 @@ namespace sigmanuts_webview2
             {
                 widgetView.Height = 0;
             }
+
+            await appView.CoreWebView2.ExecuteScriptAsync("$('.fullscreen').toggle('fast');");
         }
    
         public async void HandleWidgets()
