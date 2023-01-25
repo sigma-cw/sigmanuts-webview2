@@ -1,4 +1,4 @@
-# Sigma's New UTube System (NUTS) for Chat Customization
+# Sigma's New User-friendly and Time-saving Solution to YouTube Chat Problem
 
 **A *mostly* standalone app to serve widgets for your YouTube livestreams**
 
