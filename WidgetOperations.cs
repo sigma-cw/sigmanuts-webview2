@@ -11,7 +11,7 @@ namespace sigmanuts_webview2
     public class WidgetOperations
     {
         public static string CacheFolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sigmanuts");
-        private string WidgetsFolder = Path.Combine(CacheFolderPath, @".\localserver\widgets");
+        public string WidgetsFolder = Path.Combine(CacheFolderPath, @".\localserver\widgets");
 
 
         public static async void CreateWidget(string widgetName, Microsoft.Web.WebView2.Wpf.WebView2 appView)

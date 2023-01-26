@@ -93,7 +93,7 @@ h4 {
 
 .search-bar input#link-input {
     background-color: var(--var-foreground-color);
-    padding: 16px 24px;
+    padding: 16px 120px 16px 24px;;
     font-size: 0.9rem;
     font-weight: 500;
     background: transparent;
@@ -203,7 +203,6 @@ button#open-folder, button#refresh-widget {
     color: var(--var-text-color);
 }
 
-
 .editor {
     height: 100%;
     margin-top: 34px;
@@ -291,7 +290,76 @@ html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
 }
 
 .editor .ui-accordion-content h4 {
-    color: var(--var-text-color);
+    color: grey;
+}
+
+.ui-checkboxradio-label .ui-icon-background {
+    box-shadow: none !important;
+    border-radius: 0.22em !important;
+    border: solid 1px var(--var-accent-color) !important;
+    background: var(--var-background-color) !important;
+}
+
+.ui-icon-background, .ui-state-active .ui-icon-background {
+    border: none !important;
+    background-color: var(--var-accent-color) !important;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 1em;
+    margin: 5px 0px 10px 0px;
+    padding: 10px;
+    border-radius: 0;
+    background: var(--var-background-color);
+    box-shadow: none;
+    border: none;
+    border-bottom: solid 2px var(--var-foreground-color);
+    /* border: none; */
+    color: white;
+}
+
+.ui-widget input:focus-visible {
+    outline: solid 1px var(--var-accent-color);
+    /* border: none; */
+    border-radius: 5px;
+}
+
+.picker-container {
+    margin-top: 10px;
+    position: absolute;
+    z-index: 10;
+    display: none;
+    width: 200px;
+}
+
+.picker {
+    position: relative;
+    display: flex;
+}
+
+.picker input {
+    width: 100%;
+}
+
+.picker span {
+    background: rgba(255, 0, 0);
+    /* padding: 5px; */
+    width: 15px;
+    height: 15px;
+    display: block;
+    border: solid 2px white;
+    border-radius: 15px;
+    position: absolute;
+    right: 0;
+    top: 15px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.picker span:hover {
+    transform: scale(1.2);
+    transition: all 0.5s ease;
 }
 
 .field-group {
@@ -397,3 +465,4 @@ iframe {
     background: var(--var-preview-bg-color);
     display: none;
 }
+

@@ -2,6 +2,10 @@ var activeWidget;
 var groupList = [];
 var widgetData = {};
 
+////////////////////////////////////////////////////////////////////////////////
+//                        HELPER FUNCTIONS                                    //
+////////////////////////////////////////////////////////////////////////////////
+
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
@@ -11,6 +15,18 @@ function compareKeys(a, b) {
     var bKeys = Object.keys(b).sort();
     return JSON.stringify(aKeys) === JSON.stringify(bKeys);
 }
+
+function appendSetting(setting, el) {
+    if (setting["group"]) {
+        $(`#${setting["group"].replace(/ /g, '')} + div`).append(el)
+    } else {
+        $('#settings__editor').append(el)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                          MAIN FUNCTIONS                                    //
+////////////////////////////////////////////////////////////////////////////////
 
 async function retrieveData() {
     fetch(`widgets/${activeWidget}/src/data.txt`)
@@ -113,11 +129,7 @@ function handleFieldSettings(data) {
                     <select id="dropdown__${field}"></select>
                 `)
 
-                if (setting["group"]) {
-                    $(`#${setting["group"].replace(/ /g, '')} + div`).append(dropdown)
-                } else {
-                    $('#settings__editor').append(dropdown)
-                }
+                appendSetting(setting, dropdown);
 
                 for (option in setting["options"]) {
                     $(`#dropdown__${field}`).append(`
@@ -145,18 +157,90 @@ function handleFieldSettings(data) {
                     <label for="checkbox__${field}">${setting["label"]}</label>
                 `)
 
-                if (setting["group"]) {
-                    $(`#${setting["group"].replace(/ /g, '')} + div`).append(checkbox)
-                } else {
-                    $('#settings__editor').append(checkbox)
-                }
+                appendSetting(setting, checkbox);
 
-                $(`#checkbox__${field}`).checkboxradio()
+                $(`#checkbox__${field}`).checkboxradio();
+                $(`#checkbox__${field}`).prop('checked', widgetData[field]);
+                $(`#checkbox__${field}`).button('refresh');
+
+                $(`#checkbox__${field}`).on('change', (evt) => {
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.checked;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                });
                 break;
 
+            case "text":
+                var text = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="text" id="text__${field}" placeholder="Type here..."></input>
+                `);
+
+                appendSetting(setting, text);
+
+                $(`#text__${field}`).val(widgetData[field]);
+                $(`#text__${field}`).on('change', (evt) => {
+                    console.log(evt);
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+            case "colorpicker":
+                var picker = $(`
+                    <h4>${setting["label"]}</h4>
+                    <div class="picker color-picker__${field}">
+                        <input type="text" id="text__${field}" placeholder="Type here..."></input>
+                        <span id="${field}" style="background: ${widgetData[field]}"></span>
+                    </div>
+                `)
+                
+                appendSetting(setting, picker); 
+                $('body').append(`<div class="picker-container" id="picker__${field}"></div>`);
+                $(`#text__${field}`).val(widgetData[field]);
+
+                var colorPicker = new iro.ColorPicker(`#picker__${field}`, {
+                    width: 200,
+                    layout: [
+                        {
+                          component: iro.ui.Box,
+                          options: {
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                          }
+                        },
+                        {
+                          component: iro.ui.Slider,
+                          options: {
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            sliderType: 'hue'
+                          }
+                        }
+                      ]
+                });
+
+                $(`.color-picker__${field} span`).click((evt) => {
+                    let field = evt.currentTarget.id;
+                    let position = $(`.color-picker__${field} span`).offset();
+                    let leftPos = position.left - 210 + 'px';
+                    let topPos = position.top - 10 + 'px';
+                    $(`#picker__${field}.picker-container`).css({'left': leftPos, 'top': topPos})
+                    $(`#picker__${field}`).toggle('fast');
+                });
+                
+                break;
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//                              MAIN SCRIPT                                   //
+////////////////////////////////////////////////////////////////////////////////
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("http://localhost:6970/stream")
@@ -277,6 +361,12 @@ $('#widget-select').selectmenu();
 window.addEventListener('DOMContentLoaded', () => {
     // Start the connection.
 
+    fetch('config.ini')
+        .then(response => response.text())
+        .then(text => {
+            $('#link-input').val(text);
+        })
+
     setTimeout(() => {
         fetch('widgets/widgets.ini')
             .then(response => response.text())
@@ -319,6 +409,7 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         $('#name').click(() => {
             if ($('#name-input').val() != "") {
                 var name = $('#name-input').val();
+                name = name.replace(/\s/g, "");
                 var obj = JSON.stringify({
                     "listener": "create-widget",
                     "name": name

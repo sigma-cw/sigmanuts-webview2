@@ -29,13 +29,17 @@ namespace sigmanuts_webview2
     public partial class MainWindow : Window
     {
         public static string CacheFolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sigmanuts");
+
         private Microsoft.AspNetCore.SignalR.IHubContext<StreamHub> hubContext; // This is not used anymore, but I'll leave it here
         private bool isChatEnabled = false;
         private bool isPreviewEnabled = false;
-
         private static string currentWidget = "";
 
-        public string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
+        /// <summary>
+        /// URLs
+        /// </summary>
+
+        private string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
         private string appUrl = "http://localhost:6969/app.html";
         private string widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
 
@@ -95,13 +99,14 @@ namespace sigmanuts_webview2
             await appView.EnsureCoreWebView2Async(environment);
             await widgetView.EnsureCoreWebView2Async(environment);
 
-            if (File.Exists(Path.Combine(CacheFolderPath, @".\config.ini")))
+            if (File.Exists(Path.Combine(CacheFolderPath, @".\localserver\config.ini")))
             {
-                chatUrl = File.ReadAllText(Path.Combine(CacheFolderPath, @".\config.ini"));
+                chatUrl = File.ReadAllText(Path.Combine(CacheFolderPath, @".\localserver\config.ini"));
             }
 
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
+
             widgetView.Source = new UriBuilder(widgetUrl).Uri;
             widgetView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
@@ -157,37 +162,35 @@ namespace sigmanuts_webview2
                 case "toggle-chat":
                     ToggleChat();
                     break;
+
                 case "toggle-fullscreen":
                     ToggleFullscreen();
                     break;
+
                 case "change-url":
                     string url = stuff.value;
                     webView.CoreWebView2.Navigate(url);
                     webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
-
-
                     string[] lines =
                         {
                             url
                         };
 
-                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\config.ini"), lines);
-
+                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\config.ini"), lines);
                     break;
+
                 case "change-widget":
                     currentWidget = stuff.value;
                     string[] current =
                         {
                             currentWidget
-            };
-
-                    Debug.WriteLine($"Changing active widget to {currentWidget}");
+                        };
 
                     await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), current);
-
                     widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
                     widgetView.CoreWebView2.Navigate(widgetUrl);
                     break;
+
                 case "widget-load":
                     string widgetData = stuff.value;
                     string widgetName = stuff.name;
@@ -199,18 +202,17 @@ namespace sigmanuts_webview2
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine(ex.ToString() );
+                        Debug.WriteLine(ex.ToString());
                     }
 
-                    //Debug.WriteLine($"{widgetName} /// {widgetData}");
                     break;
+
                 case "create-widget":
                     string name = stuff.name;
                     string _srcDir = WidgetOperations.CreateWidgetFolder(name);
-
                     HandleWidgets();
-                    //appView.CoreWebView2.Navigate(appUrl);
                     break;
+
                 case "populate-widget":
                     string _name = stuff.name;
 
@@ -240,14 +242,15 @@ namespace sigmanuts_webview2
                     HandleWidgets();
                     widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
                     widgetView.CoreWebView2.Navigate(widgetUrl);
-                    //appView.CoreWebView2.Navigate(appUrl);
                     break;
+
                 case "refresh-widget":
                     string _name_ = stuff.name;
                     Debug.WriteLine(_name_);
                     WidgetOperations.CreateWidget(_name_, appView);
                     widgetView.CoreWebView2.Navigate(widgetUrl);
                     break;
+
                 case "delete-widget":
                     string __name_ = stuff.name;
                     string widgetDir = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{__name_}");
@@ -258,12 +261,13 @@ namespace sigmanuts_webview2
                     await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), clearActive);
                     await appView.CoreWebView2.ExecuteScriptAsync($"retrieveData().then(updateUI()); $('iframe').attr('src', ``)");
                     break;
+
                 default:
                     break;
             }
         }
-        
-        private void ToggleChat()
+
+        public void ToggleChat()
         {
             /// Simple function to toggle chat visibility on and off.
             /// 
@@ -283,14 +287,14 @@ namespace sigmanuts_webview2
                 {
                     webView.Height = window.ActualHeight - 94;
                 }
-            } 
+            }
             else
             {
                 webView.Height = 0;
             }
         }
 
-        private async void ToggleFullscreen()
+        public async void ToggleFullscreen()
         {
             /// Simple function to toggle fullscreen preview visibility on and off.
             /// 
@@ -298,7 +302,7 @@ namespace sigmanuts_webview2
             /// it's done by setting Height to 0 for a reason. YouTube chat pauses if not focused.
             /// Do not ask about this.
             /// 
-            if (!File.Exists(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{currentWidget.Replace("\r\n", string.Empty)}\widget.html"))) 
+            if (!File.Exists(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{currentWidget.Replace("\r\n", string.Empty)}\widget.html")))
             {
                 return;
             }
@@ -323,7 +327,7 @@ namespace sigmanuts_webview2
 
             await appView.CoreWebView2.ExecuteScriptAsync("$('.fullscreen').toggle('fast');");
         }
-   
+
         public async void HandleWidgets()
         {
 
@@ -353,6 +357,10 @@ namespace sigmanuts_webview2
 
         }
 
+
+        /// <summary>
+        /// Listening for JS events
+        /// </summary>
         private async void OnWebViewDOMContentLoaded(object sender, CoreWebView2DOMContentLoadedEventArgs arg)
         {
             /// This function injects scraping script into YouTube live chat. 

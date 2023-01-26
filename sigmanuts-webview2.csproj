@@ -39,10 +39,12 @@
     <None Remove="web-src\js\appUpload.js" />
     <None Remove="web-src\js\embedding.js" />
     <None Remove="web-src\js\FileSaver.js" />
+    <None Remove="web-src\js\iro.js" />
     <None Remove="web-src\js\jquery-3.6.3.min.js" />
     <None Remove="web-src\js\jquery-ui.min.js" />
     <None Remove="web-src\js\jszip.min.js" />
     <None Remove="web-src\js\script.js" />
+    <None Remove="web-src\js\signalr.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,6 +105,9 @@
     <Content Include="web-src\js\FileSaver.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\js\iro.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\js\jquery-3.6.3.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -113,6 +118,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\js\script.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\js\signalr.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
