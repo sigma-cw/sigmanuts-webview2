@@ -42,10 +42,11 @@ namespace sigmanuts_webview2
         {
             InitializeComponent();
 
-            if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
+            //if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
             {
                 string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
                 string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
+
 
                 DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
                 DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
@@ -53,6 +54,7 @@ namespace sigmanuts_webview2
                 CopyDir.CopyAll(diSource, diTarget);
             }
 
+            //for auto update when building
             HandleWidgets();
 
             // Start the server
@@ -64,6 +66,7 @@ namespace sigmanuts_webview2
             ServerThread.Start();
 
             Application.Current.Exit += CurrentOnExit;
+
         }
 
         protected override async void OnInitialized(EventArgs e)
@@ -79,6 +82,7 @@ namespace sigmanuts_webview2
 
             WidgetOperations.CreateWidget("widget1");
             WidgetOperations.CreateWidget("widget2");
+            WidgetOperations.CreateWidget("widget4");
 
 
             if (File.Exists(Path.Combine(CacheFolderPath, @".\config.ini")))
@@ -89,8 +93,12 @@ namespace sigmanuts_webview2
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
 
+            CoreWebView2Profile profile = appView.CoreWebView2.Profile;
+            await profile.ClearBrowsingDataAsync();
+
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
+
 
         }
 
@@ -102,6 +110,11 @@ namespace sigmanuts_webview2
 
             try
             {
+                //to update to new app.html
+                //keeps getting error when i put it in initialize
+                webView.Reload();
+                appView.Reload();
+
                 // Delete WebView2 user data before application exits
                 string? webViewCacheDir = Path.Combine(CacheFolderPath, @".\EBWebView\Default\Cache");
                 var webViewProcessId = Convert.ToInt32(webView.CoreWebView2.BrowserProcessId);

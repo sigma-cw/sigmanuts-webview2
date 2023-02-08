@@ -1,4 +1,4 @@
-var activeWidget;
+var activeWidget="";
 var groupList = [];
 var widgetData = {};
 
@@ -283,4 +283,14 @@ $('#widget-select').on('selectmenuchange', () => {
     window.chrome.webview.postMessage(obj);
     retrieveData()
         .then(updateUI())
+});
+
+$('#copy-link').on('click', () =>
+{
+    var copyField = document.getElementById('copy-link-text');
+    copyField.value = `localhost:6969/widgets/`;//move this to on widget change
+    copyField.select();
+
+    navigator.clipboard.writeText(copyField.value);
+    alert(`Copied: localhost:6969/widgets/`); //change this later
 });

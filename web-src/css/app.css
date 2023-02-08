@@ -327,3 +327,8 @@ iframe {
     height: 100%;
     border: none;
 }
+
+preview-button
+{
+    cursor: pointer;
+}

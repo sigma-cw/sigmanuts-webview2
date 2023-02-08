@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "sigmanuts-webview2": {
+      "commandName": "Executable",
+      "executablePath": "J:\\Code Projects\\sigmanuts-webview2\\bin\\Debug\\netcoreapp3.1\\win-x64\\sigmanuts-webview2.exe"
+    }
+  }
+}

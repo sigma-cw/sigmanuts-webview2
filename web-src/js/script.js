@@ -16,7 +16,7 @@ function loadScript(scriptUrl) {
 
 function raiseMessageEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
-    //console.log(eventData)
+    console.log(eventData)
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
     var message = eventData.message.innerHTML;
 
@@ -380,5 +380,7 @@ function startStream() {
     start().then(() => {
         observer.observe(document.querySelector("yt-live-chat-item-list-renderer #items"), { subtree: false, childList: true });
     }) 
+
+
 
 }
