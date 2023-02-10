@@ -1,0 +1,74 @@
+<html>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>Sigmanuts | Youtube Basic Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="sigmanuts.js"></script>
+    <script src="basic.js"></script>
+    <link href="youtube.css" rel="stylesheet">
+
+    <style>
+        body {
+            padding: 0 !important;
+            background: transparent !important;
+            margin: 0;
+            overflow-y: scroll;
+            overflow: hidden;
+        }
+
+            body.autoscroll {
+                overflow-y: auto
+            }
+
+            body.no-scroll {
+                overflow: hidden
+            }
+
+            body.no-y-scroll {
+                overflow-y: hidden
+            }
+
+        .hidden {
+            display: none
+        }
+
+        textarea {
+            --paper-input-container-input_-_white-space: pre-wrap
+        }
+
+        .grecaptcha-badge {
+            visibility: hidden
+        }
+        yt-live-chat-renderer {
+            height: 100vh;
+            align-content: flex-end;
+            background-color: transparent;
+        }
+
+        yt-live-chat-renderer #contents {
+            align-content: flex-end;
+            flex-direction: column-reverse !important;
+        }
+
+        #items.yt-live-chat-item-list-renderer 
+        {
+            flex:none !important;
+        }
+    </style>
+</head>
+<body>
+    <yt-live-chat-app>
+        <yt-live-chat-renderer class="style-scope yt-live-chat-app" hide-timestamps="" has-ticker="" has-input-action-panel="" style="--scrollbar-width:15px;">
+            <yt-live-chat-item-list-renderer class="style-scope yt-live-chat-renderer">
+                <div id="contents" class="style-scope yt-live-chat-item-list-renderer">
+                    <div id="items" class="style-scope yt-live-chat-item-list-renderer">
+
+                    </div>
+                </div>
+            </yt-live-chat-item-list-renderer>
+        </yt-live-chat-renderer>
+    </yt-live-chat-app>
+</body>
+
+</html>

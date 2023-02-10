@@ -16,11 +16,12 @@ function loadScript(scriptUrl) {
 
 function raiseMessageEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
-    console.log(eventData)
+    console.log(eventData);
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
 
     //add profile picture
     var authorPicture = eventData["author-photo"].$["img"].src;
+    authorPicture = updateProfileImageSize(authorPicture);
 
     var message = eventData.message.innerHTML;
     message = updateEmoteSize(message);
@@ -110,8 +111,10 @@ function raiseMembershipEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
-    //add member badge
-    //add author picture
+    //add member badge url
+    var memberBadge = "";
+    //add author picture url
+    var authorPicture = "";
 
     var message = eventData.message.innerHTML;
 
@@ -127,7 +130,8 @@ function raiseMembershipEvent(mutation, j, connection) {
             "month": "",
             "message": message,
             "sessionTop": false,
-            "originalEventName": "member-latest"
+            "originalEventName": "member-latest",
+            "profileImage": authorPicture           
         }
     }
 
@@ -140,8 +144,10 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[2].$["author-name"].innerText;
-    //add member badge
-    //add author picture
+    //add member badge url
+    var memberBadge = "";
+    //add author picture url
+    var authorPicture = "";
 
 
     var message = mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[6].innerHTML;
@@ -156,7 +162,8 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
             "month": "",
             "message": message,
             "sessionTop": false,
-            "originalEventName": "gift-latest"
+            "originalEventName": "gift-latest",
+            "profileImage": authorPicture
         }
     }
 
@@ -170,8 +177,10 @@ function raiseSuperchatEvent(mutation, j, connection) {
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
     var message = eventData.message.innerHTML;
-    //add member badge
-    //add author picture
+    //add member badge url
+    var memberBadge = "";
+    //add author picture url
+    var authorPicture = "";
 
     var amount = mutation.addedNodes[j].$["purchase-amount"].innerText
 
@@ -229,11 +238,12 @@ function raiseSuperchatEvent(mutation, j, connection) {
             "colors": {
                 "primaryColor": primary,
                 "secondaryColor": secondary
-                },
+            },
             "month": "",
             "message": message,
             "sessionTop": false,
-            "originalEventName": "superchat-latest"
+            "originalEventName": "superchat-latest",
+            "profileImage": authorPicture
         }
     }
 
@@ -246,8 +256,10 @@ function raiseStickerEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
-    //add member badge
-    //add author picture
+    //add member badge url
+    var memberBadge = "";
+    //add author picture url
+    var authorPicture = "";
 
     var amount = mutation.addedNodes[j].$["purchase-amount-chip"].innerText
 
@@ -312,11 +324,42 @@ function raiseStickerEvent(mutation, j, connection) {
             "stickerUrl": stickerUrl,
             "message": "",
             "sessionTop": false,
-            "originalEventName": "sticker-latest"
+            "originalEventName": "sticker-latest",
+            "profileImage": authorPicture
         }
     }
 
     console.log(detail.event.stickerUrl)
+
+    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function raiseBasicEvent(mutation, j, connection, event) {
+    let rawHtml = mutation.addedNodes[j].outerHTML;
+    var detail = {
+        "listener": "youtube-basic",
+        "event": {
+            "type": event,
+            "html": rawHtml
+        }
+    }
+
+    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+//this event is raised when the app launches/changes url
+function raiseUrlChangeEvent(connection, url) {
+    var detail = {
+        "listener": "url-change",
+        "event": {
+            "type": "url-change",
+            "url": url
+        }
+    }
 
     connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
         return console.error(err.toString());
@@ -336,21 +379,32 @@ function startStream() {
         console.log(mutationList)
         for (const mutation of mutationList) {
             for (var j = 0; j < mutation.addedNodes.length; j++) {
+
+                //should the raw html included in every events?
+                //right now it is in it's separate function to pass as is
+
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
                     raiseMessageEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "message");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
                     raiseMembershipEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "member-latest");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
                     raiseSuperchatEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "superchat-latest");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
                     setTimeout(() => raiseStickerEvent(mutation, j, connection), 100)
+                    raiseBasicEvent(mutation, j, connection, "sticker-latest");
                 }
+
+                //add member gift received event?
+                //username received membership
             }
 
             for (j = 0; j < mutation.removedNodes.length; j++) {
@@ -381,6 +435,7 @@ function startStream() {
         .withAutomaticReconnect()
         .build();
 
+
     async function start() {
         try {
             await connection.start();
@@ -396,6 +451,7 @@ function startStream() {
     });
 
     start().then(() => {
+        raiseUrlChangeEvent(connection, window.location.href);
         observer.observe(document.querySelector("yt-live-chat-item-list-renderer #items"), { subtree: false, childList: true });
     }) 
 
@@ -413,4 +469,10 @@ function updateEmoteSize(message, newSize = 32) {
 function updateBadgeSize(badgeUrl, newSize = 64) {
     let newBadgeUrl = badgeUrl.replaceAll(`=s16-c-k`, `=s${newSize}-c-k`);
     return newBadgeUrl;
+}
+
+//replaces profile image link with a higher resolution
+function updateProfileImageSize(imgUrl, newSize = 64) {
+    let newPictureUrl = imgUrl.replaceAll(`=s32-c-k-c0x00ffffff-no-rj`, `=s${newSize}-c-k-c0x00ffffff-no-rj`);
+    return newPictureUrl;
 }
