@@ -2,6 +2,15 @@ body {
     margin: 0;
 }
 
+h3 {
+    font-weight: 600;
+}
+
+h4 {
+    font-weight: 500;
+    margin: 10px 0px 0px 0px !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
     width: 0px;
@@ -34,7 +43,7 @@ body {
     --var-background-color: #181818;
     --var-foreground-color: #202020;
     --var-preview-bg-color: #101010;
-    --var-nav-hover-color: #292929;
+    --var-nav: #292929;
     --var-text-color: #e9e9e9;
     --var-accent-color: #dd7f2f;
     --var-accent-color-transparent: #da7e2e2e;
@@ -192,6 +201,81 @@ button#open-editor {
     justify-content: center;
 }
 
+.editor .ui-state-default {
+    color: var(--var-text-color) !important;
+}
+
+.editor .ui-state-active {
+    color: var(--var-accent-color) !important;
+}
+
+.editor .ui-accordion-header {
+    background: transparent;
+    border: none;
+    border-bottom: solid 2px var(--var-foreground-color);
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+    padding: 15px !important;
+}
+
+.editor .accordion__content {
+    display: flex;
+    flex-direction: column;
+}
+
+.editor .accordion__content label {
+    width: fit-content;
+}
+
+.editor .ui-accordion-content {
+    background: transparent;
+    border: none;
+}
+
+.editor .ui-accordion-content .ui-button {
+    padding: 0.4em 1em !important;
+    margin: 5px 0px !important;
+}
+
+.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content .ui-widget-content 
+.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content .ui-widget-header 
+.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content a.ui-button:active, 
+.editor .ui-accordion-content .ui-button:active, .editor .ui-accordion-content .ui-button.ui-state-active:hover {
+    border: 1px solid var(--var-accent-color) !important;
+    background: var(--var-accent-color) !important;
+    font-weight: normal;
+    color: #fff;
+}
+
+.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-widget-content 
+.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-widget-header 
+.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-button, 
+html .editor .ui-accordion-content .ui-button.ui-state-disabled:hover, 
+html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
+    border: 1px solid var(--var-foreground-color) !important;
+    background: var(--var-foreground-color) !important;
+    font-weight: normal;
+    color: var(--var-text-color) !important;
+}
+
+.editor .ui-accordion-content .ui-widget-content {
+    --var-background-color: #181818;
+    --var-foreground-color: #202020;
+    --var-preview-bg-color: #101010;
+    --var-text-color: #e9e9e9;
+    --var-accent-color: #dd7f2f;
+    --var-accent-color-transparent: #da7e2e2e;
+    border: 1px solid var(--var-foreground-color) !important;
+    background: var(--var-foreground-color) !important;
+    color: var(--var-text-color) !important;
+}
+
+.editor .ui-accordion-content h4 {
+    color: var(--var-text-color);
+}
+
 .field-group {
     margin-bottom: 12px;
     display: flex;
@@ -225,9 +309,26 @@ button#open-editor {
     padding: 32px;
     height: 100%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .preview-nav {
     display: flex;
     justify-content: space-between;
+}
+
+.chat-container {
+    height: 100%;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+preview-button
+{
+    cursor: pointer;
 }

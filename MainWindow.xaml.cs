@@ -31,6 +31,7 @@ namespace sigmanuts_webview2
         public static string CacheFolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sigmanuts");
         private Microsoft.AspNetCore.SignalR.IHubContext<StreamHub> hubContext; // This is not used anymore, but I'll leave it here
         private bool isChatEnabled = false;
+        private string currentWidget;
 
         public string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
         private string appUrl = "http://localhost:6969/app.html";
@@ -41,10 +42,11 @@ namespace sigmanuts_webview2
         {
             InitializeComponent();
 
-            if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
+            //if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
             {
                 string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
                 string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
+
 
                 DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
                 DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
@@ -52,18 +54,19 @@ namespace sigmanuts_webview2
                 CopyDir.CopyAll(diSource, diTarget);
             }
 
+            //for auto update when building
+            HandleWidgets();
+
             // Start the server
             string folder = Path.Combine(CacheFolderPath, @".\localserver");
+
+            new Thread(() => InitSignalR()) { IsBackground = true }.Start();
 
             Thread ServerThread = new Thread(() => myServer = new SimpleHTTPServer(folder, 6969)) { IsBackground = true };
             ServerThread.Start();
 
-            WidgetOperations.CreateWidget("widget1");
-            WidgetOperations.CreateWidget("widget2");
-
-            new Thread(() => InitSignalR()) { IsBackground = true }.Start();
-
             Application.Current.Exit += CurrentOnExit;
+
         }
 
         protected override async void OnInitialized(EventArgs e)
@@ -77,6 +80,10 @@ namespace sigmanuts_webview2
             await webView.EnsureCoreWebView2Async(environment);
             await appView.EnsureCoreWebView2Async(environment);
 
+            WidgetOperations.CreateWidget("widget1");
+            WidgetOperations.CreateWidget("widget2");
+            WidgetOperations.CreateWidget("widget4");
+
 
             if (File.Exists(Path.Combine(CacheFolderPath, @".\config.ini")))
             {
@@ -86,8 +93,12 @@ namespace sigmanuts_webview2
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
 
+            CoreWebView2Profile profile = appView.CoreWebView2.Profile;
+            await profile.ClearBrowsingDataAsync();
+
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
+
 
         }
 
@@ -99,6 +110,11 @@ namespace sigmanuts_webview2
 
             try
             {
+                //to update to new app.html
+                //keeps getting error when i put it in initialize
+                webView.Reload();
+                appView.Reload();
+
                 // Delete WebView2 user data before application exits
                 string? webViewCacheDir = Path.Combine(CacheFolderPath, @".\EBWebView\Default\Cache");
                 var webViewProcessId = Convert.ToInt32(webView.CoreWebView2.BrowserProcessId);
@@ -152,6 +168,26 @@ namespace sigmanuts_webview2
                     await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\config.ini"), lines);
 
                     break;
+                case "change-widget":
+                    currentWidget = stuff.value;
+                    string[] current =
+                        {
+                            currentWidget
+                        };
+
+                    Debug.WriteLine($"Changing active widget to {currentWidget}");
+
+                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), current);
+                    break;
+                case "widget-load":
+                    string widgetData = stuff.value;
+                    string widgetName = stuff.name;
+
+                    string[] dataToWrite = { widgetData };
+                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{widgetName}\src\data.txt"), dataToWrite);
+                    
+                    //Debug.WriteLine($"{widgetName} /// {widgetData}");
+                    break;
                 default:
                     break;
             }
@@ -182,6 +218,35 @@ namespace sigmanuts_webview2
             {
                 webView.Height = 0;
             }
+        }
+
+        public async void HandleWidgets()
+        {
+
+            if (File.Exists(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active")))
+            {
+                currentWidget = File.ReadAllText(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"));
+            }
+            else
+            {
+                string[] current =
+                {
+                    ""
+                };
+
+                await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), current);
+            }
+
+            try
+            {
+                string[] dirs = Directory.GetDirectories(Path.Combine(CacheFolderPath, @".\localserver\widgets"), "*", SearchOption.TopDirectoryOnly);
+                await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @$".\localserver\widgets\widgets.ini"), dirs);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("The process failed: {0}", e.ToString());
+            }
+
         }
 
         private async void OnWebViewDOMContentLoaded(object sender, CoreWebView2DOMContentLoadedEventArgs arg)
