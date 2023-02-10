@@ -18,7 +18,12 @@ function raiseMessageEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     console.log(eventData)
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+
+    //add profile picture
+    var authorPicture = eventData["author-photo"].$["img"].src;
+
     var message = eventData.message.innerHTML;
+    message = updateEmoteSize(message);
 
     var url = window.location.href;
     var url_array = url.split('=');
@@ -36,10 +41,11 @@ function raiseMessageEvent(mutation, j, connection) {
     msgId = mutation.addedNodes[j].__data.id
 
     for (var i = 0; i < eventData.content.childNodes[1].$["chat-badges"].childNodes.length; i++) {
+        let url = updateBadgeSize(eventData.content.childNodes[1].$["chat-badges"].childNodes[0].$.image.childNodes[0].src);
         badgeArray.push({
             "type": eventData.content.childNodes[1].$["chat-badges"].childNodes[0].__data.type,
             "version": "1",
-            "url": eventData.content.childNodes[1].$["chat-badges"].childNodes[0].$.image.childNodes[0].src
+            "url": url
         })
 
         badges += (mutation.addedNodes[j].$.content.childNodes[1].$["chat-badges"].childNodes[0].__data.type + '/1')
@@ -81,6 +87,7 @@ function raiseMessageEvent(mutation, j, connection) {
                 "userId": userId,
                 "displayName": authorName,
                 "displayColor": "#FFFFFF",
+                "profileImage": authorPicture,
                 "badges": badgeArray,
                 "channel": "",
                 "text": message,
@@ -103,6 +110,9 @@ function raiseMembershipEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    //add member badge
+    //add author picture
+
     var message = eventData.message.innerHTML;
 
     var detail = {
@@ -130,6 +140,10 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[2].$["author-name"].innerText;
+    //add member badge
+    //add author picture
+
+
     var message = mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[6].innerHTML;
 
     var detail = {
@@ -156,6 +170,8 @@ function raiseSuperchatEvent(mutation, j, connection) {
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
     var message = eventData.message.innerHTML;
+    //add member badge
+    //add author picture
 
     var amount = mutation.addedNodes[j].$["purchase-amount"].innerText
 
@@ -230,6 +246,8 @@ function raiseStickerEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
+    //add member badge
+    //add author picture
 
     var amount = mutation.addedNodes[j].$["purchase-amount-chip"].innerText
 
@@ -383,4 +401,16 @@ function startStream() {
 
 
 
+}
+
+//replaces emote image link with a higher resolution
+function updateEmoteSize(message, newSize = 32) {
+    let newMessage = message.replaceAll(`=w24-h24-c-k-nd"`, `=w${newSize}-h${newSize}-c-k-nd"`);
+    return newMessage;
+}
+
+//replaces badge image link with a higher resolution
+function updateBadgeSize(badgeUrl, newSize = 64) {
+    let newBadgeUrl = badgeUrl.replaceAll(`=s16-c-k`, `=s${newSize}-c-k`);
+    return newBadgeUrl;
 }
