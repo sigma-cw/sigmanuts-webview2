@@ -1,4 +1,4 @@
-var activeWidget;
+var activeWidget="";
 var groupList = [];
 var widgetData = {};
 
@@ -70,7 +70,11 @@ function updateData(widget) {
 
 async function updateUI() {
     console.log(activeWidget)
-    fetch(`widgets/${activeWidget}/src/fields.json`)
+    console.log($('#widget-select').val());
+    if ($('#widget-select').val() != 'idle') {
+        $('#widget-select option[value="idle"]').remove();
+    }
+    fetch(`widgets/${activeWidget}/src/fields.txt`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -376,7 +380,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 lines.forEach(element => {
                     if (element !== "") {
                         var name = element.split("\\")
-                        name = name[name.length - 1].replace(/(\r\n|\n|\r)/gm, "")
+                        name = name[name.length - 1];
+
+                        name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
 
                         $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
                     }
@@ -387,19 +393,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
                 $('#widget-select').val(`idle`)
                 $('#widget-select').selectmenu('refresh')
-            })
-    }, 1000)
 
-    setTimeout(() => {
-        fetch('widgets/activeWidget.active')
-            .then(response => response.text())
-            .then(text => {
-                activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
                 start()
             });
-    }, 1100);
+    }, 1000)
 });
 
 $('#widget-select').on('selectmenuchange', (obj) => {
@@ -448,11 +447,24 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         "value": $(`#widget-select-button .ui-selectmenu-text`).text().replace(/(\r\n|\n|\r)/gm, "")
     })
 
-    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "");
+
 
     $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
 
     window.chrome.webview.postMessage(obj);
     retrieveData()
         .then(updateUI())
+});
+
+$('#copy-link').on('click', () =>
+{
+    console.log(activeWidget);
+    var copyField = document.getElementById('copy-link-text');
+    copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
+    copyField.select();
+    navigator.clipboard.writeText(copyField.value);
+
+    $('#copy-link>span').text("Copied");
+    setTimeout(() => { $('#copy-link>span').text("Copy chat link"); }, 2000)
 });

@@ -107,11 +107,15 @@ namespace sigmanuts_webview2
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
 
+            CoreWebView2Profile profile = appView.CoreWebView2.Profile;
+            await profile.ClearBrowsingDataAsync();
+
             widgetView.Source = new UriBuilder(widgetUrl).Uri;
             widgetView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
+
 
         }
 
@@ -123,6 +127,11 @@ namespace sigmanuts_webview2
 
             try
             {
+                //to update to new app.html
+                //keeps getting error when i put it in initialize
+                webView.Reload();
+                appView.Reload();
+
                 // Delete WebView2 user data before application exits
                 string? webViewCacheDir = Path.Combine(CacheFolderPath, @".\EBWebView\Default\Cache");
                 var webViewProcessId = Convert.ToInt32(webView.CoreWebView2.BrowserProcessId);

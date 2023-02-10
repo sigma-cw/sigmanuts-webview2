@@ -416,6 +416,11 @@ iframe {
     overflow: hidden;
 }
 
+preview-button
+{
+    cursor: pointer;
+}
+
 .backdrop-wrapper {
     display: none;
 }
@@ -465,4 +470,3 @@ iframe {
     background: var(--var-preview-bg-color);
     display: none;
 }
-
