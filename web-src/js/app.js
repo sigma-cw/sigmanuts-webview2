@@ -54,6 +54,10 @@ function updateData(widget) {
 
 async function updateUI() {
     console.log(activeWidget)
+    console.log($('#widget-select').val());
+    if ($('#widget-select').val() != 'idle') {
+        $('#widget-select option[value="idle"]').remove();
+    }
     fetch(`widgets/${activeWidget}/src/fields.txt`)
         .then(response => {
             console.log(response)
@@ -228,7 +232,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 lines.forEach(element => {
                     if (element !== "") {
                         var name = element.split("\\")
-                        name = name[name.length - 1]
+                        name = name[name.length - 1];
+
+                        name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
 
                         $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
                     }
@@ -239,29 +245,35 @@ window.addEventListener('DOMContentLoaded', () => {
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
                 $('#widget-select').val(`idle`)
                 $('#widget-select').selectmenu('refresh')
-            })
-    }, 1000)
 
-    setTimeout(() => {
-        fetch('widgets/activeWidget.active')
-            .then(response => response.text())
-            .then(text => {
-                activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
-                retrieveData()
+                fetch('widgets/activeWidget.active')
+                    .then(response => response.text())
+                    .then(text => {
+                        activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
+
+                        if (activeWidget.length > 0) {
+                            $('#widget-select').val(activeWidget);
+                            $('#widget-select').selectmenu('refresh')
+                        }
+                        
+                    })
                     .then(() => {
-                        updateUI()
+                        retrieveData()
                             .then(() => {
-                                start()
+                                updateUI()
                                     .then(() => {
-                                        updateData("all")
-                                        $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
-                                    })
+                                        start()
+                                            .then(() => {
+                                                updateData("all")
+                                                $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
+                                            })
+                                    });
                             });
                     });
             });
-    }, 1100);
+    }, 1000)
 });
 
 $('#widget-select').on('selectmenuchange', () => {
@@ -276,7 +288,8 @@ $('#widget-select').on('selectmenuchange', () => {
         "value": $(`#widget-select-button .ui-selectmenu-text`).text().replace(/(\r\n|\n|\r)/gm, "")
     })
 
-    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "");
+
 
     $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
 
@@ -287,10 +300,12 @@ $('#widget-select').on('selectmenuchange', () => {
 
 $('#copy-link').on('click', () =>
 {
+    console.log(activeWidget);
     var copyField = document.getElementById('copy-link-text');
-    copyField.value = `localhost:6969/widgets/`;//move this to on widget change
+    copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
     copyField.select();
-
     navigator.clipboard.writeText(copyField.value);
-    alert(`Copied: localhost:6969/widgets/`); //change this later
+
+    $('#copy-link>span').text("Copied");
+    setTimeout(() => { $('#copy-link>span').text("Copy chat link"); }, 2000)
 });
