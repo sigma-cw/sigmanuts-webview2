@@ -1,6 +1,7 @@
 var activeWidget="";
 var groupList = [];
 var widgetData = {};
+var isYtVisible = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                        HELPER FUNCTIONS                                    //
@@ -71,10 +72,11 @@ function updateData(widget) {
 async function updateUI() {
     console.log(activeWidget)
     console.log($('#widget-select').val());
-    if ($('#widget-select').val() != 'idle') {
+    /* if ($('#widget-select').val() != 'idle') {
         $('#widget-select option[value="idle"]').remove();
-    }
-    fetch(`widgets/${activeWidget}/src/fields.txt`)
+        $('#widget-select').selectmenu('refresh')
+    } */
+    fetch(`widgets/${activeWidget}/src/fields.json`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -282,6 +284,18 @@ $('#ytchat').click(() => {
         "value": null
     })
     window.chrome.webview.postMessage(obj);
+
+    isYtVisible = !isYtVisible;
+
+    if (isYtVisible) {
+        $('.app').css('background', 'transparent');
+        /* $('.footer').css('display', 'none'); */
+        $('#ytchat').text('Hide YouTube Chat');
+    } else {
+        $('.app').css('background', '');
+        /* $('.footer').css('display', ''); */
+        $('#ytchat').text('Show YouTube Chat');
+    }
 });
 
 $('#fullscreen').click(() => {
@@ -338,9 +352,8 @@ $('#remove').click(() => {
     }
 
     $(`#${activeWidget.replace(/(\r\n|\n|\r)/gm, "")}`).remove();
-    $('#widget-select').selectmenu("refresh");
-
-    $('#widget-select').val('idle')
+    /* $('#widget-select').prepend('<option value="idle" id="idle">Select widget</option>'); */
+    $('#widget-select').val('idle');
     $('#widget-select').selectmenu("refresh");
 
     var obj = JSON.stringify({
@@ -402,7 +415,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 $('#widget-select').on('selectmenuchange', (obj) => {
-
+    
     if (obj.currentTarget.value === "add") {
         $('.backdrop-wrapper').show('fast');
         $('#name').click(() => {
@@ -434,6 +447,16 @@ $('#widget-select').on('selectmenuchange', (obj) => {
                 return
             }
         });
+    } else {
+        $('.backdrop-wrapper').hide('fast');
+    }
+
+    if (obj.currentTarget.value === "YouTube") {
+        $('#refresh-widget').hide();
+        $('#remove').hide();
+    } else {
+        $('#refresh-widget').show();
+        $('#remove').show();
     }
 
     $('#settings__editor').remove();

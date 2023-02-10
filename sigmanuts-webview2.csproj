@@ -46,6 +46,13 @@
     <None Remove="web-src\js\jszip.min.js" />
     <None Remove="web-src\js\script.js" />
     <None Remove="web-src\js\signalr.js" />
+    <None Remove="web-src\widgets\defaultWidgets.ini" />
+    <None Remove="web-src\widgets\YouTube\basic.js" />
+    <None Remove="web-src\widgets\YouTube\jquery-3.6.0.js" />
+    <None Remove="web-src\widgets\YouTube\sigmanuts.js" />
+    <None Remove="web-src\widgets\YouTube\src\data.txt" />
+    <None Remove="web-src\widgets\YouTube\widget.html" />
+    <None Remove="web-src\widgets\YouTube\youtube.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -122,6 +129,27 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\js\signalr.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\defaultWidgets.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\basic.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\jquery-3.6.0.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\sigmanuts.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\src\data.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\widget.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\widgets\YouTube\youtube.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
