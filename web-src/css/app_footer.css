@@ -8,6 +8,7 @@
     box-sizing: border-box;
     justify-content: space-between;
     color: white;
+    z-index: 99;
 }
 
 .footer a {

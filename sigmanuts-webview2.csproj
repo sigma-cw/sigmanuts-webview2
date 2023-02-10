@@ -37,11 +37,15 @@
     <None Remove="web-src\index.html" />
     <None Remove="web-src\js.html" />
     <None Remove="web-src\js\app.js" />
+    <None Remove="web-src\js\appUpload.js" />
+    <None Remove="web-src\js\embedding.js" />
     <None Remove="web-src\js\FileSaver.js" />
+    <None Remove="web-src\js\iro.js" />
     <None Remove="web-src\js\jquery-3.6.3.min.js" />
     <None Remove="web-src\js\jquery-ui.min.js" />
     <None Remove="web-src\js\jszip.min.js" />
     <None Remove="web-src\js\script.js" />
+    <None Remove="web-src\js\signalr.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -93,7 +97,16 @@
     <Content Include="web-src\js\app.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\js\appUpload.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\js\embedding.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\js\FileSaver.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\js\iro.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\js\jquery-3.6.3.min.js">
@@ -108,12 +121,19 @@
     <Content Include="web-src\js\script.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\js\signalr.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
 	<FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="web-src\css\widgets\" />
   </ItemGroup>
 
 </Project>

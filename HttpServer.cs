@@ -12,6 +12,9 @@ using System.Diagnostics;
 
 class SimpleHTTPServer
 {
+
+    public HttpListenerContext context;
+
     private readonly string[] _indexFiles = {
         "index.html",
         "index.htm",
@@ -141,16 +144,17 @@ class SimpleHTTPServer
             try
             {
                 HttpListenerContext context = _listener.GetContext();
+                Debug.WriteLine(context);
                 Process(context);
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
         }
     }
 
-    private void Process(HttpListenerContext context)
+    public void Process(HttpListenerContext context)
     {
         string filename = context.Request.Url.AbsolutePath;
         //Console.WriteLine(filename);

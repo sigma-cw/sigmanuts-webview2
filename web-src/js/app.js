@@ -2,6 +2,10 @@ var activeWidget="";
 var groupList = [];
 var widgetData = {};
 
+////////////////////////////////////////////////////////////////////////////////
+//                        HELPER FUNCTIONS                                    //
+////////////////////////////////////////////////////////////////////////////////
+
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
@@ -11,6 +15,18 @@ function compareKeys(a, b) {
     var bKeys = Object.keys(b).sort();
     return JSON.stringify(aKeys) === JSON.stringify(bKeys);
 }
+
+function appendSetting(setting, el) {
+    if (setting["group"]) {
+        $(`#${setting["group"].replace(/ /g, '')} + div`).append(el)
+    } else {
+        $('#settings__editor').append(el)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                          MAIN FUNCTIONS                                    //
+////////////////////////////////////////////////////////////////////////////////
 
 async function retrieveData() {
     fetch(`widgets/${activeWidget}/src/data.txt`)
@@ -117,11 +133,7 @@ function handleFieldSettings(data) {
                     <select id="dropdown__${field}"></select>
                 `)
 
-                if (setting["group"]) {
-                    $(`#${setting["group"].replace(/ /g, '')} + div`).append(dropdown)
-                } else {
-                    $('#settings__editor').append(dropdown)
-                }
+                appendSetting(setting, dropdown);
 
                 for (option in setting["options"]) {
                     $(`#dropdown__${field}`).append(`
@@ -139,7 +151,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2]
                     widgetData[key] = $(evt.currentTarget).val()
                     updateData(activeWidget);
-                    $('iframe').attr( 'src', function ( i, val ) { return val; });
+                    $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
 
@@ -149,27 +161,90 @@ function handleFieldSettings(data) {
                     <label for="checkbox__${field}">${setting["label"]}</label>
                 `)
 
-                if (setting["group"]) {
-                    $(`#${setting["group"].replace(/ /g, '')} + div`).append(checkbox)
-                } else {
-                    $('#settings__editor').append(checkbox)
-                }
+                appendSetting(setting, checkbox);
 
-                $(`#checkbox__${field}`).checkboxradio()
+                $(`#checkbox__${field}`).checkboxradio();
+                $(`#checkbox__${field}`).prop('checked', widgetData[field]);
+                $(`#checkbox__${field}`).button('refresh');
+
+                $(`#checkbox__${field}`).on('change', (evt) => {
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.checked;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                });
                 break;
 
+            case "text":
+                var text = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="text" id="text__${field}" placeholder="Type here..."></input>
+                `);
+
+                appendSetting(setting, text);
+
+                $(`#text__${field}`).val(widgetData[field]);
+                $(`#text__${field}`).on('change', (evt) => {
+                    console.log(evt);
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+            case "colorpicker":
+                var picker = $(`
+                    <h4>${setting["label"]}</h4>
+                    <div class="picker color-picker__${field}">
+                        <input type="text" id="text__${field}" placeholder="Type here..."></input>
+                        <span id="${field}" style="background: ${widgetData[field]}"></span>
+                    </div>
+                `)
+                
+                appendSetting(setting, picker); 
+                $('body').append(`<div class="picker-container" id="picker__${field}"></div>`);
+                $(`#text__${field}`).val(widgetData[field]);
+
+                var colorPicker = new iro.ColorPicker(`#picker__${field}`, {
+                    width: 200,
+                    layout: [
+                        {
+                          component: iro.ui.Box,
+                          options: {
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                          }
+                        },
+                        {
+                          component: iro.ui.Slider,
+                          options: {
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            sliderType: 'hue'
+                          }
+                        }
+                      ]
+                });
+
+                $(`.color-picker__${field} span`).click((evt) => {
+                    let field = evt.currentTarget.id;
+                    let position = $(`.color-picker__${field} span`).offset();
+                    let leftPos = position.left - 210 + 'px';
+                    let topPos = position.top - 10 + 'px';
+                    $(`#picker__${field}.picker-container`).css({'left': leftPos, 'top': topPos})
+                    $(`#picker__${field}`).toggle('fast');
+                });
+                
+                break;
         }
     }
 }
 
-function loadIframe(iframeName, url) {
-    var $iframe = $('#' + iframeName);
-    if ($iframe.length) {
-        $iframe.attr('src',url);
-        return false;
-    }
-    return true;
-}
+////////////////////////////////////////////////////////////////////////////////
+//                              MAIN SCRIPT                                   //
+////////////////////////////////////////////////////////////////////////////////
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("http://localhost:6970/stream")
@@ -209,6 +284,15 @@ $('#ytchat').click(() => {
     window.chrome.webview.postMessage(obj);
 });
 
+$('#fullscreen').click(() => {
+    console.log('toggling fullscreen');
+    var obj = JSON.stringify({
+        "listener": "toggle-fullscreen",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
+});
+
 $('#search').click(() => {
     var url = $('#link-input').val();
     var obj = JSON.stringify({
@@ -218,10 +302,74 @@ $('#search').click(() => {
     window.chrome.webview.postMessage(obj);
 });
 
-$('#widget-select').selectmenu()
+$('#refresh-widget').click(() => {
+    var obj = JSON.stringify({
+        "listener": "refresh-widget",
+        "name": activeWidget
+    })
+
+    $('#settings__editor').remove();
+    $('.editor').append('<div id="settings__editor"></div>')
+
+    groupList = [];
+    widgetData = {};
+
+    window.chrome.webview.postMessage(obj);
+
+    setTimeout(() => {
+        $('iframe')[0].contentWindow.location.reload('true');
+    }, 1000)
+
+    /* connection.on("ReceiveMessage", function (obj) {
+        var evt = JSON.parse(obj);
+        console.log(evt)
+    
+        if (evt.listener === "request-data") {
+            $('iframe')[0].contentWindow.location.reload('true');
+            connection.D.receivemessage[1] = null;
+            return
+        }
+    }); */
+});
+
+$('#remove').click(() => {
+    if (activeWidget === "Select widget") {
+        return
+    }
+
+    $(`#${activeWidget.replace(/(\r\n|\n|\r)/gm, "")}`).remove();
+    $('#widget-select').selectmenu("refresh");
+
+    $('#widget-select').val('idle')
+    $('#widget-select').selectmenu("refresh");
+
+    var obj = JSON.stringify({
+        "listener": "delete-widget",
+        "name": activeWidget.replace(/(\r\n|\n|\r)/gm, "")
+    })
+
+    $('#settings__editor').remove();
+    $('.editor').append('<div id="settings__editor"></div>')
+
+    groupList = [];
+    widgetData = {};
+
+    window.chrome.webview.postMessage(obj);
+    activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+    retrieveData()
+        .then(updateUI())
+});
+
+$('#widget-select').selectmenu();
 
 window.addEventListener('DOMContentLoaded', () => {
     // Start the connection.
+
+    fetch('config.ini')
+        .then(response => response.text())
+        .then(text => {
+            $('#link-input').val(text);
+        })
 
     setTimeout(() => {
         fetch('widgets/widgets.ini')
@@ -248,35 +396,46 @@ window.addEventListener('DOMContentLoaded', () => {
 
             })
             .then(() => {
-                fetch('widgets/activeWidget.active')
-                    .then(response => response.text())
-                    .then(text => {
-                        activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
-
-                        if (activeWidget.length > 0) {
-                            $('#widget-select').val(activeWidget);
-                            $('#widget-select').selectmenu('refresh')
-                        }
-                        
-                    })
-                    .then(() => {
-                        retrieveData()
-                            .then(() => {
-                                updateUI()
-                                    .then(() => {
-                                        start()
-                                            .then(() => {
-                                                updateData("all")
-                                                $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
-                                            })
-                                    });
-                            });
-                    });
+                start()
             });
     }, 1000)
 });
 
-$('#widget-select').on('selectmenuchange', () => {
+$('#widget-select').on('selectmenuchange', (obj) => {
+
+    if (obj.currentTarget.value === "add") {
+        $('.backdrop-wrapper').show('fast');
+        $('#name').click(() => {
+            if ($('#name-input').val() != "") {
+                var name = $('#name-input').val();
+                name = name.replace(/\s/g, "");
+                var obj = JSON.stringify({
+                    "listener": "create-widget",
+                    "name": name
+                })
+                $('#add').remove();
+                $('#widget-select').selectmenu('refresh')
+                $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`).selectmenu("refresh");
+                $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`).selectmenu("refresh");
+
+                $('#widget-select').val(`${name}`)
+                $('#widget-select').selectmenu('refresh')
+
+                $('.backdrop-wrapper').hide('fast');
+                $('#name-input').val("");
+                window.chrome.webview.postMessage(obj);
+
+                activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
+                var obj = JSON.stringify({
+                    "listener": "change-widget",
+                    "value": $(`#widget-select-button .ui-selectmenu-text`).text().replace(/(\r\n|\n|\r)/gm, "")
+                })
+                window.chrome.webview.postMessage(obj);
+                return
+            }
+        });
+    }
+
     $('#settings__editor').remove();
     $('.editor').append('<div id="settings__editor"></div>')
 

@@ -93,7 +93,7 @@ h4 {
 
 .search-bar input#link-input {
     background-color: var(--var-foreground-color);
-    padding: 16px 24px;
+    padding: 16px 120px 16px 24px;;
     font-size: 0.9rem;
     font-weight: 500;
     background: transparent;
@@ -157,17 +157,30 @@ search-button:hover {
     font-weight: 600;
     /* letter-spacing: 1px; */
     max-height: 39px;
-}
-
-button#zip-upload {
-    background-color: var(--var-foreground-color);
-    border: solid 1px var(--var-accent-color);
     margin-right: 15px;
     display: flex;
     align-items: center;
 }
 
-button#zip-upload span {
+label#zip-upload {
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    padding: 12px 18px;
+    /* text-transform: uppercase; */
+    margin: 16px 0;
+    font-weight: 600;
+    /* letter-spacing: 1px; */
+    max-height: 39px;
+    background-color: var(--var-foreground-color);
+    border: solid 1px var(--var-accent-color);
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+#zip-upload span {
     color: var(--var-accent-color);
 }
 
@@ -176,15 +189,19 @@ button#zip-upload .label {
     margin-left: 10px;
 }
 
+button#remove {
+    background-color: rgb(201, 62, 62);
+    color: white;
+}
+
 .upload-buttons span#separator {
     margin: 0 16px;
 }
 
-button#open-editor {
+button#open-folder, button#refresh-widget {
     background-color: var(--var-foreground-color);
     color: var(--var-text-color);
 }
-
 
 .editor {
     height: 100%;
@@ -273,7 +290,76 @@ html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
 }
 
 .editor .ui-accordion-content h4 {
-    color: var(--var-text-color);
+    color: grey;
+}
+
+.ui-checkboxradio-label .ui-icon-background {
+    box-shadow: none !important;
+    border-radius: 0.22em !important;
+    border: solid 1px var(--var-accent-color) !important;
+    background: var(--var-background-color) !important;
+}
+
+.ui-icon-background, .ui-state-active .ui-icon-background {
+    border: none !important;
+    background-color: var(--var-accent-color) !important;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 1em;
+    margin: 5px 0px 10px 0px;
+    padding: 10px;
+    border-radius: 0;
+    background: var(--var-background-color);
+    box-shadow: none;
+    border: none;
+    border-bottom: solid 2px var(--var-foreground-color);
+    /* border: none; */
+    color: white;
+}
+
+.ui-widget input:focus-visible {
+    outline: solid 1px var(--var-accent-color);
+    /* border: none; */
+    border-radius: 5px;
+}
+
+.picker-container {
+    margin-top: 10px;
+    position: absolute;
+    z-index: 10;
+    display: none;
+    width: 200px;
+}
+
+.picker {
+    position: relative;
+    display: flex;
+}
+
+.picker input {
+    width: 100%;
+}
+
+.picker span {
+    background: rgba(255, 0, 0);
+    /* padding: 5px; */
+    width: 15px;
+    height: 15px;
+    display: block;
+    border: solid 2px white;
+    border-radius: 15px;
+    position: absolute;
+    right: 0;
+    top: 15px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.picker span:hover {
+    transform: scale(1.2);
+    transition: all 0.5s ease;
 }
 
 .field-group {
@@ -320,15 +406,67 @@ html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
 
 .chat-container {
     height: 100%;
+    overflow: hidden;
 }
 
 iframe {
     width: 100%;
     height: 100%;
     border: none;
+    overflow: hidden;
 }
 
 preview-button
 {
     cursor: pointer;
+}
+
+.backdrop-wrapper {
+    display: none;
+}
+
+.backdrop {
+    height: 100vh;
+    top: 0px;
+    position: absolute;
+    width: 100vw;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backdrop .search-bar {
+    min-width: 500px;
+}
+
+.search-bar input#name-input {
+    background-color: var(--var-foreground-color);
+    padding: 16px 24px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    width: 100%;
+    color: var(--var-text-color);
+    outline: solid 1px var(--var-foreground-color);
+    border-radius: 100px;
+    transition: outline 0.5s ease;
+    position: absolute;
+    box-sizing: border-box;
+}
+
+.search-bar input#name-input:focus-visible {
+    outline: solid 1px var(--var-accent-color);
+    border-radius: 100px;
+    transition: outline 0.5s ease;
+}
+
+.fullscreen {
+    height: 100vh;
+    top: 0px;
+    position: absolute;
+    width: 100vw;
+    background: var(--var-preview-bg-color);
+    display: none;
 }

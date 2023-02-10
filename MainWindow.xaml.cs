@@ -29,44 +29,62 @@ namespace sigmanuts_webview2
     public partial class MainWindow : Window
     {
         public static string CacheFolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sigmanuts");
+
         private Microsoft.AspNetCore.SignalR.IHubContext<StreamHub> hubContext; // This is not used anymore, but I'll leave it here
         private bool isChatEnabled = false;
-        private string currentWidget;
+        private bool isPreviewEnabled = false;
+        private static string currentWidget = "";
 
-        public string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
+        /// <summary>
+        /// URLs
+        /// </summary>
+
+        private string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
         private string appUrl = "http://localhost:6969/app.html";
+        private string widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
 
         private SimpleHTTPServer myServer;
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            //if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver"))) 
+            try
             {
-                string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
-                string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
+                InitializeComponent();
+                Directory.CreateDirectory(Path.Combine(CacheFolderPath, @".\localserver\widgets"));
 
+                if (!File.Exists(Path.Combine(CacheFolderPath, @".\localserver")))
+                {
+                    string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
+                    string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
 
-                DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
-                DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+                    DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+                    DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
 
-                CopyDir.CopyAll(diSource, diTarget);
+                    CopyDir.CopyAll(diSource, diTarget);
+                }
+
+                HandleWidgets();
+
+                Debug.WriteLine("Running...");
+
+                new Thread(() => InitSignalR()) { IsBackground = true }.Start();
+
+                // Start the server
+                string folder = Path.Combine(CacheFolderPath, @".\localserver");
+                myServer = new SimpleHTTPServer(folder, 6969);
+                currentWidget = "";
+
+                Application.Current.Exit += CurrentOnExit;
             }
+            catch (Exception ex)
+            {
+                Directory.CreateDirectory(Path.Combine(CacheFolderPath, @".\crash-logs"));
+                string[] exception =
+                {
+                    ex.Message };
 
-            //for auto update when building
-            HandleWidgets();
-
-            // Start the server
-            string folder = Path.Combine(CacheFolderPath, @".\localserver");
-
-            new Thread(() => InitSignalR()) { IsBackground = true }.Start();
-
-            Thread ServerThread = new Thread(() => myServer = new SimpleHTTPServer(folder, 6969)) { IsBackground = true };
-            ServerThread.Start();
-
-            Application.Current.Exit += CurrentOnExit;
-
+                File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\crash-logs\latest.log"), exception);
+            }
         }
 
         protected override async void OnInitialized(EventArgs e)
@@ -79,15 +97,11 @@ namespace sigmanuts_webview2
 
             await webView.EnsureCoreWebView2Async(environment);
             await appView.EnsureCoreWebView2Async(environment);
+            await widgetView.EnsureCoreWebView2Async(environment);
 
-            WidgetOperations.CreateWidget("widget1");
-            WidgetOperations.CreateWidget("widget2");
-            WidgetOperations.CreateWidget("widget4");
-
-
-            if (File.Exists(Path.Combine(CacheFolderPath, @".\config.ini")))
+            if (File.Exists(Path.Combine(CacheFolderPath, @".\localserver\config.ini")))
             {
-                chatUrl = File.ReadAllText(Path.Combine(CacheFolderPath, @".\config.ini"));
+                chatUrl = File.ReadAllText(Path.Combine(CacheFolderPath, @".\localserver\config.ini"));
             }
 
             webView.Source = new UriBuilder(chatUrl).Uri;
@@ -95,6 +109,9 @@ namespace sigmanuts_webview2
 
             CoreWebView2Profile profile = appView.CoreWebView2.Profile;
             await profile.ClearBrowsingDataAsync();
+
+            widgetView.Source = new UriBuilder(widgetUrl).Uri;
+            widgetView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
@@ -154,20 +171,23 @@ namespace sigmanuts_webview2
                 case "toggle-chat":
                     ToggleChat();
                     break;
+
+                case "toggle-fullscreen":
+                    ToggleFullscreen();
+                    break;
+
                 case "change-url":
                     string url = stuff.value;
                     webView.CoreWebView2.Navigate(url);
                     webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
-
-
                     string[] lines =
                         {
                             url
                         };
 
-                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\config.ini"), lines);
-
+                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\config.ini"), lines);
                     break;
+
                 case "change-widget":
                     currentWidget = stuff.value;
                     string[] current =
@@ -175,25 +195,88 @@ namespace sigmanuts_webview2
                             currentWidget
                         };
 
-                    Debug.WriteLine($"Changing active widget to {currentWidget}");
-
                     await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), current);
+                    widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
+                    widgetView.CoreWebView2.Navigate(widgetUrl);
                     break;
+
                 case "widget-load":
                     string widgetData = stuff.value;
                     string widgetName = stuff.name;
 
                     string[] dataToWrite = { widgetData };
-                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{widgetName}\src\data.txt"), dataToWrite);
-                    
-                    //Debug.WriteLine($"{widgetName} /// {widgetData}");
+                    try
+                    {
+                        await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{widgetName}\src\data.txt"), dataToWrite);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.ToString());
+                    }
+
                     break;
+
+                case "create-widget":
+                    string name = stuff.name;
+                    string _srcDir = WidgetOperations.CreateWidgetFolder(name);
+                    HandleWidgets();
+                    break;
+
+                case "populate-widget":
+                    string _name = stuff.name;
+
+                    string HTML = stuff.htmlvalue;
+                    string CSS = stuff.cssvalue;
+                    string JS = stuff.jsvalue;
+                    string FIELDS = stuff.fieldsvalue;
+                    string DATA = stuff.datavalue;
+
+                    string[] _HTML = { HTML };
+                    string[] _CSS = { CSS };
+                    string[] _JS = { JS };
+                    string[] _FIELDS = { FIELDS };
+                    string[] _DATA = { DATA };
+
+                    string widgetDirectory = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{_name}");
+                    string srcDirectory = Path.Combine(widgetDirectory, "src");
+
+                    await File.WriteAllLinesAsync(Path.Combine(srcDirectory, @".\html.html"), _HTML);
+                    await File.WriteAllLinesAsync(Path.Combine(srcDirectory, @".\css.css"), _CSS);
+                    await File.WriteAllLinesAsync(Path.Combine(srcDirectory, @".\js.js"), _JS);
+                    await File.WriteAllLinesAsync(Path.Combine(srcDirectory, @".\fields.json"), _FIELDS);
+                    await File.WriteAllLinesAsync(Path.Combine(srcDirectory, @".\data.txt"), _DATA);
+
+                    WidgetOperations.CreateWidget(_name, appView);
+
+                    HandleWidgets();
+                    widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
+                    widgetView.CoreWebView2.Navigate(widgetUrl);
+                    break;
+
+                case "refresh-widget":
+                    string _name_ = stuff.name;
+                    Debug.WriteLine(_name_);
+                    WidgetOperations.CreateWidget(_name_, appView);
+                    widgetView.CoreWebView2.Navigate(widgetUrl);
+                    break;
+
+                case "delete-widget":
+                    string __name_ = stuff.name;
+                    string widgetDir = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{__name_}");
+                    Directory.Delete(widgetDir, true);
+                    HandleWidgets();
+
+                    string[] clearActive = { "" };
+                    await File.WriteAllLinesAsync(Path.Combine(CacheFolderPath, @".\localserver\widgets\activeWidget.active"), clearActive);
+                    await appView.CoreWebView2.ExecuteScriptAsync($"retrieveData().then(updateUI()); $('iframe').attr('src', ``)");
+                    break;
+
                 default:
                     break;
             }
         }
-        
-        private void ToggleChat()
+
+        public void ToggleChat()
         {
             /// Simple function to toggle chat visibility on and off.
             /// 
@@ -213,11 +296,45 @@ namespace sigmanuts_webview2
                 {
                     webView.Height = window.ActualHeight - 94;
                 }
-            } 
+            }
             else
             {
                 webView.Height = 0;
             }
+        }
+
+        public async void ToggleFullscreen()
+        {
+            /// Simple function to toggle fullscreen preview visibility on and off.
+            /// 
+            /// I am aware that I can change Visibility to Hidden or Collapsed,
+            /// it's done by setting Height to 0 for a reason. YouTube chat pauses if not focused.
+            /// Do not ask about this.
+            /// 
+            if (!File.Exists(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{currentWidget.Replace("\r\n", string.Empty)}\widget.html")))
+            {
+                return;
+            }
+
+            isPreviewEnabled = !isPreviewEnabled;
+
+            if (isPreviewEnabled)
+            {
+                if (WindowState == WindowState.Maximized)
+                {
+                    widgetView.Height = window.ActualHeight - 110;
+                }
+                else
+                {
+                    widgetView.Height = window.ActualHeight - 94;
+                }
+            }
+            else
+            {
+                widgetView.Height = 0;
+            }
+
+            await appView.CoreWebView2.ExecuteScriptAsync("$('.fullscreen').toggle('fast');");
         }
 
         public async void HandleWidgets()
@@ -249,6 +366,10 @@ namespace sigmanuts_webview2
 
         }
 
+
+        /// <summary>
+        /// Listening for JS events
+        /// </summary>
         private async void OnWebViewDOMContentLoaded(object sender, CoreWebView2DOMContentLoadedEventArgs arg)
         {
             /// This function injects scraping script into YouTube live chat. 
@@ -354,12 +475,22 @@ namespace sigmanuts_webview2
         // Maximize
         private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
         {
+            isPreviewEnabled = false;
+            widgetView.Height = 0;
+
+            isChatEnabled = false;
+            webView.Height = 0;
             SystemCommands.MaximizeWindow(this);
         }
 
         // Restore
         private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
         {
+            isPreviewEnabled = false;
+            widgetView.Height = 0;
+
+            isChatEnabled = false;
+            webView.Height = 0;
             SystemCommands.RestoreWindow(this);
         }
 

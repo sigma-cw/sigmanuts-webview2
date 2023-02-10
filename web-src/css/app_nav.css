@@ -6,7 +6,7 @@
     position: fixed;
     width: 100vw;
     box-sizing: border-box;
-    z-index: 9999;
+    z-index: 99;
 }
 
 .nav .left {
@@ -64,4 +64,10 @@ html .nav .ui-button.ui-state-disabled:active {
     border: 1px solid var(--var-background-color) !important;
     background: var(--var-background-color) !important;
     color: var(--var-text-color) !important;
+}
+
+.ui-select-menu .ui-widget-content {
+    border: none !important;
+    background: #202020 !important;
+    color: #fff !important;
 }
