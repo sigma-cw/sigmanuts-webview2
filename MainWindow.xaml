@@ -159,14 +159,12 @@
 
             <!--App content-->
             <Grid Grid.Row="1" x:Name="AppArea">
-
-                <wv2:WebView2 x:Name="webView" Visibility="Visible" Height="0" Margin="0,5,0,0"/>
-
                 <wv2:WebView2 x:Name="widgetView" Visibility="Hidden" Height="0" Margin="0,5,0,0">
-
                 </wv2:WebView2>
 
-                <wv2:WebView2 Grid.RowSpan="1" x:Name="appView" Visibility="Visible"/>
+                <wv2:WebView2  x:Name="appView" Visibility="Visible" Margin="0,5,0,0"/>
+                
+                <wv2:WebView2 x:Name="webView" Visibility="Visible"  Margin="0,5,0,0"/>
             </Grid>
 
         </Grid>

@@ -57,6 +57,8 @@ namespace sigmanuts_webview2
                     string sourceDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\web-src");
                     string targetDirectory = Path.Combine(CacheFolderPath, @".\localserver");
 
+                    Debug.WriteLine(sourceDirectory);
+
                     DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
                     DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
 
@@ -107,15 +109,13 @@ namespace sigmanuts_webview2
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
 
-            CoreWebView2Profile profile = appView.CoreWebView2.Profile;
-            await profile.ClearBrowsingDataAsync();
-
             widgetView.Source = new UriBuilder(widgetUrl).Uri;
             widgetView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
             appView.CoreWebView2.WebMessageReceived += HandleWebMessage;
             webView.CoreWebView2.DOMContentLoaded += OnWebViewDOMContentLoaded;
 
+            appView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
         }
 
@@ -127,11 +127,6 @@ namespace sigmanuts_webview2
 
             try
             {
-                //to update to new app.html
-                //keeps getting error when i put it in initialize
-                webView.Reload();
-                appView.Reload();
-
                 // Delete WebView2 user data before application exits
                 string? webViewCacheDir = Path.Combine(CacheFolderPath, @".\EBWebView\Default\Cache");
                 var webViewProcessId = Convert.ToInt32(webView.CoreWebView2.BrowserProcessId);
@@ -290,27 +285,26 @@ namespace sigmanuts_webview2
             {
                 if (WindowState == WindowState.Maximized)
                 {
-                    webView.Height = window.ActualHeight - 110;
+                    var margin = new Thickness(0, 5, 0, window.ActualHeight - 88);
+                    appView.Margin = margin;
                 }
                 else
                 {
-                    webView.Height = window.ActualHeight - 94;
+                    var margin = new Thickness(0, 5, 0, window.ActualHeight - 72);
+                    appView.Margin = margin;
                 }
             }
             else
             {
-                webView.Height = 0;
+                var margin = new Thickness(0, 5, 0, 0);
+                appView.Margin = margin;
             }
         }
 
         public async void ToggleFullscreen()
         {
             /// Simple function to toggle fullscreen preview visibility on and off.
-            /// 
-            /// I am aware that I can change Visibility to Hidden or Collapsed,
-            /// it's done by setting Height to 0 for a reason. YouTube chat pauses if not focused.
-            /// Do not ask about this.
-            /// 
+
             if (!File.Exists(Path.Combine(CacheFolderPath, $@".\localserver\widgets\{currentWidget.Replace("\r\n", string.Empty)}\widget.html")))
             {
                 return;
@@ -479,7 +473,8 @@ namespace sigmanuts_webview2
             widgetView.Height = 0;
 
             isChatEnabled = false;
-            webView.Height = 0;
+            var margin = new Thickness(0, 5, 0, 0);
+            appView.Margin = margin;
             SystemCommands.MaximizeWindow(this);
         }
 
@@ -490,7 +485,8 @@ namespace sigmanuts_webview2
             widgetView.Height = 0;
 
             isChatEnabled = false;
-            webView.Height = 0;
+            var margin = new Thickness(0, 5, 0, 0);
+            appView.Margin = margin;
             SystemCommands.RestoreWindow(this);
         }
 
