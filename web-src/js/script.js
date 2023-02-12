@@ -172,6 +172,39 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
     });
 }
 
+function raiseMembershipRedemptionEvent(mutation, j, connection) {
+    var eventData = mutation.addedNodes[j]['$']
+    //console.log(eventData)
+    var authorName = ""; //mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[2].$["author-name"].innerText;
+    //add member badge url
+    var memberBadge = "";
+    //add author picture url
+    var authorPicture = "";
+
+
+    var message = ""; //mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[6].innerHTML;
+
+    var detail = {
+        "listener": "gift-redemption",
+        "event": {
+            "type": "gift",
+            "name": authorName,
+            "items": [],
+            "tier": "1000",
+            "month": "",
+            "message": message,
+            "sessionTop": false,
+            "originalEventName": "gift-redemption",
+            "profileImage": authorPicture
+        }
+    }
+
+    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+
 function raiseSuperchatEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
@@ -393,14 +426,24 @@ function startStream() {
                     raiseBasicEvent(mutation, j, connection, "member-latest");
                 }
 
+                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
+                    raiseMembershipGiftEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "gift-latest");
+                }
+                //receiving member gift
+                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
+                    raiseMembershipRedemptionEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "member-gifted");
+                }
+
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
                     raiseSuperchatEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "superchat-latest");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
-                    setTimeout(() => raiseStickerEvent(mutation, j, connection), 100)
-                    raiseBasicEvent(mutation, j, connection, "sticker-latest");
+                    setTimeout(() => raiseStickerEvent(mutation, j, connection), 100);
+                    setTimeout(() => raiseBasicEvent(mutation, j, connection, "sticker-latest"), 100);                    
                 }
 
                 //add member gift received event?
