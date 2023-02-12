@@ -285,18 +285,18 @@ namespace sigmanuts_webview2
             {
                 if (WindowState == WindowState.Maximized)
                 {
-                    var margin = new Thickness(0, 5, 0, window.ActualHeight - 88);
+                    var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
                     appView.Margin = margin;
                 }
                 else
                 {
-                    var margin = new Thickness(0, 5, 0, window.ActualHeight - 72);
+                    var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
                     appView.Margin = margin;
                 }
             }
             else
             {
-                var margin = new Thickness(0, 5, 0, 0);
+                var margin = new Thickness(0, 0, 0, 0);
                 appView.Margin = margin;
             }
         }

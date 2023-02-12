@@ -1,7 +1,8 @@
-var activeWidget="";
+var activeWidget = "";
 var groupList = [];
 var widgetData = {};
 var isYtVisible = false;
+var activeTab = 'home';
 
 ////////////////////////////////////////////////////////////////////////////////
 //                        HELPER FUNCTIONS                                    //
@@ -204,8 +205,8 @@ function handleFieldSettings(data) {
                         <span id="${field}" style="background: ${widgetData[field]}"></span>
                     </div>
                 `)
-                
-                appendSetting(setting, picker); 
+
+                appendSetting(setting, picker);
                 $('body').append(`<div class="picker-container" id="picker__${field}"></div>`);
                 $(`#text__${field}`).val(widgetData[field]);
 
@@ -213,21 +214,21 @@ function handleFieldSettings(data) {
                     width: 200,
                     layout: [
                         {
-                          component: iro.ui.Box,
-                          options: {
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                          }
+                            component: iro.ui.Box,
+                            options: {
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }
                         },
                         {
-                          component: iro.ui.Slider,
-                          options: {
-                            borderColor: '#ffffff',
-                            borderWidth: 2,
-                            sliderType: 'hue'
-                          }
+                            component: iro.ui.Slider,
+                            options: {
+                                borderColor: '#ffffff',
+                                borderWidth: 2,
+                                sliderType: 'hue'
+                            }
                         }
-                      ]
+                    ]
                 });
 
                 $(`.color-picker__${field} span`).click((evt) => {
@@ -235,10 +236,10 @@ function handleFieldSettings(data) {
                     let position = $(`.color-picker__${field} span`).offset();
                     let leftPos = position.left - 210 + 'px';
                     let topPos = position.top - 10 + 'px';
-                    $(`#picker__${field}.picker-container`).css({'left': leftPos, 'top': topPos})
+                    $(`#picker__${field}.picker-container`).css({ 'left': leftPos, 'top': topPos })
                     $(`#picker__${field}`).toggle('fast');
                 });
-                
+
                 break;
         }
     }
@@ -277,25 +278,73 @@ connection.on("ReceiveMessage", function (obj) {
     }
 });
 
-$('#ytchat').click(() => {
-    console.log('toggling yt chat');
-    var obj = JSON.stringify({
-        "listener": "toggle-chat",
-        "value": null
-    })
-    window.chrome.webview.postMessage(obj);
+///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
-    isYtVisible = !isYtVisible;
+$('#youtube-button').click(() => {
 
-    if (isYtVisible) {
+    if (!isYtVisible) {
+        var obj = JSON.stringify({
+            "listener": "toggle-chat",
+            "value": null
+        })
+        window.chrome.webview.postMessage(obj);
+
         $('.app').css('background', 'transparent');
-        /* $('.footer').css('display', 'none'); */
-        $('#ytchat').text('Hide YouTube Chat');
-    } else {
-        $('.app').css('background', '');
-        /* $('.footer').css('display', ''); */
-        $('#ytchat').text('Show YouTube Chat');
+        $('#youtube-button').addClass('sidebar-button-active');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        $(`#${activeTab}`).removeClass('active').addClass('hidden');
     }
+
+    isYtVisible = true;
+    activeTab = 'youtube'
+});
+
+$('#home-button').click(() => {
+
+    if (isYtVisible && activeTab === 'youtube') {
+        var obj = JSON.stringify({
+            "listener": "toggle-chat",
+            "value": null
+        })
+        window.chrome.webview.postMessage(obj);
+
+        $('.app').css('background', '');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        isYtVisible = false;
+    }
+    else {
+        $(`#${activeTab}`).removeClass('active').addClass('hidden');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+    }
+
+    $(`#home`).removeClass('hidden').addClass('active');
+    $('#home-button').addClass('sidebar-button-active');
+    $(`.nav`).removeClass('hidden').addClass('active');
+    activeTab = 'home';
+});
+
+$('#store-button').click(() => {
+
+    if (isYtVisible && activeTab === 'youtube') {
+        var obj = JSON.stringify({
+            "listener": "toggle-chat",
+            "value": null
+        })
+        window.chrome.webview.postMessage(obj);
+
+        $('.app').css('background', '');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        isYtVisible = false;
+    }
+    else {
+        $(`#${activeTab}`).removeClass('active').addClass('hidden');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+    }
+
+    $(`#store`).removeClass('hidden').addClass('active');
+    $('#store-button').addClass('sidebar-button-active');
+    $(`.nav`).removeClass('active').addClass('hidden');
+    activeTab = 'store';
 });
 
 $('#fullscreen').click(() => {
@@ -376,14 +425,21 @@ $('#remove').click(() => {
 $('#widget-select').selectmenu();
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Start the connection.
 
+    // Do active tab setup
+    $(`#home`).removeClass('hidden').addClass('active');
+    $('#home-button').addClass('sidebar-button-active');
+    $(`.nav`).removeClass('hidden').addClass('active');
+    activeTab = 'home';
+
+    // Fetch cached youtube chat link
     fetch('config.ini')
         .then(response => response.text())
         .then(text => {
             $('#link-input').val(text);
         })
 
+    // Fetch widget list
     setTimeout(() => {
         fetch('widgets/widgets.ini')
             .then(response => response.text())
@@ -406,16 +462,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
                 $('#widget-select').val(`idle`)
                 $('#widget-select').selectmenu('refresh')
-
             })
             .then(() => {
                 start()
             });
-    }, 1000)
+    }, 500)
 });
 
 $('#widget-select').on('selectmenuchange', (obj) => {
-    
+
     if (obj.currentTarget.value === "add") {
         $('.backdrop-wrapper').show('fast');
         $('#name').click(() => {
@@ -480,14 +535,13 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         .then(updateUI())
 });
 
-$('#copy-link').on('click', () =>
-{
+$('#copy-link').on('click', () => {
     console.log(activeWidget);
     var copyField = document.getElementById('copy-link-text');
     copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
     copyField.select();
     navigator.clipboard.writeText(copyField.value);
 
-    $('#copy-link>span').text("Copied");
-    setTimeout(() => { $('#copy-link>span').text("Copy chat link"); }, 2000)
+    $('#copy-link>#text').text("Copied");
+    setTimeout(() => { $('#copy-link>#text').text("Copy chat link"); }, 2000)
 });

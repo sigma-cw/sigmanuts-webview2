@@ -1,0 +1,43 @@
+.layout-buttons {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+}
+
+.store-wrapper {
+    padding: 64px 56px 92px 106px;
+    height: 100%;
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.tiles {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tiles .item {
+    width: 260px;
+}
+
+.tiles .thumbnail {
+    width: 200px;
+    height: 200px;
+    background: var(--var-foreground-color);
+    border-radius: 16px;
+}
+
+.tiles .title {
+    margin-top: 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.tiles .description {
+    color: var(--var-icon-color-gray);
+    font-size: 0.75rem;
+    text-align: start;
+    margin-bottom: 16px;
+}

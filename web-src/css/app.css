@@ -1,3 +1,19 @@
+.outline {
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48
+}
+
+.fill {
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48
+}
+
 body {
     margin: 0;
 }
@@ -47,19 +63,79 @@ h4 {
     --var-text-color: #e9e9e9;
     --var-accent-color: #dd7f2f;
     --var-accent-color-transparent: #da7e2e2e;
+    --var-icon-color-gray: rgba(255, 255, 255, 0.4);
+    --var-border-color-gray: rgba(255, 255, 255, 0.1)
 }
 
 .app-container {
     height: 100%;
+    border-top: solid 1px var(--var-border-color-gray);
 }
+
+.content {
+    display: flex;
+    width: 100vw;
+}
+
+.sidebar-wrapper {
+    width: 50px;
+    background: var(--var-foreground-color);
+    border-right: solid 1px var(--var-border-color-gray);
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.top {
+    display: flex;
+    flex-direction: column;
+    padding-top: 48px;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 32px;
+}
+
+.sidebar-button {
+    align-self: center;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    color: var(--var-icon-color-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: solid 4px var(--var-foreground-color);
+}
+
+.sidebar-button:hover {
+    color: var(--var-text-color);
+}
+
+.sidebar-button-active {
+    color: white;
+    border-left: solid 4px white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.active {}
 
 .ui-wrapper {
     display: grid;
     grid-template-columns: 50% 50%;
-    padding: 92px 56px 92px 56px;
+    padding: 64px 56px 92px 106px;
     height: 100%;
     box-sizing: border-box;
     min-height: 100vh;
+    width: 100%;
 }
 
 .editor-wrapper {
@@ -69,6 +145,38 @@ h4 {
 }
 
 .upload-container {}
+
+.home-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.widget-selector {
+    display: flex;
+    align-items: center;
+}
+
+.widget-selector .ui-selectmenu-button.ui-button {
+    text-align: left;
+    white-space: nowrap;
+    width: 14em;
+    margin-left: 12px;
+    background: var(--var-foreground-color);
+    border: none;
+    /* border-bottom: solid 2px; */
+    border-radius: 32px;
+}
+
+.widget-selector .ui-selectmenu-text {
+    display: block;
+    margin-right: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--var-text-color);
+    font-weight: 600;
+}
 
 .instructions {
     display: flex;
@@ -82,18 +190,17 @@ h4 {
 }
 
 .search-bar {
-    border-radius: 100px;
     display: flex;
     max-width: 800px;
     margin: 20px 0;
     position: relative;
     height: 48px;
-    background-color: var(--var-foreground-color);
 }
 
 .search-bar input#link-input {
     background-color: var(--var-foreground-color);
-    padding: 16px 120px 16px 24px;;
+    padding: 16px 120px 16px 24px;
+    ;
     font-size: 0.9rem;
     font-weight: 500;
     background: transparent;
@@ -115,7 +222,7 @@ h4 {
 
 search-button {
     border-radius: 100px;
-    width: 100px;
+    width: 64px;
     height: 32px;
     margin-right: 8px;
     align-self: center;
@@ -151,29 +258,30 @@ search-button:hover {
     border-radius: 100px;
     border: none;
     cursor: pointer;
-    padding: 12px 18px;
+    width: 40px;
+    height: 40px;
     /* text-transform: uppercase; */
     margin: 16px 0;
     font-weight: 600;
     /* letter-spacing: 1px; */
     max-height: 39px;
-    margin-right: 15px;
+    margin-right: 8px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 label#zip-upload {
-    border-radius: 100px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
-    padding: 12px 18px;
+    padding: 20px 20px;
     /* text-transform: uppercase; */
     margin: 16px 0;
     font-weight: 600;
     /* letter-spacing: 1px; */
     max-height: 39px;
     background-color: var(--var-foreground-color);
-    border: solid 1px var(--var-accent-color);
     margin-right: 15px;
     display: flex;
     align-items: center;
@@ -184,22 +292,23 @@ label#zip-upload {
     color: var(--var-accent-color);
 }
 
-button#zip-upload .label {
+#zip-upload .label {
     color: var(--var-accent-color);
-    margin-left: 10px;
+    margin-right: 10px;
 }
 
 button#remove {
-    background-color: rgb(201, 62, 62);
-    color: white;
+    background-color: transparent;
+    color: rgb(201, 62, 62);
 }
 
 .upload-buttons span#separator {
     margin: 0 16px;
 }
 
-button#open-folder, button#refresh-widget {
-    background-color: var(--var-foreground-color);
+button#open-folder,
+button#refresh-widget {
+    background-color: transparent;
     color: var(--var-text-color);
 }
 
@@ -207,6 +316,21 @@ button#open-folder, button#refresh-widget {
     height: 100%;
     margin-top: 34px;
     max-width: 800px;
+}
+
+.empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--var-icon-color-gray);
+}
+
+.empty .kaomoji {
+    font-size: 4rem;
+    margin: 0;
+    width: 296px;
 }
 
 .upload-area {
@@ -256,20 +380,23 @@ button#open-folder, button#refresh-widget {
     margin: 5px 0px !important;
 }
 
-.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content .ui-widget-content 
-.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content .ui-widget-header 
-.editor .ui-accordion-content .ui-state-active, .editor .ui-accordion-content a.ui-button:active, 
-.editor .ui-accordion-content .ui-button:active, .editor .ui-accordion-content .ui-button.ui-state-active:hover {
+.editor .ui-accordion-content .ui-state-active,
+.editor .ui-accordion-content .ui-widget-content .editor .ui-accordion-content .ui-state-active,
+.editor .ui-accordion-content .ui-widget-header .editor .ui-accordion-content .ui-state-active,
+.editor .ui-accordion-content a.ui-button:active,
+.editor .ui-accordion-content .ui-button:active,
+.editor .ui-accordion-content .ui-button.ui-state-active:hover {
     border: 1px solid var(--var-accent-color) !important;
     background: var(--var-accent-color) !important;
     font-weight: normal;
     color: #fff;
 }
 
-.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-widget-content 
-.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-widget-header 
-.editor .ui-accordion-content .ui-state-default, .editor .ui-accordion-content .ui-button, 
-html .editor .ui-accordion-content .ui-button.ui-state-disabled:hover, 
+.editor .ui-accordion-content .ui-state-default,
+.editor .ui-accordion-content .ui-widget-content .editor .ui-accordion-content .ui-state-default,
+.editor .ui-accordion-content .ui-widget-header .editor .ui-accordion-content .ui-state-default,
+.editor .ui-accordion-content .ui-button,
+html .editor .ui-accordion-content .ui-button.ui-state-disabled:hover,
 html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
     border: 1px solid var(--var-foreground-color) !important;
     background: var(--var-foreground-color) !important;
@@ -300,13 +427,17 @@ html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
     background: var(--var-background-color) !important;
 }
 
-.ui-icon-background, .ui-state-active .ui-icon-background {
+.ui-icon-background,
+.ui-state-active .ui-icon-background {
     border: none !important;
     background-color: var(--var-accent-color) !important;
 }
 
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
-    font-family: Arial,Helvetica,sans-serif;
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 1em;
     margin: 5px 0px 10px 0px;
     padding: 10px;
@@ -416,9 +547,23 @@ iframe {
     overflow: hidden;
 }
 
-preview-button
-{
+preview-button {
     cursor: pointer;
+    padding: 12px 16px;
+    /* background: var(--var-foreground-color); */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    outline: solid 1px var(--var-foreground-color);
+    transition: outline 0.3s ease;
+}
+
+preview-button#copy-link:hover {
+    outline: solid 1px var(--var-icon-color-gray);
+}
+
+preview-button span {
+    transition: opacity 0.5s ease;
 }
 
 .backdrop-wrapper {
@@ -430,7 +575,7 @@ preview-button
     top: 0px;
     position: absolute;
     width: 100vw;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;

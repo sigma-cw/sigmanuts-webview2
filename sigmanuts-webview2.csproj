@@ -24,6 +24,7 @@
     <None Remove="Resources\Sigmanuts.png" />
     <None Remove="script.js" />
     <None Remove="web-src\app.html" />
+    <None Remove="web-src\assets\material-rounded.woff2" />
     <None Remove="web-src\css\app.css" />
     <None Remove="web-src\css\app_footer.css" />
     <None Remove="web-src\css\app_nav.css" />
@@ -34,6 +35,8 @@
     <None Remove="web-src\css\images\ui-icons_cc0000_256x240.png" />
     <None Remove="web-src\css\images\ui-icons_ffffff_256x240.png" />
     <None Remove="web-src\css\jquery-ui.min.css" />
+    <None Remove="web-src\css\settings.css" />
+    <None Remove="web-src\css\store.css" />
     <None Remove="web-src\index.html" />
     <None Remove="web-src\js.html" />
     <None Remove="web-src\js\app.js" />
@@ -45,7 +48,9 @@
     <None Remove="web-src\js\jquery-ui.min.js" />
     <None Remove="web-src\js\jszip.min.js" />
     <None Remove="web-src\js\script.js" />
+    <None Remove="web-src\js\settings.js" />
     <None Remove="web-src\js\signalr.js" />
+    <None Remove="web-src\js\store.js" />
     <None Remove="web-src\widgets\defaultWidgets.ini" />
     <None Remove="web-src\widgets\YouTube\basic.js" />
     <None Remove="web-src\widgets\YouTube\jquery-3.6.0.js" />
@@ -63,6 +68,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\app.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\assets\material-rounded.woff2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\css\app.css">
@@ -93,6 +101,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\css\jquery-ui.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\css\settings.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\css\store.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\index.html">
@@ -128,7 +142,13 @@
     <Content Include="web-src\js\script.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\js\settings.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\js\signalr.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\js\store.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\defaultWidgets.ini">

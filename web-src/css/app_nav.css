@@ -1,5 +1,5 @@
 .nav {
-    background-color: var(--var-preview-bg-color);
+    background-color: transparent;
     padding: 6px;
     display: flex;
     justify-content: space-between;
@@ -15,6 +15,11 @@
 
 .nav .right {
     display: flex;
+    margin-top: 10px;
+    margin-right: 56px;
+    align-items: center;
+    padding-left: 96px;
+    margin-top: 24px;
 }
 
 nav-button {
@@ -49,6 +54,8 @@ html .nav .ui-button.ui-state-disabled:hover,
 html .nav .ui-button.ui-state-disabled:active {
     border: 1px solid var(--var-background-color) !important;
     background: var(--var-background-color) !important;
+    border-radius: 0px;
+    padding: 10px 20px;
     font-weight: normal;
     color: var(--var-text-color) !important;
 }
@@ -70,4 +77,17 @@ html .nav .ui-button.ui-state-disabled:active {
     border: none !important;
     background: #202020 !important;
     color: #fff !important;
+}
+
+.nav .ui-selectmenu-text {
+    display: block;
+    margin-right: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px 5px;
+}
+
+.nav .ui-selectmenu-icon.ui-icon {
+    float: right;
+    margin-top: 5px;
 }
