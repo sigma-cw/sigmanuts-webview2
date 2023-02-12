@@ -136,7 +136,8 @@ namespace sigmanuts_webview2
                 webView.Dispose();
                 webViewProcess.WaitForExit(2000);
 
-                Directory.Delete(webViewCacheDir, true);
+                //Disabling cache deletion
+                //Directory.Delete(webViewCacheDir, true);
             }
             catch (Exception ex)
             {

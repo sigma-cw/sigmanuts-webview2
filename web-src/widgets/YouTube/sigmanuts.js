@@ -20,7 +20,26 @@ function requestData() {
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("http://localhost:6970/stream")
     .configureLogging(signalR.LogLevel.Information)
-    .withAutomaticReconnect()
+    .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: retryContext => {
+            if (retryContext.elapsedMilliseconds < 10000) {
+                // Retry every 5 seconds until 10 seconds elapsed
+                return 5000;
+            }
+            else if (retryContext.elapsedMilliseconds < 300000) {
+                // Retry every 12 seconds until 5 minutes elapsed
+                return 12000;
+            }
+            else if (retryContext.elapsedMilliseconds < 900000) {
+                // Retry every 60 seconds until 15 minutes elapsed
+                return 60000;
+            }
+            else {
+                // Stop reconnecting after 15 minutes elapsed, chat browser needs to be refreshed
+                return null;
+            }
+        }
+    })
     .build();
 
 async function start() {
@@ -32,6 +51,20 @@ async function start() {
         setTimeout(start, 5000);
     }
 };
+
+connection.onreconnected(connectionId => {
+    //send an event on reconnection
+    //if the browser is opened before the app loads
+    //maybe rename later
+    let newUrl = "";//request from app.js
+    const event = new CustomEvent('onEventReceived', {
+        detail: {
+            event: {},
+            listener: "reconnect"
+        }
+    });
+    window.dispatchEvent(event);
+});
 
 connection.onclose(async () => {
     await start();
