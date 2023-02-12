@@ -10,6 +10,8 @@
 <head>
     <!-- App UI styles -->
     <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/store.css">
+    <link rel="stylesheet" href="css/settings.css">
     <link rel="stylesheet" href="css/app_nav.css">
     <link rel="stylesheet" href="css/app_footer.css">
 
@@ -17,7 +19,7 @@
     <link rel="stylesheet" href="css/jquery-ui.min.css">
 
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -26,64 +28,156 @@
         <div class="app-container">
             <div class="nav">
 
-                <div class="left">
-                    <div class="app-logo"></div>
-
-                    <nav-button id="app">App</nav-button>
-                    <nav-button id="settings">Settings</nav-button>
-                    <nav-button id="help">Help</nav-button>
-                    <nav-button id="ytchat">Show YouTube chat</nav-button>
-                    <nav-button id="fullscreen">Fullscreen preview</nav-button>
-                </div>
+                <!-- <div class="left">
+                </div> -->
 
                 <div class="right">
-                    <select name="widget-select" id="widget-select">
-                        <!-- Widget options will be appended here -->
-                    </select>
+
                 </div>
 
             </div>
 
-            <div class="ui-wrapper">
+            <div class="content">
 
-                <div class="editor-wrapper">
-                    <div class="upload-container">
-                        <span class="instructions">Setup instructions<span class="material-symbols-outlined">
-                                info
-                            </span></span>
-                        <div class="search-bar">
-                            <!-- <label for="link-input">Paste YouTube chat link here...</label> -->
-                            <input type="text" id="link-input" placeholder="Paste YouTube chat link here...">
-                            <search-button id="search">SUBMIT</search-button>
+                <div class="sidebar-wrapper">
+
+                    <div class="top">
+
+                        <div id="home-button" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                home
+                            </span>
                         </div>
-                        <div class="upload-buttons">
-                            <label for="zip" id="zip-upload">
-                                <span class="material-symbols-outlined">
-                                    upload
-                                </span>
-                                <span class="label">Select ZIP</span>
-                            </label>
-                            <input style="display:none" type="file" id="zip" name="zip" accept=".7z,.zip,.rar">
-                            <!-- <span id="separator">or</span> -->
-                            <button id="open-folder">Open folder</button>
-                            <button id="refresh-widget">Refresh</button>
-                            <button id="remove">
-                                <span class="material-symbols-outlined">
-                                    delete
-                                </span>
-                            </button>
+
+                        <div id="youtube-button" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                auto_read_play
+                            </span>
                         </div>
+
+                        <div id="store-button" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                local_mall
+                            </span>
+                        </div>
+
+                        <div class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                settings
+                            </span>
+                        </div>
+
                     </div>
 
-                    <div class="editor">
-                        <div class="upload-area" style="display: none">
-                            Alternatively, drop widget ZIP here
-                        </div>
-                        <div id="settings__editor">
-                            <!-- Fields will be appended here -->
+                    <div class="bottom">
+
+                        <div class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                sleep
+                            </span>
                         </div>
 
-                        <!-- <div id="display_settings" class="field-group">
+                        <div class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                face
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="home" class="ui-wrapper active">
+
+                    <div class="editor-wrapper">
+                        <div class="upload-container">
+
+                            <div class="home-title">
+                                <span class="instructions">
+                                    <h1 style="margin: 0;">Chat setup</h1>
+                                    <span style="margin-top: 12px;" class="material-symbols-rounded outline">
+                                        info
+                                    </span>
+                                </span>
+
+                                <div class="widget-selector">
+                                    <span style="color: var(--var-icon-color-gray)"
+                                        class="material-symbols-rounded outline">
+                                        widgets
+                                    </span>
+                                    <select name="widget-select" id="widget-select">
+                                        <!-- Widget options will be appended here -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- <h4 style="font-size: 4rem; margin-top: -48px !important;">_</h4> -->
+
+                            <div class="search-bar">
+                                <!-- <label for="link-input">Paste YouTube chat link here...</label> -->
+                                <input type="text" id="link-input" placeholder="Paste YouTube chat link here...">
+                                <search-button id="search">
+                                    <span class="material-symbols-rounded outline">
+                                        search
+                                    </span>
+                                </search-button>
+                            </div>
+                            <div class="upload-buttons">
+                                <label for="zip" id="zip-upload">
+                                    <span class="label">Select ZIP</span>
+                                    <span class="material-symbols-rounded outline">
+                                        upload
+                                    </span>
+                                </label>
+                                <input style="display:none" type="file" id="zip" name="zip" accept=".7z,.zip,.rar">
+
+                                <button id="open-folder">
+                                    <span class="material-symbols-rounded outline">
+                                        folder_open
+                                    </span>
+                                </button>
+
+                                <button id="refresh-widget">
+                                    <span class="material-symbols-rounded outline">
+                                        refresh
+                                    </span>
+                                </button>
+
+                                <button id="remove">
+                                    <span class="material-symbols-rounded fill">
+                                        delete
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="editor">
+                            <div class="upload-area" style="display: none">
+                                Alternatively, drop widget ZIP here
+                            </div>
+
+                            <div class="empty">
+                                <!-- <p class="kaomoji">(⋟﹏⋞)</p> -->
+                                <svg class="kaomoji" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="200x" height="128px">
+                                    <text kerning="auto" font-family="Myriad Pro" fill="rgb(0, 0, 0)" font-size="82px"
+                                        x="0px" y="101px">
+                                        <tspan font-size="72px" font-family="Meiryo UI" fill="#646464">&#40;&#8927;
+                                        </tspan>
+                                        <tspan font-size="72px" font-family="Microsoft YaHei UI" fill="#646464">
+                                            &#65103;</tspan>
+                                        <tspan font-size="72px" font-family="Meiryo UI" fill="#646464">&#8926;&#41;
+                                        </tspan>
+                                    </text>
+                                </svg>
+                                <p>Nothing to edit here...</p>
+                            </div>
+
+                            <div id="settings__editor">
+                                <!-- Fields will be appended here -->
+                            </div>
+
+                            <!-- <div id="display_settings" class="field-group">
                             <div class="field-group__dropdown">
                                 <span>Display Settings</span>
                                 <span class="material-symbols-outlined">
@@ -113,34 +207,169 @@
                                 </span>
                             </div>
                         </div> -->
-                    </div>
-                </div>
-
-                <div class="preview-wrapper">
-
-                    <div class="preview-nav">
-                        <div class="left"><span>Preview</span></div>
-                        <div class="right">
-
-                            <preview-button id="dark-mode"></preview-button>
-                            <preview-button id="copy-link">
-                                <span>Copy chat link</span>
-                                <input type="text" id="copy-link-text" disabled style="display: none" />
-                            </preview-button>
-
                         </div>
                     </div>
 
-                    <div class="chat-container">
-                        <iframe id="preview__iframe" name="preview__iframe"
-                            sandbox="allow-scripts allow-same-origin"></iframe>
+                    <div class="preview-wrapper">
+
+                        <div class="preview-nav">
+                            <div class="left"><!-- <span>Preview</span> --></div>
+                            <div class="right">
+
+                                <preview-button id="copy-link">
+                                    <span id="text" style="margin-right: 10px">Copy chat link</span>
+                                    <span class="material-symbols-rounded outline">
+                                        content_copy
+                                    </span>
+                                    <input type="text" id="copy-link-text" disabled style="display: none" />
+                                </preview-button>
+
+                            </div>
+                        </div>
+
+                        <div class="chat-container">
+                            <iframe id="preview__iframe" name="preview__iframe"
+                                sandbox="allow-scripts allow-same-origin"></iframe>
+                        </div>
+
                     </div>
 
+                </div>
+
+                <div id="store" class="store-wrapper hidden">
+
+                    <div class="layout-buttons">
+
+                        <div id="layout-tiles" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                grid_view
+                            </span>
+                        </div>
+
+                        <div id="layout-list" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                table_rows
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <h1>Default chat presets</h1>
+                    <div class="gallery tiles">
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default YouTube Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default Twitch Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <h1>Another section here</h1>
+                    <div class="gallery tiles">
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default YouTube Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default Twitch Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Default Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Alternative Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="thumbnail">
+
+                            </div>
+                            <div class="title">
+                                Chroneco's Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
 
-            <div class="footer">
+            <!-- <div class="footer">
                 <div class="left">
                     <span>Running local web server on <a href="/">http://localhost:6969</a>...</span>
                 </div>
@@ -149,7 +378,7 @@
                     <footer-button id="github">GitHub</footer-button>
                     <footer-button id="github">Update available!</footer-button>
                 </div>
-            </div>
+            </div> -->
 
         </div>
 
@@ -174,6 +403,10 @@
 
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/appUpload.js"></script>
+
+    <script type="text/javascript" src="js/store.js"></script>
+
+    <script type="text/javascript" src="js/settings.js"></script>
 </body>
 
 </html>
