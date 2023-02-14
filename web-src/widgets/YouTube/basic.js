@@ -50,10 +50,28 @@ $(document).ready(function () {
         element = $.parseHTML(htmlText);
 
         //Some messages have %3D at the end of the id, breaking the code
+        //mem
         let id = $(element).attr("id");
         id = id.replaceAll(`%3D`, "");
         $(element).attr("id", id);
 
-        $(element).appendTo('yt-live-chat-item-list-renderer div#items');
+        $(element).appendTo('#items');
+        let height = $(element).outerHeight();
+
+        $('#items').finish().css("transform", `translateY(${height}px)`).animate(
+        {
+            distance: height
+        },
+        {
+            step: function (now, fx) {
+                if (fx.prop === "distance") {
+                    $(this).css("transform", `translateY(${height - now}px)`);
+                }
+            },
+            complete: function () {
+                this.distance = 0;
+            },
+            duration: 80
+        });
     }
 });

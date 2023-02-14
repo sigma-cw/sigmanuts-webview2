@@ -109,12 +109,28 @@ function raiseMessageEvent(mutation, j, connection) {
 
 function raiseMembershipEvent(mutation, j, connection) {
     var eventData = mutation.addedNodes[j]['$']
-    //console.log(eventData)
-    var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
-    //add member badge url
+    //console.log(eventData);
+    //var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    var authorName = eventData["header-content-inner-column"].children[0].children["author-name"].innerText;
+
     var memberBadge = "";
-    //add author picture url
-    var authorPicture = "";
+    let badgeHolder = eventData["header-content-inner-column"].children[0].children["chat-badges"];
+    if (badgeHolder.children.length >= 1) {
+        memberBadge = badgeHolder.children[0].children["image"].children[0].src;
+    }
+
+    let primaryText = eventData["header-primary-text"].innerText;
+    //parse months
+    var months = "";
+    let words = primaryText.split(" ");
+    for (let i = 0; i < words.length && months === ""; i++) {
+        if (!isNaN(words[i])) {
+            months = words[i];
+        }
+    }
+    if (months == "") months = 1;
+
+    var authorPicture = eventData["header"].children["author-photo"].children["img"].src;
 
     var message = eventData.message.innerHTML;
 
@@ -127,11 +143,12 @@ function raiseMembershipEvent(mutation, j, connection) {
             "count": 1,
             "items": [],
             "tier": "1000",
-            "month": "",
+            "month": months,
             "message": message,
             "sessionTop": false,
             "originalEventName": "member-latest",
-            "profileImage": authorPicture           
+            "profileImage": authorPicture,
+            "badges": memberBadge
         }
     }
 
@@ -148,7 +165,15 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
     var memberBadge = "";
     //add author picture url
     var authorPicture = "";
-
+    
+    var amount = 1;
+    /*
+    let words = .split(" ");
+    for (let i = 0; i < words.length && amount === 1; i++) {
+        if (!isNaN(words[i])) {
+            amount = words[i];
+        }
+    }*/
 
     var message = mutation.addedNodes[j].$.header.$.content.childNodes[8].childNodes[1].childNodes[1].childNodes[6].innerHTML;
 
@@ -163,7 +188,8 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
             "message": message,
             "sessionTop": false,
             "originalEventName": "gift-latest",
-            "profileImage": authorPicture
+            "profileImage": authorPicture,
+            "amount": amount
         }
     }
 
@@ -212,6 +238,10 @@ function raiseSuperchatEvent(mutation, j, connection) {
     var message = eventData.message.innerHTML;
     //add member badge url
     var memberBadge = "";
+    let badgeHolder = eventData["author-name-chip"].children[0].children["chat-badges"];
+    if (badgeHolder.children.length >= 1) {
+        memberBadge = badgeHolder.children[0].children["image"].children[0].src;
+    }
     //add author picture url
     var authorPicture = "";
 
@@ -276,7 +306,8 @@ function raiseSuperchatEvent(mutation, j, connection) {
             "message": message,
             "sessionTop": false,
             "originalEventName": "superchat-latest",
-            "profileImage": authorPicture
+            "profileImage": authorPicture,
+            "badges": memberBadge
         }
     }
 
@@ -419,32 +450,39 @@ function startStream() {
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
                     raiseMessageEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "message");
+                    //console.log(`MESSAGE!`);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
                     raiseMembershipEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "member-latest");
+                    //console.log(`MEMBER!`);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
                     raiseMembershipGiftEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "gift-latest");
+                    //console.log(`GIFT!`);
                 }
-                //receiving member gift
+
                 if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
                     raiseMembershipRedemptionEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "member-gifted");
+                    //console.log(`GIFT RECEIVE!`);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
                     raiseSuperchatEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "superchat-latest");
+                    //console.log(`SUPER!`);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
                     setTimeout(() => raiseStickerEvent(mutation, j, connection), 100);
-                    setTimeout(() => raiseBasicEvent(mutation, j, connection, "sticker-latest"), 100);                    
+                    setTimeout(() => raiseBasicEvent(mutation, j, connection, "sticker-latest"), 100);
+                    //console.log(`STICKER!`);                   
                 }
+
 
                 //add member gift received event?
                 //username received membership
