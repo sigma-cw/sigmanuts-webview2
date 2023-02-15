@@ -23,7 +23,9 @@ $(document).ready(function () {
         if (obj.detail.listener !== "youtube-basic") return;
 
         let htmlText = obj.detail.event.html;
-        addElement(htmlText);
+        let animate = true;
+        if (obj.detail.event.type == "member-gifted") animate = false;
+        addElement(htmlText, animate);
     });
 
     window.addEventListener('onWidgetLoad', function (obj) {
@@ -45,15 +47,36 @@ $(document).ready(function () {
         }
     }
 
-    function addElement(htmlText) {
+    function addElement(htmlText, animate) {
         if (!htmlText) return;
         element = $.parseHTML(htmlText);
 
         //Some messages have %3D at the end of the id, breaking the code
+        //mem
         let id = $(element).attr("id");
         id = id.replaceAll(`%3D`, "");
         $(element).attr("id", id);
 
-        $(element).appendTo('yt-live-chat-item-list-renderer div#items');
+        $(element).appendTo('#items');
+
+        if (animate) {
+            let height = $(element).outerHeight();
+
+            $('#items').finish().css("transform", `translateY(${height}px)`).animate(
+                {
+                    distance: height
+                },
+                {
+                    step: function (now, fx) {
+                        if (fx.prop === "distance") {
+                            $(this).css("transform", `translateY(${height - now}px)`);
+                        }
+                    },
+                    complete: function () {
+                        this.distance = 0;
+                    },
+                    duration: 80
+                });
+        }
     }
 });

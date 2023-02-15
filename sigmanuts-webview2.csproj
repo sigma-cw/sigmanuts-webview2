@@ -57,7 +57,6 @@
     <None Remove="web-src\widgets\YouTube\sigmanuts.js" />
     <None Remove="web-src\widgets\YouTube\src\data.txt" />
     <None Remove="web-src\widgets\YouTube\widget.html" />
-    <None Remove="web-src\widgets\YouTube\youtube.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -167,9 +166,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\YouTube\widget.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="web-src\widgets\YouTube\youtube.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

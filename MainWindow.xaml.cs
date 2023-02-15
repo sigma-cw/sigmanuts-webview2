@@ -267,6 +267,11 @@ namespace sigmanuts_webview2
                     await appView.CoreWebView2.ExecuteScriptAsync($"retrieveData().then(updateUI()); $('iframe').attr('src', ``)");
                     break;
 
+                case "test-message":
+                    string type = stuff.type;
+                    await webView.CoreWebView2.ExecuteScriptAsync("testMessage('" + type + "')");
+                    break;
+
                 default:
                     break;
             }

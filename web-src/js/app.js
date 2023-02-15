@@ -536,7 +536,6 @@ $('#widget-select').on('selectmenuchange', (obj) => {
 });
 
 $('#copy-link').on('click', () => {
-    console.log(activeWidget);
     var copyField = document.getElementById('copy-link-text');
     copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
     copyField.select();
@@ -545,3 +544,30 @@ $('#copy-link').on('click', () => {
     $('#copy-link>#text').text("Copied");
     setTimeout(() => { $('#copy-link>#text').text("Copy chat link"); }, 2000)
 });
+
+$('#test-message').on('click', () => {
+    sendTestMessage("test-message");
+});
+$('#test-superchat').on('click', () => {
+    sendTestMessage("test-superchat");
+});
+$('#test-sticker').on('click', () => {
+    sendTestMessage("test-sticker");
+});
+$('#test-member').on('click', () => {
+    sendTestMessage("test-member");
+});
+$('#test-gift').on('click', () => {
+    sendTestMessage("test-gift");
+});
+
+
+function sendTestMessage(type) {
+
+    var obj = JSON.stringify({
+        "listener": "test-message",
+        "type": type
+    })
+
+    window.chrome.webview.postMessage(obj);
+}
