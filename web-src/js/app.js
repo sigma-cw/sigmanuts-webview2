@@ -281,54 +281,67 @@ connection.on("ReceiveMessage", function (obj) {
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
 $('#youtube-button').click(() => {
-
-    if (!isYtVisible) {
+    if (!isYtVisible || activeTab!="login") {
         var obj = JSON.stringify({
             "listener": "toggle-chat",
-            "value": null
+            "value": true
         })
         window.chrome.webview.postMessage(obj);
 
         $('.app').css('background', 'transparent');
-        $('#youtube-button').addClass('sidebar-button-active');
         $(`#${activeTab}-button`).removeClass('sidebar-button-active');
         $(`#${activeTab}`).removeClass('active').addClass('hidden');
     }
 
+    if (activeTab == 'login') {
+        changeUrl();
+    }
+
+    $('#youtube-button').addClass('sidebar-button-active');
     isYtVisible = true;
-    activeTab = 'youtube'
+    activeTab = 'youtube';
+});
+
+$('#login-button').click(() => {
+    if (!isYtVisible || activeTab=="youtube") {
+        var obj = JSON.stringify({
+            "listener": "toggle-login",
+            "value": true
+        })
+        window.chrome.webview.postMessage(obj);
+
+        $('.app').css('background', 'transparent');
+        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        $(`#${activeTab}`).removeClass('active').addClass('hidden');
+    }
+    isYtVisible = true;
+    $('#login-button').addClass('sidebar-button-active');
+    activeTab = 'login';
 });
 
 $('#home-button').click(() => {
-
-    if (isYtVisible && activeTab === 'youtube') {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": null
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', '');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        isYtVisible = false;
-    }
-    else {
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-    }
-
-    $(`#home`).removeClass('hidden').addClass('active');
-    $('#home-button').addClass('sidebar-button-active');
-    $(`.nav`).removeClass('hidden').addClass('active');
-    activeTab = 'home';
+    setActivePage('home-button', 'home');
 });
 
 $('#store-button').click(() => {
+    setActivePage('store-button', 'store');
+});
 
-    if (isYtVisible && activeTab === 'youtube') {
+$('#theme-button').click(() => {
+    //save theme selection later?
+    $('#app').toggleClass("app-theme-dark");
+    $('#app').toggleClass("app-theme-light");
+});
+
+
+function setActivePage(buttonId, pageId) {
+
+    if (activeTab == pageId) return;
+
+    if (isYtVisible && (activeTab === 'youtube' || activeTab === 'login')) {
         var obj = JSON.stringify({
             "listener": "toggle-chat",
-            "value": null
+            "value": false
         })
         window.chrome.webview.postMessage(obj);
 
@@ -341,11 +354,17 @@ $('#store-button').click(() => {
         $(`#${activeTab}-button`).removeClass('sidebar-button-active');
     }
 
-    $(`#store`).removeClass('hidden').addClass('active');
-    $('#store-button').addClass('sidebar-button-active');
+    if (activeTab == 'login') {
+        //reset the url
+        changeUrl();
+    }
+
+    $('#' + buttonId).addClass('sidebar-button-active');
+    $(`#${pageId}`).removeClass('hidden').addClass('active');
     $(`.nav`).removeClass('active').addClass('hidden');
-    activeTab = 'store';
-});
+
+    activeTab = pageId;
+}
 
 $('#fullscreen').click(() => {
     console.log('toggling fullscreen');
@@ -357,13 +376,22 @@ $('#fullscreen').click(() => {
 });
 
 $('#search').click(() => {
+    changeUrl();
+});
+
+function changeUrl() {
     var url = $('#link-input').val();
+
+    //only accepts valid chat links
+    if (!url) return;
+    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) return;
+
     var obj = JSON.stringify({
         "listener": "change-url",
         "value": url
     })
     window.chrome.webview.postMessage(obj);
-});
+}
 
 $('#refresh-widget').click(() => {
     var obj = JSON.stringify({
