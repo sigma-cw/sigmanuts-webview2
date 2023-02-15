@@ -64,7 +64,21 @@ h4 {
     --var-accent-color: #dd7f2f;
     --var-accent-color-transparent: #da7e2e2e;
     --var-icon-color-gray: rgba(255, 255, 255, 0.4);
-    --var-border-color-gray: rgba(255, 255, 255, 0.1)
+    --var-border-color-gray: rgba(255, 255, 255, 0.1);
+    --var-active-color: white;
+}
+
+.app-theme-light {
+    --var-background-color: #ffffff;
+    --var-foreground-color: #dbdbdb;
+    --var-preview-bg-color: #bcbcbc;
+    --var-nav: #292929;
+    --var-text-color: #212121;
+    --var-accent-color: #dd7f2f;
+    --var-accent-color-transparent: #da7e2e2e;
+    --var-icon-color-gray: rgba(0, 0, 0, 0.4);
+    --var-border-color-gray: rgba(0, 0, 0, 0.1);
+    --var-active-color: black;
 }
 
 .app-container {
@@ -78,6 +92,7 @@ h4 {
 }
 
 .sidebar-wrapper {
+    top: 0;
     width: 50px;
     background: var(--var-foreground-color);
     border-right: solid 1px var(--var-border-color-gray);
@@ -118,7 +133,7 @@ h4 {
 }
 
 .sidebar-button-active {
-    color: white;
+    color: var(--var-active-color);
     border-left: solid 4px white;
 }
 

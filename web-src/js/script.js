@@ -221,7 +221,7 @@ function raiseMembershipRedemptionEvent(mutation, j, connection) {
     var detail = {
         "listener": "gift-redemption",
         "event": {
-            "type": "gift",
+            "type": "gift-redemption",
             "name": authorName,
             "items": [],
             "tier": "1000",
@@ -458,7 +458,6 @@ function startStream() {
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
                     raiseMessageEvent(mutation, j, connection);
                     raiseBasicEvent(mutation, j, connection, "message");
-                    console.log(`MESSAGE!`);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
@@ -1106,7 +1105,7 @@ function addTestGiftRedemption(id) {
     let detail = {
         "listener": "gift-redemption",
         "event": {
-            "type": "gift",
+            "type": "gift-redemption",
             "name": authorName,
             "items": [],
             "tier": "1000",
