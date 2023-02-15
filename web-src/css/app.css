@@ -570,6 +570,34 @@ preview-button span {
     display: none;
 }
 
+test-buttons{
+    padding: 12px 16px;
+    /* background: var(--var-foreground-color); */
+    border-radius: 10px;
+    outline: solid 1px var(--var-foreground-color);
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+}
+
+test-button {
+    cursor: pointer;
+    /* background: var(--var-foreground-color); */
+    border-radius: 10px;
+    transition: opacity 0.3s ease;
+    opacity: 0.5;
+    height: 24px;
+}
+
+test-button:hover
+{
+    opacity:1;
+}
+
+test-button span {
+    transition: opacity 0.5s ease;
+}
+
 .backdrop {
     height: 100vh;
     top: 0px;
