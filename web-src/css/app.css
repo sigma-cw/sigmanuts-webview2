@@ -16,6 +16,7 @@
 
 body {
     margin: 0;
+    overflow: hidden;
 }
 
 h3 {
@@ -83,7 +84,7 @@ h4 {
 
 .app-container {
     height: 100%;
-    border-top: solid 1px var(--var-border-color-gray);
+    /*border-top: solid 1px var(--var-border-color-gray);*/
 }
 
 .content {
@@ -126,6 +127,7 @@ h4 {
     align-items: center;
     justify-content: center;
     border-left: solid 4px var(--var-foreground-color);
+    user-select: none;
 }
 
 .sidebar-button:hover {
@@ -243,7 +245,7 @@ search-button {
     align-self: center;
     display: flex;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, border 0.3s ease;
     position: absolute;
     right: 0px;
     display: flex;
@@ -253,7 +255,15 @@ search-button {
     letter-spacing: 1px;
     background-color: var(--var-accent-color);
     border: solid 1px var(--var-accent-color);
+    user-select: none;
 }
+
+    search-button.ok,
+    search-button:hover.ok {
+        /*CHANGE COLOR LATER*/
+        background-color: #1bbf75;
+        border: solid 1px #1bbf75;
+    }
 
 .focused {
     outline: solid 1px var(--var-accent-color);
@@ -571,6 +581,7 @@ preview-button {
     align-items: center;
     outline: solid 1px var(--var-foreground-color);
     transition: outline 0.3s ease;
+    user-select: none;
 }
 
 preview-button#copy-link:hover {
@@ -602,6 +613,7 @@ test-button {
     transition: opacity 0.3s ease;
     opacity: 0.5;
     height: 24px;
+    user-select: none;
 }
 
 test-button:hover
@@ -611,6 +623,10 @@ test-button:hover
 
 test-button span {
     transition: opacity 0.5s ease;
+}
+
+button {
+    user-select: none;
 }
 
 .backdrop {

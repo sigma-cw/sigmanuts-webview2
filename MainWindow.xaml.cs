@@ -39,7 +39,7 @@ namespace sigmanuts_webview2
         /// URLs
         /// </summary>
 
-        private string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
+        private string chatUrl = "http://localhost:6969/tutorial.html";//"https://www.youtube.com/live_chat?v=jfKfPfyJRdk"
         private string appUrl = "http://localhost:6969/app.html";
         private string widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
 
@@ -288,8 +288,8 @@ namespace sigmanuts_webview2
             /// I am aware that I can change Visibility to Hidden or Collapsed,
             /// it's done by setting Height to 0 for a reason. YouTube chat pauses if not focused.
             /// Do not ask about this.
-
-            isChatEnabled = !isChatEnabled;
+            if (isChatEnabled == active) return;
+            isChatEnabled = active;
 
             if (isChatEnabled)
             {
