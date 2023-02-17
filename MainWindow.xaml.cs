@@ -276,6 +276,10 @@ namespace sigmanuts_webview2
                     await webView.CoreWebView2.ExecuteScriptAsync("testMessage('" + type + "')");
                     break;
 
+                case "open-folder":
+                    Process.Start("explorer.exe",Path.Combine(CacheFolderPath, @".\localserver\widgets\"));
+                    break;
+
                 default:
                     break;
             }
@@ -293,6 +297,10 @@ namespace sigmanuts_webview2
 
             if (isChatEnabled)
             {
+                appView.HorizontalAlignment = HorizontalAlignment.Left;
+                appView.Width = 51;
+                //
+                /*
                 if (WindowState == WindowState.Maximized)
                 {
                     var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
@@ -302,12 +310,15 @@ namespace sigmanuts_webview2
                 {
                     var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
                     appView.Margin = margin;
-                }
+                }*/
             }
             else
             {
+                appView.HorizontalAlignment = HorizontalAlignment.Stretch;
+                appView.Width = Double.NaN;
+                /*
                 var margin = new Thickness(0, 0, 0, 0);
-                appView.Margin = margin;
+                appView.Margin = margin;*/
             }
         }
 
@@ -486,25 +497,25 @@ namespace sigmanuts_webview2
 
         // Maximize
         private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
-        {
+        {/*
             isPreviewEnabled = false;
             widgetView.Height = 0;
 
             isChatEnabled = false;
-            var margin = new Thickness(0, 5, 0, 0);
-            appView.Margin = margin;
+            var margin = new Thickness(0, 0, 0, 0);
+            appView.Margin = margin;*/
             SystemCommands.MaximizeWindow(this);
         }
 
         // Restore
         private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
-        {
+        {/*
             isPreviewEnabled = false;
             widgetView.Height = 0;
 
             isChatEnabled = false;
             var margin = new Thickness(0, 5, 0, 0);
-            appView.Margin = margin;
+            appView.Margin = margin;*/
             SystemCommands.RestoreWindow(this);
         }
 

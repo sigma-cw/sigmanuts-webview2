@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
 	<PublishSingleFile>true</PublishSingleFile>
   <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <ApplicationIcon>sigmanuts.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

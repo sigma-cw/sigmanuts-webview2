@@ -4,6 +4,10 @@ function loadScript(scriptUrl) {
     script.src = scriptUrl;
     document.body.appendChild(script);
 
+    //disable scrolling and changing Top Chat
+    document.getElementById("item-scroller").style.overflowY = "hidden";
+    document.getElementById("trigger").style.display = "none";
+
     return new Promise((res, rej) => {
         script.onload = function () {
             res();

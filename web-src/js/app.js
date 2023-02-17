@@ -556,6 +556,12 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         .then(updateUI())
 });
 
+//new widget cancel
+$('.backdrop-wrapper').on('click', () => {
+    $('.backdrop-wrapper').hide();
+    $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
+});
+
 $('#copy-link').on('click', () => {
     var copyField = document.getElementById('copy-link-text');
     copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
@@ -582,6 +588,13 @@ $('#test-gift').on('click', () => {
     sendTestMessage("test-gift");
 });
 
+$('#open-folder').on('click', () => {
+    var obj = JSON.stringify({
+        "listener": "open-folder",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
+});
 
 function sendTestMessage(type) {
 
