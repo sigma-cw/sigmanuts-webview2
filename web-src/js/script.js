@@ -127,6 +127,9 @@ function raiseMembershipEvent(mutation, j, connection) {
     }
 
     let primaryText = eventData["header-primary-text"].innerText;
+    let memberTier = eventData["header-subtext"].innerText;
+    //Welcome to [Membership]! for 1st time join
+    //Membership name after that
     //parse months
     var months = "";
     let words = primaryText.split(" ");
@@ -146,10 +149,10 @@ function raiseMembershipEvent(mutation, j, connection) {
         "event": {
             "type": "member",
             "name": authorName,
-            "amount": 1,
+            "amount": months,
             "count": 1,
             "items": [],
-            "tier": "1000",
+            "tier": memberTier,
             "month": months,
             "message": message,
             "sessionTop": false,
@@ -989,16 +992,16 @@ function addTestMember() {
                 </yt-live-chat-membership-item-renderer>`;
     }
     let detail = {
-        "listener": "gift-latest",
+        "listener": "member-latest",
         "event": {
-            "type": "gift",
+            "type": "member",
             "name": authorName,
             "items": [],
-            "tier": "1000",
-            "month": "",
+            "tier": (month == 1) ? "Welcome to Membership!" :"Membership Tier",
+            "month": month,
             "message": message,
             "sessionTop": false,
-            "originalEventName": "gift-latest",
+            "originalEventName": "member-latest",
             "profileImage": testAuthorPhoto,
             "amount": month,
             "badge": testBadge
