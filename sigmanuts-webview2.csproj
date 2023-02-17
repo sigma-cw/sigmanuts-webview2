@@ -180,4 +180,13 @@
     <Folder Include="web-src\css\widgets\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="web-src\tutorial.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="web-src\widgets\YouTube\youtube.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -30,13 +30,9 @@ const connection = new signalR.HubConnectionBuilder()
                 // Retry every 12 seconds until 5 minutes elapsed
                 return 12000;
             }
-            else if (retryContext.elapsedMilliseconds < 900000) {
-                // Retry every 60 seconds until 15 minutes elapsed
+            else{
+                // Retry every 60 seconds after that
                 return 60000;
-            }
-            else {
-                // Stop reconnecting after 15 minutes elapsed, chat browser needs to be refreshed
-                return null;
             }
         }
     })

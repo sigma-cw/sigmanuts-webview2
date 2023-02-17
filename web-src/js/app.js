@@ -281,42 +281,11 @@ connection.on("ReceiveMessage", function (obj) {
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
 $('#youtube-button').click(() => {
-    if (!isYtVisible || activeTab!="login") {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": true
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', 'transparent');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-    }
-
-    if (activeTab == 'login') {
-        changeUrl();
-    }
-
-    $('#youtube-button').addClass('sidebar-button-active');
-    isYtVisible = true;
-    activeTab = 'youtube';
+    setActivePage('youtube-button', 'youtube');
 });
 
 $('#login-button').click(() => {
-    if (!isYtVisible || activeTab=="youtube") {
-        var obj = JSON.stringify({
-            "listener": "toggle-login",
-            "value": true
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', 'transparent');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-    }
-    isYtVisible = true;
-    $('#login-button').addClass('sidebar-button-active');
-    activeTab = 'login';
+    setActivePage('login-button', 'login');
 });
 
 $('#home-button').click(() => {
@@ -337,28 +306,37 @@ $('#theme-button').click(() => {
 function setActivePage(buttonId, pageId) {
 
     if (activeTab == pageId) return;
+    let toggleChat = false;
 
-    if (isYtVisible && (activeTab === 'youtube' || activeTab === 'login')) {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": false
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', '');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        isYtVisible = false;
+    if ((pageId == 'youtube' || pageId == 'login')) {
+        toggleChat = true;
+        $('.app').css('background', 'transparent');
     }
     else {
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        $('.app').css('background', '');
     }
+
+    var obj = JSON.stringify({
+        "listener": "toggle-chat",
+        "value": toggleChat
+    })
+    if (pageId == 'login') {
+        obj = JSON.stringify({
+            "listener": "toggle-login",
+            "value": true
+        })
+    }
+    window.chrome.webview.postMessage(obj);
+
+    isYtVisible = toggleChat;
 
     if (activeTab == 'login') {
         //reset the url
-        changeUrl();
+        changeUrl(false);
     }
 
+    $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+    $(`#${activeTab}`).removeClass('active').addClass('hidden');
     $('#' + buttonId).addClass('sidebar-button-active');
     $(`#${pageId}`).removeClass('hidden').addClass('active');
     $(`.nav`).removeClass('active').addClass('hidden');
@@ -379,18 +357,34 @@ $('#search').click(() => {
     changeUrl();
 });
 
-function changeUrl() {
+function changeUrl(animate = true) {
     var url = $('#link-input').val();
 
     //only accepts valid chat links
-    if (!url) return;
-    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) return;
+    if (!url) {
+        alert("Please input valid URL");
+        return;
+    }
+    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
+        alert("Please input valid URL");
+        return;
+    }
 
     var obj = JSON.stringify({
         "listener": "change-url",
         "value": url
     })
     window.chrome.webview.postMessage(obj);
+
+    if (animate) {
+        let iconName = $('#search>span').html();
+        $('#search').addClass("ok");
+        $('#search>span').html("done");
+        setTimeout(() => {
+            $('#search').removeClass("ok");
+            $('#search>span').html(iconName);
+        }, 1600);
+    }
 }
 
 $('#refresh-widget').click(() => {
@@ -488,8 +482,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 $('#widget-select').prepend(`<option disabled selected value="idle" id="idle">Select widget</option>`)
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`idle`)
-                $('#widget-select').selectmenu('refresh')
+                $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
             })
             .then(() => {
                 start()
