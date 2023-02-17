@@ -7,9 +7,12 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives" x:Class="sigmanuts_webview2.MainWindow"
         mc:Ignorable="d"
+        MinHeight="700"
+        MinWidth="1100"
         x:Name="window"
+        Background="#181818"
         Title="SIGMANUTS" Height="700" Width="1100">
-
+        
     <Window.Resources>
         <ResourceDictionary>
 
@@ -159,13 +162,14 @@
 
             <!--App content-->
             <Grid Grid.Row="1" x:Name="AppArea" Panel.ZIndex="10">
-
+                
                 <wv2:WebView2 x:Name="widgetView" Visibility="Hidden" Height="0" Margin="0,0,0,0">
                 </wv2:WebView2>
 
-                <wv2:WebView2  x:Name="appView" Visibility="Visible" Margin="0,0,0,0"/>
+                <wv2:WebView2  x:Name="appView" Visibility="Visible" HorizontalAlignment="Stretch" Margin="0,0,0,0" Width="Auto"/>
 
-                <wv2:WebView2 x:Name="webView" Visibility="Visible"  Margin="50,0,0,0"/>
+                <wv2:WebView2 x:Name="webView" Visibility="Visible"  Margin="51,0,0,0"/>
+
 
             </Grid>
 
