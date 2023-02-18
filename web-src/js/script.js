@@ -455,54 +455,44 @@ loadScript(signalRscript)
         startStream()
     })
 
-function startStream() {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    const callback = (mutationList, observer) => {
-        console.log(mutationList)
+function startStream() {
+    const callback = async (mutationList, observer) => {
+        console.log(mutationList);
+        await sleep(messageDelay);
         for (const mutation of mutationList) {
             for (var j = 0; j < mutation.addedNodes.length; j++) {
-
-
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
-                    setTimeout(() => {
-                        raiseMessageEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "message");
-                    }, messageDelay);                    
+                    raiseMessageEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "message");                    
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
-                    setTimeout(() => {
-                        raiseMembershipEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "member-latest");
-                    }, messageDelay);                      
+                    raiseMembershipEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "member-latest");              
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
-                    setTimeout(() => {
-                        raiseMembershipGiftEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "gift-latest");
-                    }, 100);  
+                    raiseMembershipGiftEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "gift-latest");
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {                    
-                    setTimeout(() => {
-                        raiseMembershipRedemptionEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "member-gifted");
-                    }, messageDelay);
+                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
+                    raiseMembershipRedemptionEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "member-gifted");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
-                    setTimeout(() => {
-                        raiseSuperchatEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "superchat-latest");
-                    }, messageDelay);                    
+                    raiseSuperchatEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "superchat-latest");
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
-                    setTimeout(() => {
-                        raiseStickerEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "sticker-latest");
-                    }, messageDelay);  
+                    raiseStickerEvent(mutation, j, connection);
+                    raiseBasicEvent(mutation, j, connection, "sticker-latest");
                 }
 
             }
