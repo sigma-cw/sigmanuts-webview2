@@ -446,6 +446,7 @@ function raiseUrlChangeEvent(connection, url) {
 }
 
 var testConnection;
+const messageDelay = 40;
 
 var signalRscript = "https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"
 
@@ -463,33 +464,45 @@ function startStream() {
 
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
-                    raiseMessageEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "message");
+                    setTimeout(() => {
+                        raiseMessageEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "message");
+                    }, messageDelay);                    
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
-                    raiseMembershipEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "member-latest");
+                    setTimeout(() => {
+                        raiseMembershipEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "member-latest");
+                    }, messageDelay);                      
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
-                    setTimeout(() => raiseMembershipGiftEvent(mutation, j, connection), 100);
-                    setTimeout(() => raiseBasicEvent(mutation, j, connection, "gift-latest"), 100);
+                    setTimeout(() => {
+                        raiseMembershipGiftEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "gift-latest");
+                    }, 100);  
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
-                    raiseMembershipRedemptionEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "member-gifted");
+                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {                    
+                    setTimeout(() => {
+                        raiseMembershipRedemptionEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "member-gifted");
+                    }, messageDelay);
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
-                    raiseSuperchatEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "superchat-latest");
+                    setTimeout(() => {
+                        raiseSuperchatEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "superchat-latest");
+                    }, messageDelay);                    
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
-                    setTimeout(() => raiseStickerEvent(mutation, j, connection), 100);
-                    setTimeout(() => raiseBasicEvent(mutation, j, connection, "sticker-latest"), 100);             
+                    setTimeout(() => {
+                        raiseStickerEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "sticker-latest");
+                    }, messageDelay);  
                 }
 
             }
@@ -646,6 +659,14 @@ const testMessageDetails = [
         badge: ""
     },
     {
+        name: "Verified Channel Name",
+        message: "This is how verified user look like",
+        authorPicture: testAuthorPhoto,
+        authorExternalChannelId: "ChannelId",
+        authorType: "",
+        badge: ""
+    },
+    {
         name: "Member name",
         message: `<img class="emoji yt-formatted-string style-scope yt-live-chat-text-message-renderer" src="https://yt3.ggpht.com/pWxhQ_AK8pmeiKURTW1jvc-qwPmU5wsxkDyxuGxHVKB4xHroF9NAMtnC1xljIWFF8zaIjbSE=w48-h48-c-k-nd">`,
         authorPicture: testAuthorPhoto,
@@ -658,15 +679,18 @@ const testMessageDetails = [
 function addTestMessage() {
     currentTestMessage = currentTestMessage % testMessageDetails.length;
     let testMessageDetail = testMessageDetails[currentTestMessage];
-
-    let messageHTML = 
-`<yt-live-chat-text-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" author-type="${testMessageDetail.authorType}">
+    let verifiedBadge = ``;
+    if (testMessageDetail.name.includes("Verified")) {
+        verifiedBadge = `<yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="Verified" type="verified" shared-tooltip-text="Verified"><div id="image" class="style-scope yt-live-chat-author-badge-renderer"><yt-icon class="style-scope yt-live-chat-author-badge-renderer"><svg viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g transform="scale(0.66)" class="style-scope yt-icon"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" class="style-scope yt-icon"></path></g></svg></yt-icon></div></yt-live-chat-author-badge-renderer>`;
+    }
+    let messageHTML =
+        `<yt-live-chat-text-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" ${(testMessageDetail.authorType == "owner") ?"author-is-owner":""} author-type="${testMessageDetail.authorType}">
     <!--css-build:shady-->
     <yt-img-shadow id="author-photo" class="no-transition style-scope yt-live-chat-text-message-renderer" height="24" width="24" style="background-color: transparent;" loaded="">
         <!--css-build:shady--><img id="img" draggable="false" class="style-scope yt-img-shadow" alt="" height="24" width="24" src="${testMessageDetail.authorPicture}"></yt-img-shadow>
     <div id="content" class="style-scope yt-live-chat-text-message-renderer"><span id="timestamp" class="style-scope yt-live-chat-text-message-renderer">00:00 PM</span>
-        <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer">
-            <!--css-build:shady--><span id="prepend-chat-badges" class="style-scope yt-live-chat-author-chip"></span><span id="author-name" dir="auto" class="${testMessageDetail.authorType} style-scope yt-live-chat-author-chip">${testMessageDetail.name}<span id="chip-badges" class="style-scope yt-live-chat-author-chip"></span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
+        <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer" ${((testMessageDetail.authorType == "owner") || (testMessageDetail.name.includes("Verified"))) ? "is-highlighted" : ""}>
+            <!--css-build:shady--><span id="prepend-chat-badges" class="style-scope yt-live-chat-author-chip"></span><span id="author-name" dir="auto" class="${testMessageDetail.authorType} style-scope yt-live-chat-author-chip">${testMessageDetail.name}<span id="chip-badges" class="style-scope yt-live-chat-author-chip">${verifiedBadge}</span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                 <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" type="${testMessageDetail.authorType}">
                     <!--css-build:shady-->
                     <div id="image" class="style-scope yt-live-chat-author-badge-renderer">${testMessageDetail.badge}</div>
@@ -727,55 +751,77 @@ const superColors =
             "tier": 1000,
             "primary": "rgba(30,136,229,1)",
             "secondary": "rgba(21,101,192,1)",
+            "textHeader": "rgba(255,255,255,1)",
+            "textAuthor": "rgba(255,255,255,0.701961)",
+            "textMessage": "rgba(255,255,255,1)",
             "amount": "$1.00"
         },
         {
             "tier": 2000,
             "primary": "rgba(0,229,255,1)",
             "secondary": "rgba(0,184,212,1)",
+            "textHeader": "rgba(0,0,0,1)",
+            "textAuthor": "rgba(0,0,0,0.701961)",
+            "textMessage": "rgba(0,0,0,1)",
             "amount": "$2.00"
         },
         {
             "tier": 3000,
             "primary": "rgba(29,233,182,1)",
             "secondary": "rgba(0,191,165,1)",
+            "textHeader": "rgba(0,0,0,1)",
+            "textAuthor": "rgba(0,0,0,0.541176)",
+            "textMessage": "rgba(0,0,0,1)",
             "amount": "$5.00"
         },
         {
             "tier": 4000,
             "primary": "rgba(255,202,40,1)",
             "secondary": "rgba(255,179,0,1)",
+            "textHeader": "rgba(0,0,0,0.87451)",
+            "textAuthor": "rgba(0,0,0,0.541176)",
+            "textMessage": "rgba(0,0,0,0.87451)",
             "amount": "$10.00"
         },
         {
             "tier": 5000,
             "primary": "rgba(245,124,0,1)",
             "secondary": "rgba(230,81,0,1)",
+            "textHeader": "rgba(255,255,255,0.87451)",
+            "textAuthor": "rgba(255,255,255,0.701961)",
+            "textMessage": "rgba(255,255,255,0.87451)",
             "amount": "$20.00"
         },
         {
             "tier": 6000,
             "primary": "rgba(233,30,99,1)",
             "secondary": "rgba(194,24,91,1)",
+            "textHeader": "rgba(255,255,255,1)",
+            "textAuthor": "rgba(255,255,255,0.701961)",
+            "textMessage": "rgba(255, 255, 255, 1)",
             "amount": "$50.00"
         },
         {
             "tier": 7000,
             "primary": "rgba(230,33,23,1)",
             "secondary": "rgba(208,0,0,1)",
+            "textHeader": "rgba(255,255,255,1)",
+            "textAuthor": "rgba(255,255,255,0.701961)",
+            "textMessage": "rgba(255, 255, 255, 1)",
             "amount": "$100.00"
         },
     ];
 
 function addTestSuperchat() {
     currentSuperTest = currentSuperTest % superColors.length;
+    let superDetail = superColors[currentSuperTest];
     let message = "";
-    if (testMessageCounter % 2 == 1) {
+    if (testMessageCounter % 2 == 1 && (superDetail.tier!=1000)) {
         message = "This is a superchat message";
     }
     let authorName = "Superchat Sender";
-    let superDetail = superColors[currentSuperTest];
-    let messageHTML = `<yt-live-chat-paid-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" ${message == "" ?`show-only-header=""`:""} allow-animations="" style="--yt-live-chat-paid-message-primary-color:${superDetail.primary}; --yt-live-chat-paid-message-secondary-color:${superDetail.secondary}; --yt-live-chat-paid-message-header-color:rgba(1,1,1,0.87451); --yt-live-chat-paid-message-author-name-color:rgba(1,1,1,0.541176); --yt-live-chat-paid-message-timestamp-color:rgba(0,0,0,0.501961); --yt-live-chat-paid-message-color:rgba(1,1,1,0.87451);">
+
+    let messageHTML = `<yt-live-chat-paid-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" ${message == "" ? `show-only-header=""` : ""} allow-animations="" style="--yt-live-chat-paid-message-primary-color:${superDetail.primary}; --yt-live-chat-paid-message-secondary-color:${superDetail.secondary}; --yt-live-chat-paid-message-header-color:${superDetail.textHeader}; --yt-live-chat-disable-highlight-message-author-name-color:${superDetail.textAuthor}; --yt-live-chat-paid-message-timestamp-color:rgba(0,0,0,0.501961); --yt-live-chat-paid-message-color:${superDetail.textMessage};">
                     <!--css-build:shady-->
                     <div id="card" class="style-scope yt-live-chat-paid-message-renderer">
                         <div id="header" class="style-scope yt-live-chat-paid-message-renderer">
@@ -787,7 +833,9 @@ function addTestSuperchat() {
                             <dom-if restamp="" class="style-scope yt-live-chat-paid-message-renderer"><template is="dom-if"></template></dom-if>
                             <div id="header-content" class="style-scope yt-live-chat-paid-message-renderer">
                                 <div id="header-content-primary-column" class="style-scope yt-live-chat-paid-message-renderer">
-                                    <div id="author-name" class="style-scope yt-live-chat-paid-message-renderer">${authorName}</div>
+                                    <div id="author-name-chip" class="style-scope yt-live-chat-paid-message-renderer"><yt-live-chat-author-chip disable-highlighting="" class="style-scope yt-live-chat-paid-message-renderer">
+                                        <div id="author-name" class="style-scope yt-live-chat-paid-message-renderer">${authorName}</div>
+                                    </yt-live-chat-author-badge-renderer></span></yt-live-chat-author-chip></div>
                                     <div id="purchase-amount-column" class="style-scope yt-live-chat-paid-message-renderer">
                                         <yt-img-shadow id="currency-img" height="16" width="16" class="style-scope yt-live-chat-paid-message-renderer no-transition" hidden="">
                                             <!--css-build:shady--><img id="img" class="style-scope yt-img-shadow" alt="" height="16" width="16"></yt-img-shadow>
@@ -843,7 +891,7 @@ function addTestSticker() {
     currentSuperTest = currentSuperTest % superColors.length;
     let authorName = "Super Sticker Sender";
     let superDetail = superColors[currentSuperTest];
-    let messageHTML = `<yt-live-chat-paid-sticker-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" style="--yt-live-chat-paid-sticker-chip-background-color:${superDetail.primary}; --yt-live-chat-paid-sticker-chip-text-color:rgba(255,255,255,1); --yt-live-chat-paid-sticker-background-color:${superDetail.secondary}; --yt-live-chat-paid-sticker-author-name-text-color:rgba(255,255,255,0.701961);">
+    let messageHTML = `<yt-live-chat-paid-sticker-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" style="--yt-live-chat-paid-sticker-chip-background-color:${superDetail.primary}; --yt-live-chat-paid-sticker-chip-text-color:${superDetail.textHeader}; --yt-live-chat-paid-sticker-background-color:${superDetail.secondary}; --yt-live-chat-disable-highlight-message-author-name-color:${superDetail.textAuthor};">
                     <!--css-build:shady-->
                     <div id="card" class="style-scope yt-live-chat-paid-sticker-renderer">
                         <div id="author-info" tabindex="0" class="style-scope yt-live-chat-paid-sticker-renderer">
@@ -853,7 +901,10 @@ function addTestSticker() {
                             <dom-if class="style-scope yt-live-chat-paid-sticker-renderer"><template is="dom-if"></template></dom-if>
                             <div id="content" class="style-scope yt-live-chat-paid-sticker-renderer"><span id="timestamp" class="style-scope yt-live-chat-paid-sticker-renderer">18:31</span>
                                 <div id="content-primary-column" class="style-scope yt-live-chat-paid-sticker-renderer">
-                                    <div id="author-name" class="style-scope yt-live-chat-paid-sticker-renderer">${authorName}</div><span id="price-column" class="style-scope yt-live-chat-paid-sticker-renderer">
+                                    <div id="author-name-chip" class="style-scope yt-live-chat-paid-sticker-renderer"><yt-live-chat-author-chip disable-highlighting="" single-line="" class="style-scope yt-live-chat-paid-sticker-renderer">
+                                       <div id="author-name" class="style-scope yt-live-chat-paid-sticker-renderer">${authorName}</div>
+                                    </yt-live-chat-author-chip></div>
+                                    <span id="price-column" class="style-scope yt-live-chat-paid-sticker-renderer">
                                         <yt-formatted-string id="purchase-amount-chip" class="style-scope yt-live-chat-paid-sticker-renderer">${superDetail.amount}</yt-formatted-string>
                                         <yt-formatted-string id="deleted-state" class="style-scope yt-live-chat-paid-sticker-renderer">
                                             <!--css-build:shady-->
@@ -864,7 +915,7 @@ function addTestSticker() {
                         </div>
                         <div id="sticker-container" class="style-scope yt-live-chat-paid-sticker-renderer sticker-loaded">
                             <yt-img-shadow id="sticker" notify-on-loaded="" tabindex="0" class="style-scope yt-live-chat-paid-sticker-renderer no-transition" style="background-color: transparent;" loaded="">
-                                <!--css-build:shady--><img id="img" class="style-scope yt-img-shadow" alt="POGCRAZY" width="144" height="144" src="${stickerUrl}"></yt-img-shadow>
+                                <!--css-build:shady--><img id="img" class="style-scope yt-img-shadow" alt="POGCRAZY" width="72" height="72" src="${stickerUrl}"></yt-img-shadow>
                         </div>
                     </div>
                 </yt-live-chat-paid-sticker-renderer>`;

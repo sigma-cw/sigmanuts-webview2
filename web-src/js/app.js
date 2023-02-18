@@ -360,15 +360,49 @@ $('#search').click(() => {
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
 
+    let valid = true;
+
     //only accepts valid chat links
     if (!url) {
-        alert("Please input valid URL");
-        return;
+        valid = false;
     }
+
+    if (url.startsWith("https://youtube.com/live/")) {
+        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
+        $('#link-input').val(url);
+    }
+    if (url.startsWith("https://studio.youtube.com/video/")){
+        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
+        $('#link-input').val(url);
+    }
+
     if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
-        alert("Please input valid URL");
+        valid = false;
+    }
+
+    if (!valid) {
+        let iconName = $('#search>span').html();
+        $('#search').addClass("error");
+        $('#search>span').html("close");
+        setTimeout(() => {
+            $('#search').removeClass("error");
+            $('#search>span').html(iconName);
+        }, 1600);
+
+        $('.search-bar').removeClass("animate");
+        setTimeout(() => {
+            $('.search-bar').addClass("animate");
+        }, 10);
+
+        $("#link-error-notification").css("display", "block");
+
         return;
     }
+    else {
+        $("#link-error-notification").css("display", "none");
+    }
+
+    
 
     var obj = JSON.stringify({
         "listener": "change-url",
