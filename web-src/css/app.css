@@ -16,6 +16,7 @@
 
 body {
     margin: 0;
+    /*overflow: hidden;*/
 }
 
 h3 {
@@ -64,12 +65,26 @@ h4 {
     --var-accent-color: #dd7f2f;
     --var-accent-color-transparent: #da7e2e2e;
     --var-icon-color-gray: rgba(255, 255, 255, 0.4);
-    --var-border-color-gray: rgba(255, 255, 255, 0.1)
+    --var-border-color-gray: rgba(255, 255, 255, 0.1);
+    --var-active-color: white;
+}
+
+.app-theme-light {
+    --var-background-color: #ffffff;
+    --var-foreground-color: #dbdbdb;
+    --var-preview-bg-color: #bcbcbc;
+    --var-nav: #292929;
+    --var-text-color: #212121;
+    --var-accent-color: #dd7f2f;
+    --var-accent-color-transparent: #da7e2e2e;
+    --var-icon-color-gray: rgba(0, 0, 0, 0.4);
+    --var-border-color-gray: rgba(0, 0, 0, 0.1);
+    --var-active-color: black;
 }
 
 .app-container {
     height: 100%;
-    border-top: solid 1px var(--var-border-color-gray);
+    /*border-top: solid 1px var(--var-border-color-gray);*/
 }
 
 .content {
@@ -78,6 +93,7 @@ h4 {
 }
 
 .sidebar-wrapper {
+    top: 0;
     width: 50px;
     background: var(--var-foreground-color);
     border-right: solid 1px var(--var-border-color-gray);
@@ -111,6 +127,7 @@ h4 {
     align-items: center;
     justify-content: center;
     border-left: solid 4px var(--var-foreground-color);
+    user-select: none;
 }
 
 .sidebar-button:hover {
@@ -118,7 +135,7 @@ h4 {
 }
 
 .sidebar-button-active {
-    color: white;
+    color: var(--var-active-color);
     border-left: solid 4px white;
 }
 
@@ -228,7 +245,7 @@ search-button {
     align-self: center;
     display: flex;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, border 0.3s ease;
     position: absolute;
     right: 0px;
     display: flex;
@@ -238,7 +255,15 @@ search-button {
     letter-spacing: 1px;
     background-color: var(--var-accent-color);
     border: solid 1px var(--var-accent-color);
+    user-select: none;
 }
+
+    search-button.ok,
+    search-button:hover.ok {
+        /*CHANGE COLOR LATER*/
+        background-color: #1bbf75;
+        border: solid 1px #1bbf75;
+    }
 
 .focused {
     outline: solid 1px var(--var-accent-color);
@@ -556,6 +581,7 @@ preview-button {
     align-items: center;
     outline: solid 1px var(--var-foreground-color);
     transition: outline 0.3s ease;
+    user-select: none;
 }
 
 preview-button#copy-link:hover {
@@ -568,6 +594,39 @@ preview-button span {
 
 .backdrop-wrapper {
     display: none;
+}
+
+test-buttons{
+    padding: 12px 16px;
+    /* background: var(--var-foreground-color); */
+    border-radius: 10px;
+    outline: solid 1px var(--var-foreground-color);
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+}
+
+test-button {
+    cursor: pointer;
+    /* background: var(--var-foreground-color); */
+    border-radius: 10px;
+    transition: opacity 0.3s ease;
+    opacity: 0.5;
+    height: 24px;
+    user-select: none;
+}
+
+test-button:hover
+{
+    opacity:1;
+}
+
+test-button span {
+    transition: opacity 0.5s ease;
+}
+
+button {
+    user-select: none;
 }
 
 .backdrop {

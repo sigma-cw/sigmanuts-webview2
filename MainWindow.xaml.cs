@@ -39,7 +39,7 @@ namespace sigmanuts_webview2
         /// URLs
         /// </summary>
 
-        private string chatUrl = "https://www.youtube.com/live_chat?v=jfKfPfyJRdk";
+        private string chatUrl = "http://localhost:6969/tutorial.html";//"https://www.youtube.com/live_chat?v=jfKfPfyJRdk"
         private string appUrl = "http://localhost:6969/app.html";
         private string widgetUrl = $"http://localhost:6969/widgets/{currentWidget}/widget.html";
 
@@ -165,11 +165,15 @@ namespace sigmanuts_webview2
             switch (stuff.listener.ToString())
             {
                 case "toggle-chat":
-                    ToggleChat();
+                    ToggleChat(Boolean.Parse(stuff.value.ToString()));
                     break;
 
                 case "toggle-fullscreen":
                     ToggleFullscreen();
+                    break;
+
+                case "toggle-login":
+                    ToggleLogin();
                     break;
 
                 case "change-url":
@@ -267,23 +271,36 @@ namespace sigmanuts_webview2
                     await appView.CoreWebView2.ExecuteScriptAsync($"retrieveData().then(updateUI()); $('iframe').attr('src', ``)");
                     break;
 
+                case "test-message":
+                    string type = stuff.type;
+                    await webView.CoreWebView2.ExecuteScriptAsync("testMessage('" + type + "')");
+                    break;
+
+                case "open-folder":
+                    Process.Start("explorer.exe",Path.Combine(CacheFolderPath, @".\localserver\widgets\"));
+                    break;
+
                 default:
                     break;
             }
         }
 
-        public void ToggleChat()
+        public void ToggleChat(bool active)
         {
             /// Simple function to toggle chat visibility on and off.
             /// 
             /// I am aware that I can change Visibility to Hidden or Collapsed,
             /// it's done by setting Height to 0 for a reason. YouTube chat pauses if not focused.
             /// Do not ask about this.
-
-            isChatEnabled = !isChatEnabled;
+            if (isChatEnabled == active) return;
+            isChatEnabled = active;
 
             if (isChatEnabled)
             {
+                appView.HorizontalAlignment = HorizontalAlignment.Left;
+                appView.Width = 51;
+                //
+                /*
                 if (WindowState == WindowState.Maximized)
                 {
                     var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
@@ -293,13 +310,22 @@ namespace sigmanuts_webview2
                 {
                     var margin = new Thickness(0, 0, window.ActualWidth - 51, 0);
                     appView.Margin = margin;
-                }
+                }*/
             }
             else
             {
+                appView.HorizontalAlignment = HorizontalAlignment.Stretch;
+                appView.Width = Double.NaN;
+                /*
                 var margin = new Thickness(0, 0, 0, 0);
-                appView.Margin = margin;
+                appView.Margin = margin;*/
             }
+        }
+
+        public void ToggleLogin()
+        {
+            ToggleChat(true);
+            webView.CoreWebView2.Navigate("https://www.youtube.com/account");
         }
 
         public async void ToggleFullscreen()
@@ -331,6 +357,8 @@ namespace sigmanuts_webview2
 
             await appView.CoreWebView2.ExecuteScriptAsync("$('.fullscreen').toggle('fast');");
         }
+
+        
 
         public async void HandleWidgets()
         {
@@ -469,25 +497,25 @@ namespace sigmanuts_webview2
 
         // Maximize
         private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
-        {
+        {/*
             isPreviewEnabled = false;
             widgetView.Height = 0;
 
             isChatEnabled = false;
-            var margin = new Thickness(0, 5, 0, 0);
-            appView.Margin = margin;
+            var margin = new Thickness(0, 0, 0, 0);
+            appView.Margin = margin;*/
             SystemCommands.MaximizeWindow(this);
         }
 
         // Restore
         private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
-        {
+        {/*
             isPreviewEnabled = false;
             widgetView.Height = 0;
 
             isChatEnabled = false;
             var margin = new Thickness(0, 5, 0, 0);
-            appView.Margin = margin;
+            appView.Margin = margin;*/
             SystemCommands.RestoreWindow(this);
         }
 

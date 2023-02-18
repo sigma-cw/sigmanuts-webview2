@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
 	<PublishSingleFile>true</PublishSingleFile>
   <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <ApplicationIcon>sigmanuts.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -57,7 +58,6 @@
     <None Remove="web-src\widgets\YouTube\sigmanuts.js" />
     <None Remove="web-src\widgets\YouTube\src\data.txt" />
     <None Remove="web-src\widgets\YouTube\widget.html" />
-    <None Remove="web-src\widgets\YouTube\youtube.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -169,9 +169,6 @@
     <Content Include="web-src\widgets\YouTube\widget.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="web-src\widgets\YouTube\youtube.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -182,6 +179,15 @@
 
   <ItemGroup>
     <Folder Include="web-src\css\widgets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="web-src\tutorial.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="web-src\widgets\YouTube\youtube.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

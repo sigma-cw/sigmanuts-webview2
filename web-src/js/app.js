@@ -281,71 +281,68 @@ connection.on("ReceiveMessage", function (obj) {
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
 $('#youtube-button').click(() => {
+    setActivePage('youtube-button', 'youtube');
+});
 
-    if (!isYtVisible) {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": null
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', 'transparent');
-        $('#youtube-button').addClass('sidebar-button-active');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-    }
-
-    isYtVisible = true;
-    activeTab = 'youtube'
+$('#login-button').click(() => {
+    setActivePage('login-button', 'login');
 });
 
 $('#home-button').click(() => {
-
-    if (isYtVisible && activeTab === 'youtube') {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": null
-        })
-        window.chrome.webview.postMessage(obj);
-
-        $('.app').css('background', '');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        isYtVisible = false;
-    }
-    else {
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-    }
-
-    $(`#home`).removeClass('hidden').addClass('active');
-    $('#home-button').addClass('sidebar-button-active');
-    $(`.nav`).removeClass('hidden').addClass('active');
-    activeTab = 'home';
+    setActivePage('home-button', 'home');
 });
 
 $('#store-button').click(() => {
+    setActivePage('store-button', 'store');
+});
 
-    if (isYtVisible && activeTab === 'youtube') {
-        var obj = JSON.stringify({
-            "listener": "toggle-chat",
-            "value": null
-        })
-        window.chrome.webview.postMessage(obj);
+$('#theme-button').click(() => {
+    //save theme selection later?
+    $('#app').toggleClass("app-theme-dark");
+    $('#app').toggleClass("app-theme-light");
+});
 
-        $('.app').css('background', '');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
-        isYtVisible = false;
+
+function setActivePage(buttonId, pageId) {
+
+    if (activeTab == pageId) return;
+    let toggleChat = false;
+
+    if ((pageId == 'youtube' || pageId == 'login')) {
+        toggleChat = true;
+        $('.app').css('background', 'transparent');
     }
     else {
-        $(`#${activeTab}`).removeClass('active').addClass('hidden');
-        $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+        $('.app').css('background', '');
     }
 
-    $(`#store`).removeClass('hidden').addClass('active');
-    $('#store-button').addClass('sidebar-button-active');
+    var obj = JSON.stringify({
+        "listener": "toggle-chat",
+        "value": toggleChat
+    })
+    if (pageId == 'login') {
+        obj = JSON.stringify({
+            "listener": "toggle-login",
+            "value": true
+        })
+    }
+    window.chrome.webview.postMessage(obj);
+
+    isYtVisible = toggleChat;
+
+    if (activeTab == 'login') {
+        //reset the url
+        changeUrl(false);
+    }
+
+    $(`#${activeTab}-button`).removeClass('sidebar-button-active');
+    $(`#${activeTab}`).removeClass('active').addClass('hidden');
+    $('#' + buttonId).addClass('sidebar-button-active');
+    $(`#${pageId}`).removeClass('hidden').addClass('active');
     $(`.nav`).removeClass('active').addClass('hidden');
-    activeTab = 'store';
-});
+
+    activeTab = pageId;
+}
 
 $('#fullscreen').click(() => {
     console.log('toggling fullscreen');
@@ -357,13 +354,38 @@ $('#fullscreen').click(() => {
 });
 
 $('#search').click(() => {
+    changeUrl();
+});
+
+function changeUrl(animate = true) {
     var url = $('#link-input').val();
+
+    //only accepts valid chat links
+    if (!url) {
+        alert("Please input valid URL");
+        return;
+    }
+    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
+        alert("Please input valid URL");
+        return;
+    }
+
     var obj = JSON.stringify({
         "listener": "change-url",
         "value": url
     })
     window.chrome.webview.postMessage(obj);
-});
+
+    if (animate) {
+        let iconName = $('#search>span').html();
+        $('#search').addClass("ok");
+        $('#search>span').html("done");
+        setTimeout(() => {
+            $('#search').removeClass("ok");
+            $('#search>span').html(iconName);
+        }, 1600);
+    }
+}
 
 $('#refresh-widget').click(() => {
     var obj = JSON.stringify({
@@ -460,8 +482,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 $('#widget-select').prepend(`<option disabled selected value="idle" id="idle">Select widget</option>`)
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`idle`)
-                $('#widget-select').selectmenu('refresh')
+                $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
             })
             .then(() => {
                 start()
@@ -535,8 +556,13 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         .then(updateUI())
 });
 
+//new widget cancel
+$('.backdrop-wrapper').on('click', () => {
+    $('.backdrop-wrapper').hide();
+    $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
+});
+
 $('#copy-link').on('click', () => {
-    console.log(activeWidget);
     var copyField = document.getElementById('copy-link-text');
     copyField.value = `localhost:6969/widgets/${activeWidget}/widget.html`;
     copyField.select();
@@ -545,3 +571,37 @@ $('#copy-link').on('click', () => {
     $('#copy-link>#text').text("Copied");
     setTimeout(() => { $('#copy-link>#text').text("Copy chat link"); }, 2000)
 });
+
+$('#test-message').on('click', () => {
+    sendTestMessage("test-message");
+});
+$('#test-superchat').on('click', () => {
+    sendTestMessage("test-superchat");
+});
+$('#test-sticker').on('click', () => {
+    sendTestMessage("test-sticker");
+});
+$('#test-member').on('click', () => {
+    sendTestMessage("test-member");
+});
+$('#test-gift').on('click', () => {
+    sendTestMessage("test-gift");
+});
+
+$('#open-folder').on('click', () => {
+    var obj = JSON.stringify({
+        "listener": "open-folder",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
+});
+
+function sendTestMessage(type) {
+
+    var obj = JSON.stringify({
+        "listener": "test-message",
+        "type": type
+    })
+
+    window.chrome.webview.postMessage(obj);
+}
