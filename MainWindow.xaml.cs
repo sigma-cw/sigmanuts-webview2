@@ -104,7 +104,7 @@ namespace sigmanuts_webview2
             if (File.Exists(Path.Combine(CacheFolderPath, @".\localserver\config.ini")))
             {
                 chatUrl = File.ReadAllText(Path.Combine(CacheFolderPath, @".\localserver\config.ini"));
-            }
+            } 
 
             webView.Source = new UriBuilder(chatUrl).Uri;
             appView.Source = new UriBuilder(appUrl).Uri;
@@ -137,7 +137,7 @@ namespace sigmanuts_webview2
                 webViewProcess.WaitForExit(2000);
 
                 //Disabling cache deletion
-                //Directory.Delete(webViewCacheDir, true);
+                Directory.Delete(webViewCacheDir, true);
             }
             catch (Exception ex)
             {
