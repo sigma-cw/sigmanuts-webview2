@@ -502,6 +502,7 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch('config.ini')
         .then(response => response.text())
         .then(text => {
+            console.log(text)
             $('#link-input').val(text);
         })
 
