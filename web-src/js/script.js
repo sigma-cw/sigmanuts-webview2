@@ -37,9 +37,11 @@ function raiseMessageEvent(mutation, j, connection) {
     var badges = "", badgeArray = [];
     var isMod, isMember;
     var userId, msgId;
+    var userType = "";
 
     if (mutation.addedNodes[j].attributes["author-type"].value === "owner") {
-        badges = "broadcaster/1"
+        badges = "broadcaster/1";
+        userType = "owner";
     }
 
     userId = "";
@@ -48,22 +50,28 @@ function raiseMessageEvent(mutation, j, connection) {
     } catch (error) { }
     msgId = mutation.addedNodes[j].id
 
-    for (var i = 0; i < eventData.content.childNodes[1].$["chat-badges"].childNodes.length; i++) {
-        let url = updateBadgeSize(eventData.content.childNodes[1].$["chat-badges"].childNodes[0].$.image.childNodes[0].src);
+    for (var i = 0; i < eventData.content.childNodes[1].$["chat-badges"].childNodes.length; i++) {       
+        let badgeType = mutation.addedNodes[j].$.content.childNodes[1].$["chat-badges"].childNodes[i].__data.type;
+
+        if (badges != "") badges += ",";
+        badges += (mutation.addedNodes[j].$.content.childNodes[1].$["chat-badges"].childNodes[i].__data.type + '/1');
+
+        let url = "";        
+        if (badgeType === "member") {
+            isMember = "1"
+            url = eventData.content.childNodes[1].$["chat-badges"].childNodes[i].children["image"].childNodes[0].src;
+            if (userType == "") userType = "member";
+        }
+        if (badgeType === "moderator") {
+            isMod = "1"
+            userType = "moderator";
+        }
+
         badgeArray.push({
-            "type": eventData.content.childNodes[1].$["chat-badges"].childNodes[0].__data.type,
+            "type": badgeType,
             "version": "1",
             "url": url
         })
-
-        badges += (mutation.addedNodes[j].$.content.childNodes[1].$["chat-badges"].childNodes[0].__data.type + '/1')
-
-        if (mutation.addedNodes[j].attributes["author-type"].value === "member") {
-            isMember = "1"
-        }
-        if (mutation.addedNodes[j].attributes["author-type"].value === "moderator") {
-            isMod = "1"
-        }
     };
 
     var detail = {
@@ -86,10 +94,11 @@ function raiseMessageEvent(mutation, j, connection) {
                     "returning-chatter": "0",
                     "room-id": roomId,
                     "subscriber": isMember,
+                    "member": isMember,
                     "tmi-sent-ts": "",
                     "turbo": "",
                     "user-id": userId,
-                    "user-type": ""
+                    "user-type": userType
                 },
                 "nick": authorName,
                 "userId": userId,
@@ -707,7 +716,8 @@ function addTestMessage() {
                     "mod": testMessageDetail.authorType == "moderator",
                     "returning-chatter": "0",
                     "room-id": "",
-                    "subscriber": testMessageDetail == "member",
+                    "subscriber": testMessageDetail.authorType == "member",
+                    "member": testMessageDetail.authorType == "member",
                     "tmi-sent-ts": "",
                     "turbo": "",
                     "user-id": "userId",
