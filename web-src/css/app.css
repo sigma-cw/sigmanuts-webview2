@@ -265,6 +265,49 @@ search-button {
         border: solid 1px #1bbf75;
     }
 
+    search-button.error,
+    search-button:hover.error {
+        /*CHANGE COLOR LATER*/
+        background-color: #de0930;
+        border: solid 1px #de0930;
+    }
+
+#link-error-notification {
+    color: #de0930;
+    margin-left: 24px;
+    margin-top: -20px;
+    z-index: 9;
+    pointer-events: none;
+}
+
+.search-bar.animate
+{
+    animation: search-bar-error 0.2s ease-out;
+}
+
+@keyframes search-bar-error
+{
+    0% {
+        transform: translateX(-6px);
+    }
+
+    25% {
+        transform: translateX(6px);
+    }
+
+    50% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(2px);
+    }
+
+    100% {
+        transform: translateX(0px);
+    }
+}
+
 .focused {
     outline: solid 1px var(--var-accent-color);
 }
