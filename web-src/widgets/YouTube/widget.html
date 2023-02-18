@@ -40,6 +40,7 @@
             .grecaptcha-badge {
                 visibility: hidden
             }
+
         yt-live-chat-renderer {
             height: 100vh;
             align-content: flex-end;
@@ -47,10 +48,14 @@
             background-color: transparent;
         }
 
-            yt-live-chat-renderer #contents {
-                align-content: flex-end;
-                flex-direction: column-reverse !important;
-            }
+        yt-live-chat-text-message-renderer[author-is-owner] {
+            background-color: transparent;
+        }
+
+        yt-live-chat-renderer #contents {
+            align-content: flex-end;
+            flex-direction: column-reverse !important;
+        }
 
             yt-live-chat-renderer #menu {
                 display: none;

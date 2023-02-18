@@ -352,10 +352,17 @@ $('#fullscreen').click(() => {
     })
     window.chrome.webview.postMessage(obj);
 });
-
+$('#link-input').on('keypress', function (e) {
+    if (e.which == 13) {
+        changeUrl();
+        return false;
+    }
+});
 $('#search').click(() => {
     changeUrl();
 });
+
+const searchIconName = $('#search>span').html();
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
@@ -371,7 +378,11 @@ function changeUrl(animate = true) {
         url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
         $('#link-input').val(url);
     }
-    if (url.startsWith("https://studio.youtube.com/video/")){
+    else if (url.startsWith("https://www.youtube.com/watch?v=")) {
+        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://www.youtube.com/watch?v=", "");
+        $('#link-input').val(url);
+    }
+    else if (url.startsWith("https://studio.youtube.com/video/")){
         url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
         $('#link-input').val(url);
     }
@@ -381,12 +392,11 @@ function changeUrl(animate = true) {
     }
 
     if (!valid) {
-        let iconName = $('#search>span').html();
         $('#search').addClass("error");
         $('#search>span').html("close");
         setTimeout(() => {
             $('#search').removeClass("error");
-            $('#search>span').html(iconName);
+            $('#search>span').html(searchIconName);
         }, 1600);
 
         $('.search-bar').removeClass("animate");
