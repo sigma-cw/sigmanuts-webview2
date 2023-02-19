@@ -363,7 +363,7 @@ $('#search').click(() => {
 });
 
 const searchIconName = $('#search>span').html();
-var lastValidUrl = "";
+var lastValidUrl = "http://localhost:6969/tutorial.html";
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
