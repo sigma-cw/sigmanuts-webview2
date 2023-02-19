@@ -434,7 +434,7 @@ namespace sigmanuts_webview2
                 profile = appView.CoreWebView2.Profile;
  
                 CoreWebView2BrowsingDataKinds dataKinds = (CoreWebView2BrowsingDataKinds)
-                                         (CoreWebView2BrowsingDataKinds.AllSite);
+                                         (CoreWebView2BrowsingDataKinds.DiskCache | CoreWebView2BrowsingDataKinds.AllDomStorage);
                 await profile.ClearBrowsingDataAsync(dataKinds);
             }
         }
