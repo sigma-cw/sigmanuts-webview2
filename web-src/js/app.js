@@ -512,7 +512,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(text => {
             console.log(text)
             $('#link-input').val(text);
-            changeUrl(false);
+            //changeUrl(false);
         })
 
     // Fetch widget list
