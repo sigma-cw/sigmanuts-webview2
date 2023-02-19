@@ -3,6 +3,8 @@ var groupList = [];
 var widgetData = {};
 var isYtVisible = false;
 var activeTab = 'home';
+var defaultUrl = "http://localhost:6969/tutorial.html";
+var lastValidUrl = "";
 
 ////////////////////////////////////////////////////////////////////////////////
 //                        HELPER FUNCTIONS                                    //
@@ -71,7 +73,7 @@ function updateData(widget) {
 }
 
 async function updateUI() {
-    console.log(activeWidget)
+    //console.log(activeWidget)
     console.log($('#widget-select').val());
     /* if ($('#widget-select').val() != 'idle') {
         $('#widget-select option[value="idle"]').remove();
@@ -366,29 +368,41 @@ const searchIconName = $('#search>span').html();
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
-
     let valid = true;
 
+
     //only accepts valid chat links
-    if (!url) {
+    if (url) {
+        if (url.startsWith("https://youtube.com/live/")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
+            $('#link-input').val(url);
+        }
+        else if (url.startsWith("https://www.youtube.com/watch?v=")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://www.youtube.com/watch?v=", "");
+            $('#link-input').val(url);
+        }
+        else if (url.startsWith("https://studio.youtube.com/video/")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
+            $('#link-input').val(url);
+        }
+    }
+
+    if (!isValid(url)) {
         valid = false;
     }
 
-    if (url.startsWith("https://youtube.com/live/")) {
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
-        $('#link-input').val(url);
-    }
-    else if (url.startsWith("https://www.youtube.com/watch?v=")) {
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://www.youtube.com/watch?v=", "");
-        $('#link-input').val(url);
-    }
-    else if (url.startsWith("https://studio.youtube.com/video/")){
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
-        $('#link-input').val(url);
-    }
-
-    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
-        valid = false;
+    //if from login page
+    if (!valid && animate == false) {
+        if (!lastValidUrl) {
+            var obj = JSON.stringify({
+                "listener": "change-url",
+                "value": defaultUrl
+            })
+            window.chrome.webview.postMessage(obj);
+            return;
+        }
+        url = lastValidUrl;
+        valid = true;
     }
 
     if (!valid) {
@@ -412,6 +426,7 @@ function changeUrl(animate = true) {
         $("#link-error-notification").css("display", "none");
     }
 
+    lastValidUrl = url;
     
 
     var obj = JSON.stringify({
@@ -429,6 +444,11 @@ function changeUrl(animate = true) {
             $('#search>span').html(iconName);
         }, 1600);
     }
+}
+
+function isValid(url) {
+    if (!url) return false;
+    return url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?");
 }
 
 $('#refresh-widget').click(() => {
@@ -498,12 +518,15 @@ window.addEventListener('DOMContentLoaded', () => {
     $(`.nav`).removeClass('hidden').addClass('active');
     activeTab = 'home';
 
+    $('#refresh-widget').hide();
+    $('#remove').hide();
+
     // Fetch cached youtube chat link
     fetch('config.ini')
         .then(response => response.text())
         .then(text => {
-            console.log(text)
-            $('#link-input').val(text);
+            console.log(text);
+            if (isValid(text)) $('#link-input').val(text);                                    
         })
 
     // Fetch widget list

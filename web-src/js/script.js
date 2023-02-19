@@ -7,6 +7,8 @@ function loadScript(scriptUrl) {
     //disable scrolling and changing Top Chat
     document.getElementById("item-scroller").style.overflowY = "hidden";
     document.getElementById("trigger").style.display = "none";
+    document.getElementById("overflow").style.display = "none";
+    
 
     return new Promise((res, rej) => {
         script.onload = function () {
