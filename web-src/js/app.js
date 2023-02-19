@@ -363,6 +363,7 @@ $('#search').click(() => {
 });
 
 const searchIconName = $('#search>span').html();
+var lastValidUrl = "";
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
@@ -391,6 +392,12 @@ function changeUrl(animate = true) {
         valid = false;
     }
 
+    //if from login page
+    if (!valid && animate == false) {
+        url = lastValidUrl;
+        valid = true;
+    }
+
     if (!valid) {
         $('#search').addClass("error");
         $('#search>span').html("close");
@@ -412,6 +419,7 @@ function changeUrl(animate = true) {
         $("#link-error-notification").css("display", "none");
     }
 
+    lastValidUrl = url;
     
 
     var obj = JSON.stringify({
@@ -504,6 +512,7 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(text => {
             console.log(text)
             $('#link-input').val(text);
+            changeUrl(false);
         })
 
     // Fetch widget list
