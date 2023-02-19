@@ -1,60 +1,31 @@
-html:not(.style-scope) {
-    --primary-text-color: var(--light-theme-text-color);
-    --primary-background-color: var(--light-theme-background-color);
-    --secondary-text-color: var(--light-theme-secondary-color);
-    --disabled-text-color: var(--light-theme-disabled-color);
-    --divider-color: var(--light-theme-divider-color);
-    --error-color: #dd2c00;
-    --primary-color: #3f51b5;
-    --light-primary-color: #c5cae9;
-    --dark-primary-color: #303f9f;
-    --accent-color: #ff4081;
-    --light-accent-color: #ff80ab;
-    --dark-accent-color: #f50057;
-    --light-theme-background-color: #fff;
-    --light-theme-base-color: #000;
-    --light-theme-text-color: #212121;
-    --light-theme-secondary-color: #737373;
-    --light-theme-disabled-color: #9b9b9b;
-    --light-theme-divider-color: #dbdbdb;
-    --dark-theme-background-color: #212121;
-    --dark-theme-base-color: #fff;
-    --dark-theme-text-color: #fff;
-    --dark-theme-secondary-color: #bcbcbc;
-    --dark-theme-disabled-color: #646464;
-    --dark-theme-divider-color: #3c3c3c;
-    --text-primary-color: var(--dark-theme-text-color);
-    --default-primary-color: var(--primary-color)
+
+yt-live-chat-renderer {
+    position: relative;
+    height: 100%;
+    background: var(--yt-live-chat-background-color);
+    color: var(--yt-live-chat-primary-text-color);
+    overflow: hidden;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    contain: content;
+    font-size: 13px;
 }
 
-tp-yt-paper-tooltip {
-    display: block;
-    position: absolute;
-    outline: none;
-    z-index: 1002;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default
+
+yt-live-chat-author-chip[disable-highlighting] #author-name {
+    color: var(--yt-live-chat-disable-highlight-message-author-name-color, rgba(255, 255, 255, .7));
+    font-size: 14px
 }
 
-.tp-yt-paper-tooltip[style-target=tooltip] {
-    display: block;
-    outline: none;
-    font-family: "Roboto","Noto",sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: 10px;
-    line-height: 1;
-    background-color: var(--paper-tooltip-background,#616161);
-    color: var(--paper-tooltip-text-color,#fff);
-    padding: 8px;
-    border-radius: 2px
-}
+    yt-live-chat-renderer[hide-timestamps] {
+        --yt-live-chat-item-timestamp-display: none
+    }
 
-.hidden.tp-yt-paper-tooltip {
-    display: none !important
-}
+
+    tp-yt-paper-tooltip ,.tp-yt-paper-tooltip[style-target=tooltip], .hidden.tp-yt-paper-tooltip {
+        display: none !important
+    }
 
 yt-icon, .yt-icon-container.yt-icon {
     display: inline-flexbox;
@@ -104,6 +75,13 @@ yt-img-shadow {
         opacity: 1
     }
 
+
+yt-themed-image-renderer {
+    --yt-img-margin-left: 0;
+    --yt-img-margin-right: 0;
+    display: block;
+}
+
 img.yt-img-shadow {
     display: block;
     margin-left: var(--yt-img-margin-left,auto);
@@ -138,6 +116,7 @@ img.yt-live-chat-author-badge-renderer, yt-icon.yt-live-chat-author-badge-render
     width: 16px;
     height: 16px
 }
+
 
 yt-live-chat-author-chip {
     display: inline-flex;
@@ -577,20 +556,6 @@ yt-live-chat-text-message-renderer:hover #menu.yt-live-chat-text-message-rendere
     transform: none
 }
 
-yt-live-chat-text-message-renderer:not([modern]) #inline-action-button-container.yt-live-chat-text-message-renderer {
-    background-color: var(--yt-live-chat-moderation-mode-hover-background-color)
-}
-
-#inline-action-button-container.yt-live-chat-text-message-renderer {
-    position: absolute;
-    top: -4px;
-    right: 0;
-    bottom: -4px;
-    left: 0;
-    display: none;
-    align-items: center;
-    justify-content: center
-}
 
 yt-live-chat-text-message-renderer {
     position: relative;
@@ -634,7 +599,7 @@ yt-live-chat-author-chip.yt-live-chat-text-message-renderer {
     opacity: var(--yt-live-chat-text-message-renderer-message-message-style-opacity)
 }
 
-    #message.yt-live-chat-text-message-renderer .emoji.yt-live-chat-text-message-renderer {
+    .emoji{
         width: var(--yt-live-chat-emoji-size);
         height: var(--yt-live-chat-emoji-size);
         margin: -1px 2px 1px;
@@ -866,31 +831,6 @@ yt-live-chat-paid-sticker-renderer.yt-live-chat-item-list-renderer {
     padding: 4px 24px
 }
 
-yt-live-chat-renderer {
-    font-size: 13px;
-    --yt-emoji-picker-renderer-height: 180px;
-    --yt-button-default-text-color: var(--yt-live-chat-button-default-text-color);
-    --yt-button-default-background-color: var(--yt-live-chat-button-default-background-color);
-    --yt-button-dark-text-color: var(--yt-live-chat-button-dark-text-color);
-    --yt-button-dark-background-color: var(--yt-live-chat-button-dark-background-color);
-    --yt-button-payment-background-color: var(--yt-live-chat-sponsor-color)
-}
-
-yt-live-chat-renderer {
-    position: relative;
-    height: 100%;
-    background: var(--yt-live-chat-background-color);
-    color: var(--yt-live-chat-primary-text-color);
-    overflow: hidden;
-    z-index: 0;
-    display: flex;
-    flex-direction: column;
-    contain: content
-}
-
-    yt-live-chat-renderer[hide-timestamps] {
-        --yt-live-chat-item-timestamp-display: none
-    }
 
 yt-live-chat-item-list-renderer.yt-live-chat-renderer, yt-live-chat-ninja-message-renderer.yt-live-chat-renderer {
     flex: 1;
@@ -921,478 +861,38 @@ canvas, caption, center, cite, code, dd, del, dfn, div, dl, dt, em, embed, field
 }
 
 html {
-    --yt-deprecated-blue-light: hsl(205.9,80%,43.1%);
-    --yt-deprecated-opalescence-grey-opacity-lighten-3: hsla(0,0%,53.3%,.4);
-    --yt-deprecated-opalescence-soft-grey-opacity-lighten-3: hsla(0,0%,93.3%,.4);
-    --yt-deprecated-luna-black-opacity-lighten-2: hsla(0,0%,6.7%,.6);
-    --yt-deprecated-luna-black-opacity-lighten-3: hsla(0,0%,6.7%,.4);
-    --yt-deprecated-luna-black-opacity-lighten-4: hsla(0,0%,6.7%,.2);
-    --yt-deprecated-opalescence-soft-grey: hsl(0,0%,93.3%);
-    --yt-opalescence-dark-grey: hsl(0,0%,20%);
-    --yt-deprecated-luna-black: hsl(0,0%,6.7%);
-    --yt-deprecated-white-opacity-lighten-4: hsla(0,0%,100%,.2);
-    --yt-deprecated-opalescence-soft-grey-opacity-lighten-1: hsla(0,0%,93.3%,.8);
-    --yt-deprecated-opalescence-soft-grey: hsl(0,0%,93.3%);
-    --yt-live-chat-background-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-secondary-background-color: var(--yt-deprecated-opalescence-soft-grey);
-    --yt-live-chat-action-panel-background-color: var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3);
-    --yt-live-chat-action-panel-background-color-transparent: hsla(0,0%,97%,.8);
-    --yt-live-chat-mode-change-background-color: var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3);
-    --yt-live-chat-primary-text-color: var(--yt-spec-text-primary);
-    --yt-live-chat-secondary-text-color: var(--yt-deprecated-luna-black-opacity-lighten-2);
-    --yt-live-chat-tertiary-text-color: var(--yt-deprecated-luna-black-opacity-lighten-3);
-    --yt-live-chat-text-input-field-inactive-underline-color: #b8b8b8;
-    --yt-live-chat-text-input-field-placeholder-color: var(--yt-deprecated-luna-black-opacity-lighten-2);
-    --yt-live-chat-text-input-field-underline-transition-duration: .25s;
-    --yt-live-chat-icon-button-color: var(--yt-live-chat-primary-text-color);
-    --yt-live-chat-enabled-send-button-color: #4285f4;
-    --yt-live-chat-disabled-icon-button-color: var(--yt-deprecated-luna-black-opacity-lighten-4);
-    --yt-live-chat-picker-button-color: var(--yt-deprecated-luna-black-opacity-lighten-3);
-    --yt-live-chat-picker-button-active-color: var(--yt-deprecated-luna-black-opacity-lighten-1);
-    --yt-live-chat-picker-button-disabled-color: var(--yt-live-chat-disabled-icon-button-color);
-    --yt-live-chat-picker-button-hover-color: var(--yt-deprecated-luna-black-opacity-lighten-2);
+    --yt-live-chat-background-color: #191919;
+    --yt-live-chat-secondary-background-color: #282828;
+    --yt-live-chat-primary-text-color: #fff;
+    --yt-live-chat-secondary-text-color: rgba(255,255,255,.7);
+    --yt-live-chat-tertiary-text-color: rgba(255,255,255,.54);
     --yt-live-chat-mention-background-color: #ff5722;
-    --yt-live-chat-mention-text-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-deleted-message-color: rgba(0,0,0,.5);
-    --yt-live-chat-deleted-message-bar-color: rgba(11,11,11,.2);
-    --yt-live-chat-disabled-button-background-color: var(--yt-deprecated-opalescence-soft-grey);
-    --yt-live-chat-disabled-button-text-color: var(--yt-deprecated-luna-black-opacity-lighten-3);
-    --yt-live-chat-sub-panel-background-color: var(--yt-deprecated-opalescence-soft-grey);
-    --yt-live-chat-sub-panel-background-color-transparent: hsla(0,0%,93%,.7);
-    --yt-live-chat-header-background-color: var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3);
-    --yt-live-chat-header-button-color: var(--yt-deprecated-luna-black);
-    --yt-live-chat-header-bottom-border: 1px solid var(--yt-spec-10-percent-layer);
-    --yt-live-chat-count-color-early-warning: hsl(40,76%,55%);
-    --yt-live-chat-count-color-error: hsl(10,51%,49%);
-    --yt-live-chat-error-message-color: hsl(10,51%,49%);
-    --yt-live-chat-reconnect-message-color: hsla(0,0%,7%,.2);
-    --yt-live-chat-moderator-color: hsl(225,84%,66%);
-    --yt-live-chat-new-moderator-color: var(--yt-spec-call-to-action);
-    --yt-live-chat-owner-color: hsl(40,76%,55%);
+    --yt-live-chat-mention-text-color: #fff;
+    --yt-live-chat-deleted-message-color: rgba(255,255,255,.5);
+    --yt-live-chat-deleted-message-bar-color: rgba(255,255,255,.5);
+    --yt-live-chat-error-message-color: #c00;
+    --yt-live-chat-moderator-color: #5e84f1;
+    --yt-live-chat-owner-color: #ffd600;
+    --yt-live-chat-message-highlight-background-color: #282828;
     --yt-live-chat-author-chip-owner-background-color: #ffd600;
-    --yt-live-chat-author-chip-owner-text-color: rgba(0,0,0,.87);
-    --yt-live-chat-author-chip-verified-background-color: var(--yt-spec-grey-1);
-    --yt-live-chat-author-chip-verified-text-color: var(--yt-spec-grey-5);
-    --yt-live-chat-message-highlight-background-color: #f8f8f8;
-    --yt-live-chat-sponsor-color: #107516;
-    --yt-live-chat-overlay-color: hsla(0,0%,0%,.6);
-    --yt-live-chat-dialog-background-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-dialog-text-color: var(--yt-deprecated-luna-black-opacity-lighten-2);
-    --yt-live-chat-banner-border-color: var(--yt-spec-10-percent-layer);
-    --yt-live-chat-banner-animation-duration: .35s;
-    --yt-live-chat-banner-animation-fast-duration: .25s;
-    --yt-live-chat-banner-gradient-scrim: linear-gradient(rgba(255,255,255,.95),transparent);
-    --yt-live-chat-banner-indeterminate-bar-background: repeating-linear-gradient(90deg,#fff,#fff 6px,#aaa 6px,#aaa 9px);
-    --yt-live-chat-banner-bar-animation-duration: 1s;
-    --yt-live-chat-action-panel-gradient-scrim: linear-gradient(to top,rgba(255,255,255,.95),transparent);
-    --yt-live-chat-call-for-questions-primary-text-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-call-for-questions-secondary-text-color: var(--yt-spec-static-overlay-text-secondary);
-    --yt-live-chat-call-for-questions-ask-question-button-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-call-to-action-primary-text-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-call-to-action-secondary-text-color: var(--yt-spec-static-overlay-text-secondary);
-    --yt-live-chat-call-to-action-ask-question-button-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-qna-primary-text-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-qna-start-panel-header-border-color: var(--yt-spec-10-percent-layer);
-    --yt-live-chat-qna-panel-start-button-background-color: var(--yt-spec-call-to-action);
-    --yt-live-chat-qna-panel-start-button-color: var(--yt-spec-general-background-b);
-    --yt-live-chat-qna-start-panel-button-background-color-disabled: var(--yt-spec-badge-chip-background);
-    --yt-live-chat-qna-panel-start-button-color-disabled: var(--yt-spec-text-disabled);
-    --yt-live-chat-poll-primary-text-color: var(--yt-spec-static-overlay-text-primary);
-    --yt-live-chat-poll-secondary-text-color: var(--yt-spec-static-overlay-text-secondary);
-    --yt-live-chat-poll-tertiary-text-color: var(--yt-spec-static-overlay-text-disabled);
-    --yt-live-chat-poll-choice-text-color: var(--yt-live-chat-poll-primary-text-color);
-    --yt-live-chat-poll-choice-background-color: transparent;
-    --yt-live-chat-poll-choice-border-radius: 2px;
-    --yt-live-chat-poll-choice-border: 1px solid var(--yt-live-chat-poll-tertiary-text-color);
-    --yt-live-chat-poll-choice-min-height: 16px;
-    --yt-live-chat-poll-choice-vote-bar-background-color: var(--yt-spec-static-overlay-button-secondary);
-    --yt-live-chat-poll-choice-hover-color: rgba(17,17,16,.1);
-    --yt-live-chat-poll-choice-animation-duration: .5s;
-    --yt-live-chat-poll-choice-text-padding: 0 16px;
-    --yt-live-chat-poll-editor-panel-header-border-color: var(--yt-spec-10-percent-layer);
-    --yt-live-chat-poll-editor-start-button-color: var(--yt-spec-text-primary-inverse);
-    --yt-live-chat-poll-editor-start-button-background-color: var(--yt-spec-call-to-action);
-    --yt-live-chat-poll-editor-start-button-color-disabled: var(--yt-spec-text-disabled);
-    --yt-live-chat-poll-editor-start-button-background-color-disabled: var(--yt-spec-badge-chip-background);
-    --yt-live-interactivity-component-background-color: #264c8a;
-    --yt-live-chat-panel-animation-duration: .5s;
-    --yt-live-chat-universal-motion-curve: cubic-bezier(.05,0,0,1);
-    --yt-live-chat-moderation-mode-hover-background-color: var(--yt-deprecated-luna-black-opacity-lighten-4);
-    --yt-live-chat-additional-inline-action-button-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-additional-inline-action-button-background-color: hsla(0,0%,26%,.8);
-    --yt-live-chat-additional-inline-action-button-background-color-hover: hsla(0,0%,26%,1);
+    --yt-live-chat-author-chip-owner-text-color: hsl(0,0%,6.7%);
+    --yt-live-chat-author-chip-verified-background-color: #606060;
+    --yt-live-chat-author-chip-verified-text-color: #e9e9e9;
+    --yt-live-chat-sponsor-color: #2ba640;
+    --yt-live-chat-overlay-color: rgba(0,0,0,.5);
     --yt-formatted-string-emoji-size: 24px;
     --yt-live-chat-emoji-size: 24px;
-    --yt-live-chat-text-input-field-suggestion-background-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-text-input-field-suggestion-background-color-hover: #eee;
-    --yt-live-chat-text-input-field-suggestion-text-color: #666;
-    --yt-live-chat-text-input-field-suggestion-text-color-hover: #333;
-    --yt-live-chat-ticker-arrow-background: hsl(0,0%,97.3%);
-    --yt-emoji-picker-category-background-color: var(--yt-live-chat-action-panel-background-color-transparent);
-    --yt-emoji-picker-category-color: var(--yt-live-chat-secondary-text-color);
-    --yt-emoji-picker-category-button-color: var(--yt-live-chat-picker-button-color);
-    --yt-emoji-picker-search-background-color: var(--yt-spec-white-2);
-    --yt-emoji-picker-search-color: var(--yt-deprecated-luna-black-opacity-lighten-1);
-    --yt-emoji-picker-search-placeholder-color: var(--yt-deprecated-luna-black-opacity-lighten-2);
-    --yt-emoji-picker-base-with-variants-border: var(--yt-spec-black-pure-alpha-15);
-    --yt-emoji-picker-variant-selector-bg-color: #e0e0e0;
-    --yt-live-chat-slider-active-color: #2196f3;
-    --yt-live-chat-slider-container-color: #c8c8c8;
-    --yt-live-chat-slider-markers-color: #505050;
-    --yt-live-chat-toast-action-color: #2196f3;
-    --yt-live-chat-toast-background-color: var(--yt-opalescence-dark-grey);
-    --yt-live-chat-toast-text-color: var(--yt-spec-static-brand-white);
-    --yt-live-chat-automod-button-background-color: var(--yt-deprecated-opalescence-soft-grey);
-    --yt-live-chat-automod-button-background-color-hover: var(--yt-deprecated-luna-black-opacity-lighten-4);
-    --yt-live-chat-creator-support-button-border-radius: 2px;
-    --yt-live-chat-creator-support-button-padding: 10px 16px;
-    --yt-live-chat-creator-support-button-font-size: inherit;
-    --yt-live-chat-countdown-opacity: .3;
-    --yt-live-chat-shimmer-background-color: rgba(136,136,136,.2);
-    --yt-live-chat-shimmer-linear-gradient: linear-gradient(0deg,rgba(255,255,255,0) 40%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 65%);
-    --yt-live-chat-vem-background-color: var(--yt-deprecated-opalescence-soft-grey);
-    --yt-live-chat-upsell-dialog-renderer-button-padding: 10px 16px;
-    --yt-live-chat-product-picker-icon-color: rgba(17,17,17,.6);
-    --yt-live-chat-product-picker-hover-color: rgba(17,17,16,.1);
-    --yt-live-chat-product-picker-disabled-icon-color: rgba(17,17,17,.4);
-    --yt-pdg-paid-stickers-tab-selection-bar-color: var(--yt-spec-dark-blue);
     --yt-pdg-paid-stickers-author-name-font-size: 14px;
     --yt-pdg-paid-stickers-author-subtext-font-size: 13px;
     --yt-pdg-paid-stickers-margin-left: 38px;
     --yt-live-chat-ninja-message-background-color: transparent;
-    --yt-live-chat-panel-pages-border-color: var(--yt-spec-10-percent-layer)
-}
-
-    html[dark] {
-        --yt-live-chat-background-color: #191919;
-        --yt-live-chat-action-panel-background-color: #282828;
-        --yt-live-chat-action-panel-background-color-transparent: rgba(40,40,40,.8);
-        --yt-live-chat-secondary-background-color: #282828;
-        --yt-live-chat-toast-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-toast-background-color: #323232;
-        --yt-live-chat-mode-change-background-color: #333;
-        --yt-live-chat-primary-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-secondary-text-color: rgba(255,255,255,.7);
-        --yt-live-chat-tertiary-text-color: rgba(255,255,255,.54);
-        --yt-live-chat-text-input-field-inactive-underline-color: #666;
-        --yt-live-chat-text-input-field-placeholder-color: #666;
-        --yt-live-chat-icon-button-color: var(--yt-live-chat-primary-text-color);
-        --yt-live-chat-enabled-send-button-color: #fff;
-        --yt-live-chat-disabled-icon-button-color: rgba(255,255,255,.3);
-        --yt-live-chat-picker-button-color: var(--yt-live-chat-tertiary-text-color);
-        --yt-live-chat-picker-button-active-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-picker-button-disabled-color: var(--yt-live-chat-disabled-icon-button-color);
-        --yt-live-chat-picker-button-hover-color: rgba(255,255,255,.74);
-        --yt-live-chat-mention-background-color: #ff5722;
-        --yt-live-chat-mention-text-color: #fff;
-        --yt-live-chat-deleted-message-color: rgba(255,255,255,.5);
-        --yt-live-chat-deleted-message-bar-color: rgba(255,255,255,.5);
-        --yt-live-chat-error-message-color: var(--yt-spec-brand-link-text);
-        --yt-live-chat-reconnect-message-color: #fff;
-        --yt-live-chat-disabled-button-background-color: #444;
-        --yt-live-chat-disabled-button-text-color: var(--yt-live-chat-secondary-text-color);
-        --yt-live-chat-sub-panel-background-color: #3e3e3e;
-        --yt-live-chat-sub-panel-background-color-transparent: rgba(62,62,62,.7);
-        --yt-live-chat-header-background-color: var(--yt-live-chat-action-panel-background-color);
-        --yt-live-chat-header-button-color: var(--yt-live-chat-secondary-text-color);
-        --yt-live-chat-moderator-color: #5e84f1;
-        --yt-live-chat-owner-color: #ffd600;
-        --yt-live-chat-message-highlight-background-color: #282828;
-        --yt-live-chat-author-chip-owner-text-color: var(--yt-deprecated-luna-black);
-        --yt-live-chat-author-chip-verified-background-color: var(--yt-spec-grey-5);
-        --yt-live-chat-author-chip-verified-text-color: var(--yt-spec-white-4);
-        --yt-live-chat-sponsor-color: #2ba640;
-        --yt-live-chat-overlay-color: rgba(0,0,0,.5);
-        --yt-live-chat-dialog-background-color: #424242;
-        --yt-live-chat-dialog-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-button-default-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-button-default-background-color: var(--yt-deprecated-white-opacity-lighten-4);
-        --yt-live-chat-button-dark-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-button-dark-background-color: var(--yt-deprecated-white-opacity-lighten-4);
-        --yt-emoji-picker-variant-selector-bg-color: #2f2f2f;
-        --yt-live-chat-moderation-mode-hover-background-color: rgba(255,255,255,.3);
-        --yt-live-chat-additional-inline-action-button-color: var(--yt-grey);
-        --yt-live-chat-additional-inline-action-button-background-color: var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-1);
-        --yt-live-chat-additional-inline-action-button-background-color-hover: var(--yt-deprecated-opalescence-soft-grey);
-        --yt-formatted-string-emoji-size: 24px;
-        --yt-live-chat-emoji-size: 24px;
-        --yt-live-chat-text-input-field-suggestion-background-color: #3e3e3e;
-        --yt-live-chat-text-input-field-suggestion-background-color-hover: #343434;
-        --yt-live-chat-text-input-field-suggestion-text-color: var(--yt-spec-static-brand-white);
-        --yt-live-chat-text-input-field-suggestion-text-color-hover: var(--yt-spec-static-brand-white);
-        --yt-live-chat-text-input-field-placeholder-color: var(--yt-live-chat-secondary-text-color);
-        --yt-live-chat-ticker-arrow-background: var(--yt-live-chat-action-panel-background-color);
-        --yt-emoji-picker-category-background-color: var(--yt-live-chat-action-panel-background-color-transparent);
-        --yt-emoji-picker-category-color: var(--yt-live-chat-secondary-text-color);
-        --yt-emoji-picker-category-button-color: var(--yt-live-chat-picker-button-color);
-        --yt-emoji-picker-search-background-color: #444;
-        --yt-emoji-picker-search-color: #fff;
-        --yt-emoji-picker-search-placeholder-color: #999;
-        --yt-emoji-picker-base-with-variants-border: var(--yt-spec-white-1-alpha-25);
-        --yt-live-chat-slider-active-color: #2196f3;
-        --yt-live-chat-slider-container-color: #515151;
-        --yt-live-chat-slider-markers-color: #fff;
-        --yt-live-chat-banner-gradient-scrim: linear-gradient(rgba(40,40,40,.95),transparent);
-        --yt-live-chat-action-panel-gradient-scrim: linear-gradient(to top,rgba(40,40,40,.95),transparent);
-        --yt-live-chat-poll-editor-start-button-background-color-disabled: var(--yt-spec-grey-1);
-        --yt-live-chat-automod-button-background-color: var(--yt-deprecated-opalescence-grey-opacity-lighten-3);
-        --yt-live-chat-automod-button-background-color-hover: rgba(255,255,255,.5);
-        --yt-live-chat-automod-button-explanation-color: rgba(255,255,255,.7);
-        --yt-live-chat-countdown-opacity: .5;
-        --yt-live-chat-shimmer-background-color: rgba(17,17,17,.4);
-        --yt-live-chat-shimmer-linear-gradient: linear-gradient(0deg,rgba(0,0,0,.1) 40%,rgba(100,100,100,.3) 50%,rgba(0,0,0,.1) 60%);
-        --yt-live-chat-vem-background-color: #3e3e3e;
-        --yt-live-chat-product-picker-icon-color: rgba(255,255,255,.5);
-        --yt-live-chat-product-picker-hover-color: rgba(68,68,68,1);
-        --yt-live-chat-product-picker-disabled-icon-color: rgba(255,255,255,.3);
-        --yt-pdg-paid-stickers-tab-selection-bar-color: var(--yt-spec-light-blue)
-    }
-
-html, [light] {
-    --yt-spec-base-background: #fff;
-    --yt-spec-raised-background: #fff;
-    --yt-spec-menu-background: #fff;
-    --yt-spec-inverted-background: #0f0f0f;
-    --yt-spec-additive-background: rgba(0,0,0,.05);
-    --yt-spec-outline: rgba(0,0,0,.1);
-    --yt-spec-shadow: rgba(0,0,0,.25);
-    --yt-spec-text-primary: #030303;
-    --yt-spec-text-primary-inverse: #fff;
-    --yt-spec-text-secondary: #606060;
-    --yt-spec-text-disabled: #909090;
-    --yt-spec-call-to-action: #065fd4;
-    --yt-spec-call-to-action-inverse: #3ea6ff;
-    --yt-spec-suggested-action: #def1ff;
-    --yt-spec-suggested-action-inverse: #263850;
-    --yt-spec-icon-active-other: #606060;
-    --yt-spec-icon-inactive: #909090;
-    --yt-spec-icon-disabled: #ccc;
-    --yt-spec-button-chip-background-hover: rgba(0,0,0,.1);
-    --yt-spec-touch-response: #000;
-    --yt-spec-touch-response-inverse: #fff;
-    --yt-spec-brand-icon-active: #f00;
-    --yt-spec-brand-icon-inactive: #606060;
-    --yt-spec-brand-button-background: #c00;
-    --yt-spec-brand-link-text: #c00;
-    --yt-spec-wordmark-text: #212121;
-    --yt-spec-error-indicator: #990412;
-    --yt-spec-themed-blue: #065fd4;
-    --yt-spec-themed-green: #107516;
-    --yt-spec-ad-indicator: #00716c;
-    --yt-spec-themed-overlay-background: rgba(255,255,255,.7);
-    --yt-spec-commerce-badge-background: #deffde;
-    --yt-spec-static-brand-red: #f00;
-    --yt-spec-static-brand-white: #fff;
-    --yt-spec-static-brand-black: #212121;
-    --yt-spec-static-clear-color: rgba(255,255,255,0);
-    --yt-spec-static-clear-black: rgba(0,0,0,0);
-    --yt-spec-static-ad-yellow: #fbc02d;
-    --yt-spec-static-grey: #606060;
-    --yt-spec-static-overlay-background-solid: #000;
-    --yt-spec-static-overlay-background-heavy: rgba(0,0,0,.8);
-    --yt-spec-static-overlay-background-medium: rgba(0,0,0,.6);
-    --yt-spec-static-overlay-background-medium-light: rgba(0,0,0,.3);
-    --yt-spec-static-overlay-background-light: rgba(0,0,0,.1);
-    --yt-spec-static-overlay-text-primary: #fff;
-    --yt-spec-static-overlay-text-secondary: rgba(255,255,255,.7);
-    --yt-spec-static-overlay-text-disabled: rgba(255,255,255,.3);
-    --yt-spec-static-overlay-call-to-action: #3ea6ff;
-    --yt-spec-static-overlay-icon-active-other: #fff;
-    --yt-spec-static-overlay-icon-inactive: rgba(255,255,255,.7);
-    --yt-spec-static-overlay-icon-disabled: rgba(255,255,255,.3);
-    --yt-spec-static-overlay-button-secondary: rgba(255,255,255,.1);
-    --yt-spec-static-overlay-button-primary: rgba(255,255,255,.3);
-    --yt-spec-static-overlay-touch-response: #fff;
-    --yt-spec-static-overlay-touch-response-inverse: #000;
-    --yt-spec-static-overlay-background-brand: rgba(204,0,0,.9);
-    --yt-spec-assistive-feed-vibrant-gradient-1: #007a65;
-    --yt-spec-assistive-feed-vibrant-gradient-2: #7f0e7f;
-    --yt-spec-assistive-feed-vibrant-gradient-3: #ff8983;
-    --yt-spec-assistive-feed-themed-gradient-1: #d4fff8;
-    --yt-spec-assistive-feed-themed-gradient-2: #ffdeff;
-    --yt-spec-assistive-feed-themed-gradient-3: #ffe6e6;
-    --yt-spec-brand-background-solid: #fff;
-    --yt-spec-brand-background-primary: rgba(255,255,255,.98);
-    --yt-spec-brand-background-secondary: rgba(255,255,255,.95);
-    --yt-spec-general-background-a: #f9f9f9;
-    --yt-spec-general-background-b: #f1f1f1;
-    --yt-spec-general-background-c: #e9e9e9;
-    --yt-spec-error-background: #181818;
-    --yt-spec-10-percent-layer: rgba(0,0,0,.1);
-    --yt-spec-snackbar-background: #212121;
-    --yt-spec-snackbar-background-updated: #181818;
-    --yt-spec-badge-chip-background: rgba(0,0,0,.05);
-    --yt-spec-verified-badge-background: rgba(0,0,0,.15);
-    --yt-spec-call-to-action-faded: rgba(6,95,212,.3);
-    --yt-spec-call-to-action-hover: #0551b4;
-    --yt-spec-brand-button-background-hover: #990412;
-    --yt-spec-brand-link-text-faded: rgba(204,0,0,.3);
-    --yt-spec-filled-button-focus-outline: rgba(0,0,0,.6);
-    --yt-spec-static-overlay-button-hover: rgba(255,255,255,.5);
-    --yt-spec-mono-filled-hover: #272727;
-    --yt-spec-commerce-filled-hover: #0556bf;
-    --yt-spec-mono-tonal-hover: rgba(0,0,0,.1);
-    --yt-spec-commerce-tonal-hover: #dadfe6;
-    --yt-spec-static-overlay-filled-hover: #e6e6e6;
-    --yt-spec-static-overlay-tonal-hover: rgba(255,255,255,.2);
-    --yt-spec-filled-button-text: #fff;
-    --yt-spec-paper-tab-ink: rgba(0,0,0,.3);
-    --yt-spec-selected-nav-text: #c00
-}
-
-    html[dark], [dark] {
-        --yt-spec-base-background: #0f0f0f;
-        --yt-spec-raised-background: #212121;
-        --yt-spec-menu-background: #282828;
-        --yt-spec-inverted-background: #f1f1f1;
-        --yt-spec-additive-background: rgba(255,255,255,.1);
-        --yt-spec-outline: rgba(255,255,255,.2);
-        --yt-spec-shadow: rgba(0,0,0,.25);
-        --yt-spec-text-primary: #fff;
-        --yt-spec-text-secondary: #aaa;
-        --yt-spec-text-disabled: #717171;
-        --yt-spec-text-primary-inverse: #030303;
-        --yt-spec-call-to-action: #3ea6ff;
-        --yt-spec-call-to-action-inverse: #065fd4;
-        --yt-spec-suggested-action: #263850;
-        --yt-spec-suggested-action-inverse: #def1ff;
-        --yt-spec-icon-active-other: #fff;
-        --yt-spec-icon-inactive: #909090;
-        --yt-spec-icon-disabled: #606060;
-        --yt-spec-button-chip-background-hover: rgba(255,255,255,.2);
-        --yt-spec-touch-response: #fff;
-        --yt-spec-touch-response-inverse: #000;
-        --yt-spec-brand-icon-active: #fff;
-        --yt-spec-brand-icon-inactive: #909090;
-        --yt-spec-brand-button-background: #c00;
-        --yt-spec-brand-link-text: #ff4e45;
-        --yt-spec-wordmark-text: #fff;
-        --yt-spec-error-indicator: #ff8983;
-        --yt-spec-themed-blue: #3ea6ff;
-        --yt-spec-themed-green: #2ba640;
-        --yt-spec-ad-indicator: #00aaa7;
-        --yt-spec-themed-overlay-background: rgba(0,0,0,.8);
-        --yt-spec-commerce-badge-background: #002d08;
-        --yt-spec-static-brand-red: #f00;
-        --yt-spec-static-brand-white: #fff;
-        --yt-spec-static-brand-black: #212121;
-        --yt-spec-static-clear-color: rgba(255,255,255,0);
-        --yt-spec-static-clear-black: rgba(0,0,0,0);
-        --yt-spec-static-ad-yellow: #fbc02d;
-        --yt-spec-static-grey: #606060;
-        --yt-spec-static-overlay-background-solid: #000;
-        --yt-spec-static-overlay-background-heavy: rgba(0,0,0,.8);
-        --yt-spec-static-overlay-background-medium: rgba(0,0,0,.6);
-        --yt-spec-static-overlay-background-medium-light: rgba(0,0,0,.3);
-        --yt-spec-static-overlay-background-light: rgba(0,0,0,.1);
-        --yt-spec-static-overlay-text-primary: #fff;
-        --yt-spec-static-overlay-text-secondary: rgba(255,255,255,.7);
-        --yt-spec-static-overlay-text-disabled: rgba(255,255,255,.3);
-        --yt-spec-static-overlay-call-to-action: #3ea6ff;
-        --yt-spec-static-overlay-icon-active-other: #fff;
-        --yt-spec-static-overlay-icon-inactive: rgba(255,255,255,.7);
-        --yt-spec-static-overlay-icon-disabled: rgba(255,255,255,.3);
-        --yt-spec-static-overlay-button-primary: rgba(255,255,255,.3);
-        --yt-spec-static-overlay-button-secondary: rgba(255,255,255,.1);
-        --yt-spec-static-overlay-touch-response: #fff;
-        --yt-spec-static-overlay-touch-response-inverse: #000;
-        --yt-spec-static-overlay-background-brand: rgba(204,0,0,.9);
-        --yt-spec-assistive-feed-themed-gradient-1: #005446;
-        --yt-spec-assistive-feed-themed-gradient-2: #39003f;
-        --yt-spec-assistive-feed-themed-gradient-3: #590000;
-        --yt-spec-brand-background-solid: #212121;
-        --yt-spec-brand-background-primary: rgba(33,33,33,.98);
-        --yt-spec-brand-background-secondary: rgba(33,33,33,.95);
-        --yt-spec-general-background-a: #181818;
-        --yt-spec-general-background-b: #0f0f0f;
-        --yt-spec-general-background-c: #030303;
-        --yt-spec-error-background: #f9f9f9;
-        --yt-spec-10-percent-layer: rgba(255,255,255,.1);
-        --yt-spec-snackbar-background: #030303;
-        --yt-spec-snackbar-background-updated: #f9f9f9;
-        --yt-spec-badge-chip-background: rgba(255,255,255,.1);
-        --yt-spec-verified-badge-background: rgba(255,255,255,.25);
-        --yt-spec-call-to-action-faded: rgba(62,166,255,.3);
-        --yt-spec-call-to-action-hover: #6ebcff;
-        --yt-spec-brand-button-background-hover: #990412;
-        --yt-spec-brand-link-text-faded: rgba(255,78,69,.3);
-        --yt-spec-filled-button-focus-outline: rgba(255,255,255,.7);
-        --yt-spec-static-overlay-button-hover: rgba(255,255,255,.5);
-        --yt-spec-mono-filled-hover: #d9d9d9;
-        --yt-spec-commerce-filled-hover: #65b8ff;
-        --yt-spec-mono-tonal-hover: rgba(255,255,255,.2);
-        --yt-spec-commerce-tonal-hover: #515561;
-        --yt-spec-static-overlay-filled-hover: #e6e6e6;
-        --yt-spec-static-overlay-tonal-hover: rgba(255,255,255,.2);
-        --yt-spec-paper-tab-ink: rgba(255,255,255,.3);
-        --yt-spec-filled-button-text: #030303;
-        --yt-spec-selected-nav-text: #fff
-    }
-
-html {
-    --yt-spec-white-1: #fff;
-    --yt-spec-white-2: #f9f9f9;
-    --yt-spec-white-3: #f1f1f1;
-    --yt-spec-white-4: #e9e9e9;
-    --yt-spec-black-1: #282828;
-    --yt-spec-black-2: #1f1f1f;
-    --yt-spec-black-3: #161616;
-    --yt-spec-black-4: #0d0d0d;
-    --yt-spec-black-pure: #000;
-    --yt-spec-grey-1: #ccc;
-    --yt-spec-grey-2: #aaa;
-    --yt-spec-grey-3: #909090;
-    --yt-spec-grey-4: #717171;
-    --yt-spec-grey-5: #606060;
-    --yt-brand-youtube-red: #f00;
-    --yt-brand-medium-red: #c00;
-    --yt-brand-light-red: #ff4e45;
-    --yt-spec-red-30: #ff8983;
-    --yt-spec-red-70: #990412;
-    --yt-spec-pale-blue: #f2f8ff;
-    --yt-spec-light-blue: #3ea6ff;
-    --yt-spec-dark-blue: #065fd4;
-    --yt-spec-navy-blue: #252a3a;
-    --yt-spec-light-green: #2ba640;
-    --yt-spec-dark-green: #107516;
-    --yt-spec-yellow: #fbc02d;
-    --yt-spec-black-pure-alpha-5: rgba(0,0,0,.05);
-    --yt-spec-black-pure-alpha-10: rgba(0,0,0,.1);
-    --yt-spec-black-pure-alpha-15: rgba(0,0,0,.15);
-    --yt-spec-black-pure-alpha-30: rgba(0,0,0,.3);
-    --yt-spec-black-pure-alpha-60: rgba(0,0,0,.6);
-    --yt-spec-black-pure-alpha-80: rgba(0,0,0,.8);
-    --yt-spec-black-1-alpha-98: rgba(40,40,40,.98);
-    --yt-spec-black-1-alpha-95: rgba(40,40,40,.95);
-    --yt-spec-white-1-alpha-10: rgba(255,255,255,.1);
-    --yt-spec-white-1-alpha-20: rgba(255,255,255,.2);
-    --yt-spec-white-1-alpha-25: rgba(255,255,255,.25);
-    --yt-spec-white-1-alpha-30: rgba(255,255,255,.3);
-    --yt-spec-white-1-alpha-70: rgba(255,255,255,.7);
-    --yt-spec-white-1-alpha-95: rgba(255,255,255,.95);
-    --yt-spec-white-1-alpha-98: rgba(255,255,255,.98);
-    --yt-brand-medium-red-alpha-90: rgba(204,0,0,.9);
-    --yt-brand-medium-red-alpha-30: rgba(204,0,0,.3);
-    --yt-brand-light-red-alpha-30: rgba(255,78,69,.3);
-    --yt-spec-light-blue-alpha-30: rgba(62,166,255,.3);
-    --yt-spec-dark-blue-alpha-30: rgba(6,95,212,.3)
 }
 
 html {
-    --yt-deprecated-luna-black: hsl(0,0%,6.7%);
-    --yt-deprecated-opalescence-grey: hsl(0,0%,53.3%);
-    --yt-deprecated-opalescence-soft-grey: hsl(0,0%,93.3%);
-    --yt-deprecated-blue: hsl(206.1,79.3%,52.7%);
-    --yt-deprecated-luna-black-opacity-lighten-1: hsla(0,0%,6.7%,.8);
-    --yt-deprecated-luna-black-opacity-lighten-2: hsla(0,0%,6.7%,.6);
-    --yt-deprecated-luna-black-opacity-lighten-3: hsla(0,0%,6.7%,.4);
-    --yt-deprecated-opalescence-soft-grey-opacity-lighten-3: hsla(0,0%,93.3%,.4);
-    --yt-deprecated-white-opacity-lighten-1: hsla(0,0%,100%,.8);
-    --yt-deprecated-white-opacity-lighten-2: hsla(0,0%,100%,.6);
-    --yt-deprecated-dark-surface-100: hsl(0,0%,7%)
+    scrollbar-color: #606060 transparent
 }
 
-
-html {
-    scrollbar-color: var(--yt-spec-text-secondary) transparent
+#inline-action-button-container
+{
+    display: none !important;
 }
