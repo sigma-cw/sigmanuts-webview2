@@ -45,7 +45,7 @@ To install, download the required packages and then run the app, no installation
 
 ## Is it against YouTube ToS?
 
-Short answer: Technically, *kind of* yes.
+Short answer: Technically, *kind of* yes. But also... *maybe*.
 
 Long answer: It's complicated. There's a clause in YouTube's terms of service that explicitly prohibits any unauthorized bot activity on their website, including scraping. The unfortunate reality is that the way we can make this app work so well is by injecting a script into a YouTube chat that reads the incoming messages and let's you do all sorts of cool things with them. 
 
