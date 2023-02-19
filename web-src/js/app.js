@@ -3,6 +3,8 @@ var groupList = [];
 var widgetData = {};
 var isYtVisible = false;
 var activeTab = 'home';
+var defaultUrl = "http://localhost:6969/tutorial.html";
+var lastValidUrl = "";
 
 ////////////////////////////////////////////////////////////////////////////////
 //                        HELPER FUNCTIONS                                    //
@@ -363,7 +365,6 @@ $('#search').click(() => {
 });
 
 const searchIconName = $('#search>span').html();
-var lastValidUrl = "http://localhost:6969/tutorial.html";
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
@@ -371,10 +372,7 @@ function changeUrl(animate = true) {
 
 
     //only accepts valid chat links
-    if (!url) {
-        valid = false;
-    }
-    else {
+    if (url) {
         if (url.startsWith("https://youtube.com/live/")) {
             url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
             $('#link-input').val(url);
@@ -387,17 +385,22 @@ function changeUrl(animate = true) {
             url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
             $('#link-input').val(url);
         }
-
-        if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
-            valid = false;
-        }
     }
 
-    
+    if (!isValid(url)) {
+        valid = false;
+    }
 
     //if from login page
     if (!valid && animate == false) {
-        if (!lastValidUrl) return
+        if (!lastValidUrl) {
+            var obj = JSON.stringify({
+                "listener": "change-url",
+                "value": defaultUrl
+            })
+            window.chrome.webview.postMessage(obj);
+            return;
+        }
         url = lastValidUrl;
         valid = true;
     }
@@ -441,6 +444,11 @@ function changeUrl(animate = true) {
             $('#search>span').html(iconName);
         }, 1600);
     }
+}
+
+function isValid(url) {
+    if (!url) return false;
+    return url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?");
 }
 
 $('#refresh-widget').click(() => {
@@ -517,8 +525,8 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch('config.ini')
         .then(response => response.text())
         .then(text => {
-            console.log(text)
-            $('#link-input').val(text);            
+            console.log(text);
+            if (isValid(text)) $('#link-input').val(text);                                    
         })
 
     // Fetch widget list
