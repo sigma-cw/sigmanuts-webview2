@@ -51,7 +51,7 @@ Long answer: It's complicated. There's a clause in YouTube's terms of service th
 
 In a broader sense, what we are doing is scraping, yes. At the same time, we do not think it is harmful, as it doesn't do any API requests, and loads only once when the user loads the chat. The initial load is handled by the user, so this script is no different from a browser extension one can run for YouTube. We believe that if YouTube allows extensions that inject scripts and styles into YouTube page, this should also be fine, even if both are *technically* against their terms of service.
 
-Regardless of what you read here, you should decide for yourself whether you want to use the app. We have provided you with the information, and as such not responsible for what you ultimately decide to do with this app.
+Regardless of what you read here, you should decide for yourself whether you want to use the app. We have provided you with the information, and as such are not responsible for what you ultimately decide to do with this app.
 
 ## Documentation
 
