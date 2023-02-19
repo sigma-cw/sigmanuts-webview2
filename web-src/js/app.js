@@ -71,7 +71,7 @@ function updateData(widget) {
 }
 
 async function updateUI() {
-    console.log(activeWidget)
+    //console.log(activeWidget)
     console.log($('#widget-select').val());
     /* if ($('#widget-select').val() != 'idle') {
         $('#widget-select option[value="idle"]').remove();
@@ -367,33 +367,37 @@ var lastValidUrl = "";
 
 function changeUrl(animate = true) {
     var url = $('#link-input').val();
-
     let valid = true;
+
 
     //only accepts valid chat links
     if (!url) {
         valid = false;
     }
+    else {
+        if (url.startsWith("https://youtube.com/live/")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
+            $('#link-input').val(url);
+        }
+        else if (url.startsWith("https://www.youtube.com/watch?v=")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://www.youtube.com/watch?v=", "");
+            $('#link-input').val(url);
+        }
+        else if (url.startsWith("https://studio.youtube.com/video/")) {
+            url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
+            $('#link-input').val(url);
+        }
 
-    if (url.startsWith("https://youtube.com/live/")) {
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://youtube.com/live/", "");
-        $('#link-input').val(url);
-    }
-    else if (url.startsWith("https://www.youtube.com/watch?v=")) {
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://www.youtube.com/watch?v=", "");
-        $('#link-input').val(url);
-    }
-    else if (url.startsWith("https://studio.youtube.com/video/")){
-        url = "https://www.youtube.com/live_chat?v=" + url.replace("https://studio.youtube.com/video/", "").replace("/livestreaming", "");
-        $('#link-input').val(url);
+        if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
+            valid = false;
+        }
     }
 
-    if (!(url.startsWith("https://www.youtube.com/live_chat?") || url.startsWith("https://studio.youtube.com/live_chat?"))) {
-        valid = false;
-    }
+    
 
     //if from login page
     if (!valid && animate == false) {
+        if (!lastValidUrl) return
         url = lastValidUrl;
         valid = true;
     }
@@ -506,13 +510,15 @@ window.addEventListener('DOMContentLoaded', () => {
     $(`.nav`).removeClass('hidden').addClass('active');
     activeTab = 'home';
 
+    $('#refresh-widget').hide();
+    $('#remove').hide();
+
     // Fetch cached youtube chat link
     fetch('config.ini')
         .then(response => response.text())
         .then(text => {
             console.log(text)
-            $('#link-input').val(text);
-            changeUrl(false);
+            $('#link-input').val(text);            
         })
 
     // Fetch widget list
