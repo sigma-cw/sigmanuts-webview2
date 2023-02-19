@@ -449,6 +449,11 @@ yt-live-chat-paid-sticker-renderer {
         box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12),0 3px 1px -2px rgba(0,0,0,.2)
     }
 
+yt-live-chat-author-chip[disable-highlighting] #author-name.yt-live-chat-author-chip {
+    color: var(--yt-live-chat-disable-highlight-message-author-name-color,rgba(255,255,255,0.7));
+    font-size: 14px;
+}
+
 #author-name-chip.yt-live-chat-paid-sticker-renderer {
     padding-right: 8px;
     display: block;
