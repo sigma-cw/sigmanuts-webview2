@@ -133,12 +133,14 @@ namespace sigmanuts_webview2
                 var webViewProcessId = Convert.ToInt32(webView.CoreWebView2.BrowserProcessId);
                 var webViewProcess = Process.GetProcessById(webViewProcessId);
 
+                ClearBrowserData();
+
                 // Shutdown browser with Dispose, and wait for process to exit
                 webView.Dispose();
                 webViewProcess.WaitForExit(2000);
 
                 //Disabling cache deletion
-                Directory.Delete(webViewCacheDir, true);
+                //Directory.Delete(webViewCacheDir, true);
             }
             catch (Exception ex)
             {
@@ -422,6 +424,19 @@ namespace sigmanuts_webview2
             string contents = File.ReadAllText(pathToScript);
 
             await webView.CoreWebView2.ExecuteScriptAsync(contents);
+        }
+
+        private async void ClearBrowserData()
+        {
+            CoreWebView2Profile profile;
+            if (webView.CoreWebView2 != null)
+            {
+                profile = appView.CoreWebView2.Profile;
+ 
+                CoreWebView2BrowsingDataKinds dataKinds = (CoreWebView2BrowsingDataKinds)
+                                         (CoreWebView2BrowsingDataKinds.AllSite);
+                await profile.ClearBrowsingDataAsync(dataKinds);
+            }
         }
 
         /// <summary>
