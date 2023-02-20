@@ -26,9 +26,11 @@
     <None Remove="script.js" />
     <None Remove="web-src\app.html" />
     <None Remove="web-src\assets\material-rounded.woff2" />
+    <None Remove="web-src\assets\sad.png" />
     <None Remove="web-src\css\app.css" />
     <None Remove="web-src\css\app_footer.css" />
     <None Remove="web-src\css\app_nav.css" />
+    <None Remove="web-src\css\google_font.css" />
     <None Remove="web-src\css\images\ui-icons_444444_256x240.png" />
     <None Remove="web-src\css\images\ui-icons_555555_256x240.png" />
     <None Remove="web-src\css\images\ui-icons_777620_256x240.png" />
@@ -73,6 +75,9 @@
     <Content Include="web-src\assets\material-rounded.woff2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="web-src\assets\sad.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="web-src\css\app.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -80,6 +85,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\css\app_nav.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web-src\css\google_font.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\css\images\ui-icons_444444_256x240.png">

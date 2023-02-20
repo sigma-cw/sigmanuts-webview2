@@ -18,8 +18,7 @@
     <!-- Loading jqueryUI for UI elements -->
     <link rel="stylesheet" href="css/jquery-ui.min.css">
 
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="/css/google_font.css" />
 </head>
 
 <body>
@@ -71,7 +70,14 @@
 
                     <div class="bottom">
 
-                        <div id="theme-button" class="sidebar-button">
+                        <div id="theme-button" type="update" class="sidebar-button">
+                            <span style="color:#52b96a" class="material-symbols-rounded outline">
+                                download
+                            </span>
+                        </div>
+
+
+                        <div id="theme-button" type="dark-mode" class="sidebar-button">
                             <span class="material-symbols-rounded outline">
                                 sleep
                             </span>
@@ -115,13 +121,15 @@
 
                             <div class="search-bar">
                                 <!-- <label for="link-input">Paste YouTube chat link here...</label> -->
-                                <input type="text" id="link-input" placeholder="Paste YouTube chat link here..." autocomplete="off">
+                                <input type="text" id="link-input" placeholder="Paste YouTube chat link here..."
+                                    autocomplete="off">
                                 <search-button id="search">
                                     <span class="material-symbols-rounded outline">
                                         search
                                     </span>
                                 </search-button>
-                                <span id="link-error-notification" style="display: none;">Please input valid youtube chat link</span>
+                                <span id="link-error-notification" style="display: none;">Please input valid youtube
+                                    chat link</span>
                             </div>
                             <div class="upload-buttons">
                                 <label for="zip" id="zip-upload">
@@ -250,163 +258,163 @@
                                         </span>
                                     </test-button>
                                 </test-buttons>
-                    </div>
-                    <div class="right">
+                            </div>
+                            <div class="right">
 
-                        <preview-button id="copy-link">
-                            <span id="text" style="margin-right: 10px">Copy chat link</span>
+                                <preview-button id="copy-link">
+                                    <span id="text" style="margin-right: 10px">Copy chat link</span>
+                                    <span class="material-symbols-rounded outline">
+                                        content_copy
+                                    </span>
+                                    <input type="text" id="copy-link-text" disabled style="display: none" />
+                                </preview-button>
+
+                            </div>
+                        </div>
+
+                        <div class="chat-container">
+                            <iframe id="preview__iframe" name="preview__iframe"
+                                sandbox="allow-scripts allow-same-origin"></iframe>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="store" class="store-wrapper hidden">
+
+                    <div class="layout-buttons">
+
+                        <div id="layout-tiles" class="sidebar-button">
                             <span class="material-symbols-rounded outline">
-                                content_copy
+                                grid_view
                             </span>
-                            <input type="text" id="copy-link-text" disabled style="display: none" />
-                        </preview-button>
+                        </div>
+
+                        <div id="layout-list" class="sidebar-button">
+                            <span class="material-symbols-rounded outline">
+                                table_rows
+                            </span>
+                        </div>
 
                     </div>
-                </div>
 
-                <div class="chat-container">
-                    <iframe id="preview__iframe" name="preview__iframe"
-                        sandbox="allow-scripts allow-same-origin"></iframe>
-                </div>
+                    <h1>Default chat presets</h1>
+                    <div class="gallery tiles">
 
-            </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-        </div>
+                            </div>
+                            <div class="title">
+                                Default YouTube Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod.
+                            </div>
+                        </div>
 
-        <div id="store" class="store-wrapper hidden">
+                        <div class="item">
+                            <div class="thumbnail">
 
-            <div class="layout-buttons">
+                            </div>
+                            <div class="title">
+                                Default Twitch Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur.
+                            </div>
+                        </div>
 
-                <div id="layout-tiles" class="sidebar-button">
-                    <span class="material-symbols-rounded outline">
-                        grid_view
-                    </span>
-                </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-                <div id="layout-list" class="sidebar-button">
-                    <span class="material-symbols-rounded outline">
-                        table_rows
-                    </span>
-                </div>
-
-            </div>
-
-            <h1>Default chat presets</h1>
-            <div class="gallery tiles">
-
-                <div class="item">
-                    <div class="thumbnail">
-
-                    </div>
-                    <div class="title">
-                        Default YouTube Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod.
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="thumbnail">
+                            </div>
+                            <div class="title">
+                                Default Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
 
                     </div>
-                    <div class="title">
-                        Default Twitch Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur.
-                    </div>
-                </div>
 
-                <div class="item">
-                    <div class="thumbnail">
+                    <h1>Another section here</h1>
+                    <div class="gallery tiles">
 
-                    </div>
-                    <div class="title">
-                        Default Sigmanuts Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore.
-                    </div>
-                </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-            </div>
+                            </div>
+                            <div class="title">
+                                Default YouTube Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod.
+                            </div>
+                        </div>
 
-            <h1>Another section here</h1>
-            <div class="gallery tiles">
+                        <div class="item">
+                            <div class="thumbnail">
 
-                <div class="item">
-                    <div class="thumbnail">
+                            </div>
+                            <div class="title">
+                                Default Twitch Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur.
+                            </div>
+                        </div>
 
-                    </div>
-                    <div class="title">
-                        Default YouTube Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod.
-                    </div>
-                </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-                <div class="item">
-                    <div class="thumbnail">
+                            </div>
+                            <div class="title">
+                                Default Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
 
-                    </div>
-                    <div class="title">
-                        Default Twitch Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur.
-                    </div>
-                </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-                <div class="item">
-                    <div class="thumbnail">
+                            </div>
+                            <div class="title">
+                                Alternative Sigmanuts Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
 
-                    </div>
-                    <div class="title">
-                        Default Sigmanuts Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore.
-                    </div>
-                </div>
+                        <div class="item">
+                            <div class="thumbnail">
 
-                <div class="item">
-                    <div class="thumbnail">
+                            </div>
+                            <div class="title">
+                                Chroneco's Chat
+                            </div>
+                            <div class="description">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore.
+                            </div>
+                        </div>
 
-                    </div>
-                    <div class="title">
-                        Alternative Sigmanuts Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore.
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="thumbnail">
-
-                    </div>
-                    <div class="title">
-                        Chroneco's Chat
-                    </div>
-                    <div class="description">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore.
                     </div>
                 </div>
 
             </div>
-        </div>
 
-    </div>
-
-    <!-- <div class="footer">
+            <!-- <div class="footer">
         <div class="left">
             <span>Running local web server on <a href="/">http://localhost:6969</a>...</span>
         </div>
@@ -417,7 +425,12 @@
         </div>
     </div> -->
 
-</div>
+        </div>
+
+        <div class="version">
+            <p>BETAv1.0</p>
+            <p id="update-text">Update available!</p>
+        </div>
 
         <div class="backdrop-wrapper">
             <div class="backdrop">
@@ -426,7 +439,11 @@
                     <div class="search-bar">
                         <!-- <label for="link-input">Paste YouTube chat link here...</label> -->
                         <input type="text" id="name-input" placeholder="Type in the name for your widget...">
-                        <search-button id="name">SUBMIT</search-button>
+                        <search-button id="name">
+                            <span class="material-symbols-rounded outline">
+                                done
+                            </span>
+                        </search-button>
                     </div>
                 </div>
             </div>

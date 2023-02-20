@@ -138,6 +138,14 @@ window.addEventListener('DOMContentLoaded', () => {
             $('#zip').val('')
             return
         }
+        $('#settings__editor').remove();
+        $('.editor').append('<div id="settings__editor"></div>')
+
+        groupList = [];
+        widgetData = {};
+        setTimeout(() => {
+            $('iframe')[0].contentWindow.location.reload('true');
+        }, 1000)
         var files = evt.target.files;
         for (var i = 0; i < files.length; i++) {
             handleZip(files[i]);
