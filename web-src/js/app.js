@@ -308,6 +308,8 @@ $('#theme-button').click(() => {
 function setActivePage(buttonId, pageId) {
 
     if (activeTab == pageId) return;
+
+    $('.search-bar').removeClass("animate");
     let toggleChat = false;
 
     if ((pageId == 'youtube' || pageId == 'login')) {
@@ -370,7 +372,6 @@ function changeUrl(animate = true) {
     var url = $('#link-input').val();
     let valid = true;
 
-
     //only accepts valid chat links
     if (url) {
         if (url.startsWith("https://youtube.com/live/")) {
@@ -413,7 +414,6 @@ function changeUrl(animate = true) {
             $('#search>span').html(searchIconName);
         }, 1600);
 
-        $('.search-bar').removeClass("animate");
         setTimeout(() => {
             $('.search-bar').addClass("animate");
         }, 10);
@@ -526,7 +526,10 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(response => response.text())
         .then(text => {
             console.log(text);
-            if (isValid(text)) $('#link-input').val(text);                                    
+            if (isValid(text)) {
+                lastValidUrl = text;
+                $('#link-input').val(text);
+            }
         })
 
     // Fetch widget list
