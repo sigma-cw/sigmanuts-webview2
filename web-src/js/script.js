@@ -149,7 +149,7 @@ function raiseMembershipEvent(mutation, j, connection) {
             months = words[i];
         }
     }
-    if (months == "") months = 1;
+    if (months == "") months = 0;
 
     var authorPicture = eventData["header"].children["author-photo"].children["img"].src;
 
@@ -161,7 +161,7 @@ function raiseMembershipEvent(mutation, j, connection) {
             "type": "member",
             "name": authorName,
             "amount": months,
-            "count": 1,
+            "count": months,
             "items": [],
             "tier": memberTier,
             "month": months,
@@ -502,8 +502,11 @@ function startStream() {
                 }
 
                 if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
-                    raiseStickerEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "sticker-latest");
+                    setTimeout(()=>{
+                        raiseStickerEvent(mutation, j, connection);
+                        raiseBasicEvent(mutation, j, connection, "sticker-latest");
+                    },160);
+                    
                 }
 
             }
@@ -952,10 +955,10 @@ const testBadge = "https://yt3.ggpht.com/rpkYUyUfZAo1shsoHgQEftP4qwgdjbDKQK1HO2s
 function addTestMember() {
     let authorName = "New Member Name";
     let message = "";
-    let month = 1;
+    let month = 0;
     if (testMessageCounter % 2 == 0) {
         authorName = "Existing Member Name";
-        month = 2 + Math.floor(Math.random() * 10);
+        month = 1 + Math.floor(Math.random() * 12);
         message = `I have subscribed for ${month} months!`;
     }
     let messageHTML = `<yt-live-chat-membership-item-renderer class="style-scope yt-live-chat-item-list-renderer" show-only-header="" id="test-message-${testMessageCounter}">
@@ -997,7 +1000,7 @@ function addTestMember() {
                         </div>
                     </div>
                 </yt-live-chat-membership-item-renderer>`;
-    if (month > 1) {
+    if (month > 0) {
         messageHTML = `<yt-live-chat-membership-item-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" has-inline-action-buttons="3" has-primary-header-text="">
                     <!--css-build:shady-->
                     <div id="card" class="style-scope yt-live-chat-membership-item-renderer">
