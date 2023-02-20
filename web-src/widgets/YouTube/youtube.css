@@ -507,8 +507,8 @@ yt-live-chat-paid-sticker-renderer:not([dashboard-money-feed]) #purchase-amount-
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    background-color: var(--yt-spec-text-primary);
-    opacity: .1;
+    background-color: transparent;
+    opacity: 1;
     margin-left: var(--yt-pdg-paid-stickers-margin-left);
     margin-top: 4px;
     z-index: 0
@@ -517,11 +517,6 @@ yt-live-chat-paid-sticker-renderer:not([dashboard-money-feed]) #purchase-amount-
 yt-live-chat-paid-sticker-renderer:not([dashboard-money-feed]) #sticker-container.yt-live-chat-paid-sticker-renderer {
     margin: 0;
     margin-left: auto
-}
-
-#sticker-container.sticker-loaded.yt-live-chat-paid-sticker-renderer {
-    background-color: var(--yt-live-chat-paid-sticker-container-loaded-style-background-color);
-    opacity: var(--yt-live-chat-paid-sticker-container-loaded-style-opacity)
 }
 
 #content.yt-live-chat-paid-sticker-renderer {
@@ -594,7 +589,7 @@ yt-live-chat-author-chip.yt-live-chat-text-message-renderer {
 }
 
 #message.yt-live-chat-text-message-renderer {
-    color: var(--yt-live-chat-primary-text-color,var(--yt-spec-text-primary));
+    color: var(--yt-live-chat-primary-text-color,#fff);
     line-height: 16px;
     overflow: hidden;
     overflow-wrap: break-word;
@@ -871,8 +866,6 @@ html {
     --yt-live-chat-primary-text-color: #fff;
     --yt-live-chat-secondary-text-color: rgba(255,255,255,.7);
     --yt-live-chat-tertiary-text-color: rgba(255,255,255,.54);
-    --yt-live-chat-mention-background-color: #ff5722;
-    --yt-live-chat-mention-text-color: #fff;
     --yt-live-chat-deleted-message-color: rgba(255,255,255,.5);
     --yt-live-chat-deleted-message-bar-color: rgba(255,255,255,.5);
     --yt-live-chat-error-message-color: #c00;
