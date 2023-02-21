@@ -2,7 +2,7 @@
 
 **A *mostly* standalone app to serve widgets for your YouTube livestreams**
 
-![App](https://i.imgur.com/aqiPMew.png)
+![App](https://i.imgur.com/qUd63Zr.png)
 
 ## Features
 
