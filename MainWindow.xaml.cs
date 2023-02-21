@@ -16,6 +16,7 @@ using System.Security.Policy;
 using Microsoft.AspNetCore.Hosting.Server;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace sigmanuts_webview2
 {
@@ -177,6 +178,10 @@ namespace sigmanuts_webview2
 
                 case "toggle-login":
                     ToggleLogin();
+                    break;
+
+                case "toggle-update":
+                    OpenUrl("https://github.com/sigmacw/sigmanuts-webview2/releases");
                     break;
 
                 case "change-url":
@@ -555,6 +560,35 @@ namespace sigmanuts_webview2
                 MainWindowBorder.BorderThickness = new Thickness(0);
                 RestoreButton.Visibility = Visibility.Collapsed;
                 MaximizeButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
     }

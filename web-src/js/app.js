@@ -1,3 +1,5 @@
+const CURRENTVERSION = 'BETAv1.0'
+
 var activeWidget = "";
 var groupList = [];
 var widgetData = {};
@@ -9,6 +11,18 @@ var lastValidUrl = "";
 ////////////////////////////////////////////////////////////////////////////////
 //                        HELPER FUNCTIONS                                    //
 ////////////////////////////////////////////////////////////////////////////////
+
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
 
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
@@ -33,7 +47,7 @@ function appendSetting(setting, el) {
 ////////////////////////////////////////////////////////////////////////////////
 
 async function retrieveData() {
-    fetch(`widgets/${activeWidget}/src/data.txt`)
+    fetch(`widgets/${activeWidget}/src/data.txt?version=${makeid(10)}`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -79,18 +93,22 @@ async function updateUI() {
         $('#widget-select option[value="idle"]').remove();
         $('#widget-select').selectmenu('refresh')
     } */
-    fetch(`widgets/${activeWidget}/src/fields.json`)
+    fetch(`widgets/${activeWidget}/src/fields.json?version=${makeid(10)}`)
         .then(response => {
             console.log(response)
             if (response.ok) {
                 return response.text()
             }
             else {
-                throw new Error('{}', { cause: "Not found" })
+                $('.empty').show();
+                throw new Error('{}', { cause: "Not found" })     
             }
         })
         .then(text => {
             if (text) {
+                if (text != '[]') {
+                    $('.empty').hide();
+                }
                 handleFieldGroups(JSON.parse(text));
                 handleFieldSettings(JSON.parse(text));
                 $('#settings__editor').accordion({
@@ -298,10 +316,17 @@ $('#store-button').click(() => {
     setActivePage('store-button', 'store');
 });
 
-$('#theme-button').click(() => {
+$('#theme-button[type="dark-mode"]').click(() => {
     //save theme selection later?
     $('#app').toggleClass("app-theme-dark");
     $('#app').toggleClass("app-theme-light");
+});
+
+$('#theme-button[type="update"]').click(() => {
+    obj = JSON.stringify({
+        "listener": "toggle-update"
+    })
+    window.chrome.webview.postMessage(obj);
 });
 
 
@@ -508,9 +533,20 @@ $('#remove').click(() => {
         .then(updateUI())
 });
 
-$('#widget-select').selectmenu();
-
 window.addEventListener('DOMContentLoaded', () => {
+
+    $('#widget-select').selectmenu();
+
+    // CHECK FOR UPDATES
+    fetch(`https://mccw.studio/widgetstatus/sigmanuts.txt?version=${makeid(10)}`)
+        .then(response => response.text())
+        .then(text => {
+            console.log(text);
+            if (CURRENTVERSION === text) {
+                $('#theme-button[type="update"]').hide();
+                $('#update-text').hide();
+            }
+        })
 
     // Do active tab setup
     $(`#home`).removeClass('hidden').addClass('active');
@@ -522,7 +558,7 @@ window.addEventListener('DOMContentLoaded', () => {
     $('#remove').hide();
 
     // Fetch cached youtube chat link
-    fetch('config.ini')
+    fetch(`config.ini?version=${makeid(10)}`)
         .then(response => response.text())
         .then(text => {
             console.log(text);
@@ -534,7 +570,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Fetch widget list
     setTimeout(() => {
-        fetch('widgets/widgets.ini')
+        fetch(`widgets/widgets.ini?version=${makeid(10)}`)
             .then(response => response.text())
             .then(text => {
                 var lines = text.split('\n')
@@ -553,12 +589,20 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 $('#widget-select').prepend(`<option disabled selected value="idle" id="idle">Select widget</option>`)
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
+                $('#widget-select').val(`idle`).selectmenu('refresh').trigger("selectmenuchange");
+            })
+    }, 500)
+
+    setTimeout(() => {
+        fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
+            .then(response => response.text())
+            .then(text => {
+                activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
                 start()
             });
-    }, 500)
+    }, 600);
 });
 
 $('#widget-select').on('selectmenuchange', (obj) => {
@@ -595,15 +639,17 @@ $('#widget-select').on('selectmenuchange', (obj) => {
             }
         });
     } else {
-        $('.backdrop-wrapper').hide('fast');
+        //$('.backdrop-wrapper').hide('fast');
     }
 
     if (obj.currentTarget.value === "YouTube") {
         $('#refresh-widget').hide();
         $('#remove').hide();
+        $('#zip-upload').hide();
     } else {
         $('#refresh-widget').show();
         $('#remove').show();
+        $('#zip-upload').show();
     }
 
     $('#settings__editor').remove();
@@ -619,7 +665,6 @@ $('#widget-select').on('selectmenuchange', (obj) => {
 
     activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "");
 
-
     $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
 
     window.chrome.webview.postMessage(obj);
@@ -628,9 +673,12 @@ $('#widget-select').on('selectmenuchange', (obj) => {
 });
 
 //new widget cancel
-$('.backdrop-wrapper').on('click', () => {
-    $('.backdrop-wrapper').hide();
-    $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
+$('.backdrop-wrapper').on('click', (e) => {
+    console.log(e);
+    if (e.target === $('.backdrop')[0]) {
+        $('.backdrop-wrapper').hide();
+    }
+    $('#widget-select').val(`idle`).selectmenu('refresh').trigger("selectmenuchange");
 });
 
 $('#copy-link').on('click', () => {

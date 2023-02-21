@@ -717,3 +717,16 @@ button {
     background: var(--var-preview-bg-color);
     display: none;
 }
+
+.version {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    color:#555;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.version p {
+    text-align: right;
+    margin: 0;
+}
