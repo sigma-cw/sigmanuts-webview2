@@ -59,6 +59,8 @@ Regardless of what you read here, you should decide for yourself whether you wan
 
 ## Documentation
 
+You can find the documentation [here](https://github.com/sigmacw/sigmanuts-webview2/wiki/Sigmanuts-API).
+
 ## Changelog
 
 02/20/2023 - BETAv0.5
