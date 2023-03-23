@@ -46,8 +46,9 @@ function appendSetting(setting, el) {
 //                          MAIN FUNCTIONS                                    //
 ////////////////////////////////////////////////////////////////////////////////
 
-async function retrieveData() {
-    fetch(`widgets/${activeWidget}/src/data.txt?version=${makeid(10)}`)
+async function retrieveData(widgetName) {
+    if (!widgetName) return;
+    fetch(`widgets/${widgetName}/src/data.txt?version=${makeid(10)}`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -64,6 +65,7 @@ async function retrieveData() {
                 console.log('Could not parse.')
                 widgetData = {};
             }
+            updateData(widgetName);
         })
         .catch((error) => {
             //
@@ -72,66 +74,22 @@ async function retrieveData() {
 
 //widgetData was empty
 //need to be on demand
-async function updateData(widget) {
+async function updateData(widgetName) {   
+    
+    var obj = JSON.stringify({
+        "listener": "widget-load",
+        "name": widgetName,
+        "value": JSON.stringify(widgetData)
+    })
 
-    if (widget == activeWidget) {
-        var obj = JSON.stringify({
-            "listener": "widget-load",
-            "name": widget,
-            "value": JSON.stringify(widgetData)
-        })
-
-        if (widget != "all") {
-            window.chrome.webview.postMessage(obj);
-        }
-
-        connection.invoke("SendMessage", obj).catch(function (err) {
-            return console.error(err.toString());
-        });
-        return;
+    if (widgetName != "all") {
+        window.chrome.webview.postMessage(obj);
     }
 
-    fetch(`widgets/${widget}/src/data.txt?version=${makeid(10)}`)
-        .then(response => {
-            console.log(response)
-            if (response.ok) {
-                return response.text()
-            }
-            else {
-                throw new Error('{}', { cause: "Not found" })
-            }
-        })
-        .then(text => {
-            try {
-                console.log("UPDATE DATA: "+`widgets/${widget}/src/data.txt`+" > "+widget);
-                console.log(text);
-
-                //if data is empty / null
-                //parse data from fields as default
-
-                data = JSON.parse(text)
-
-                var obj = JSON.stringify({
-                    "listener": "widget-load",
-                    "name": widget,
-                    "value": JSON.stringify(data)
-                })
-
-                if (widget != "all") {
-                    window.chrome.webview.postMessage(obj);
-                }
-
-                connection.invoke("SendMessage", obj).catch(function (err) {
-                    return console.error(err.toString());
-                });
-
-            } catch (ex) {
-                console.log('Could not parse.')
-            }
-        })
-        .catch((error) => {
-            //
-        })    
+    connection.invoke("SendMessage", obj).catch(function (err) {
+        return console.error(err.toString());
+    });
+    return;
 }
 
 async function updateUI() {
@@ -417,7 +375,7 @@ async function start() {
     try {
         await connection.start();
 
-        initOnloadData();
+        //initOnloadData();
 
         console.log("SignalR Connected.");
     } catch (err) {
@@ -435,18 +393,21 @@ connection.on("ReceiveMessage", function (obj) {
     console.log(evt)
 
     if (evt.listener === "request-data") {
-        updateData(evt.name);
+        retrieveData(evt.name);
     }
 });
-
+/*
 function initOnloadData() {
-
+    
     $("#widget-select option").each(function () {
-        if ($(this).val() == "idle") return;
-        if ($(this).val() == "add") return;
-        updateData($(this).val());
+        console.log("INIT LOAD DATA "+name);
+
+        let name = $(this).val();
+        if (name != "idle" && name != "add") {
+            retrieveData(name);
+        }        
     });
-}
+}*/
 
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
@@ -679,7 +640,7 @@ $('#remove').click(() => {
 
     window.chrome.webview.postMessage(obj);
     activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
-    retrieveData()
+    retrieveData(activeWidget)
         .then(updateUI())
 });
 
@@ -819,7 +780,7 @@ $('#widget-select').on('selectmenuchange', (obj) => {
     $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
 
     window.chrome.webview.postMessage(obj);
-    retrieveData()
+    retrieveData(activeWidget)
         .then(updateUI())
 });
 
