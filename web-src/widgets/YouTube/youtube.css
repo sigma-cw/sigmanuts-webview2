@@ -599,12 +599,13 @@ yt-live-chat-author-chip.yt-live-chat-text-message-renderer {
     opacity: var(--yt-live-chat-text-message-renderer-message-message-style-opacity)
 }
 
-    .emoji{
-        width: var(--yt-live-chat-emoji-size);
-        height: var(--yt-live-chat-emoji-size);
-        margin: -1px 2px 1px;
-        vertical-align: middle
-    }
+.emoji,
+.small-emoji {
+    width: var(--yt-live-chat-emoji-size, 24px);
+    height: var(--yt-live-chat-emoji-size, 24px);
+    margin: -1px 2px 1px;
+    vertical-align: middle !important;
+}
 
 a.yt-live-chat-text-message-renderer {
     display: inline;
