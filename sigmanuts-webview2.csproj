@@ -172,7 +172,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\YouTube\src\data.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\YouTube\widget.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -192,6 +192,9 @@
   <ItemGroup>
     <None Update="web-src\tutorial.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="web-src\widgets\YouTube\src\fields.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="web-src\widgets\YouTube\youtube.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

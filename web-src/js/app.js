@@ -70,20 +70,68 @@ async function retrieveData() {
         })
 }
 
-function updateData(widget) {
-    var obj = JSON.stringify({
-        "listener": "widget-load",
-        "name": widget,
-        "value": JSON.stringify(widgetData)
-    })
+//widgetData was empty
+//need to be on demand
+async function updateData(widget) {
 
-    if (widget != "all") {
-        window.chrome.webview.postMessage(obj);
+    if (widget == activeWidget) {
+        var obj = JSON.stringify({
+            "listener": "widget-load",
+            "name": widget,
+            "value": JSON.stringify(widgetData)
+        })
+
+        if (widget != "all") {
+            window.chrome.webview.postMessage(obj);
+        }
+
+        connection.invoke("SendMessage", obj).catch(function (err) {
+            return console.error(err.toString());
+        });
+        return;
     }
 
-    connection.invoke("SendMessage", obj).catch(function (err) {
-        return console.error(err.toString());
-    });
+    fetch(`widgets/${widget}/src/data.txt?version=${makeid(10)}`)
+        .then(response => {
+            console.log(response)
+            if (response.ok) {
+                return response.text()
+            }
+            else {
+                throw new Error('{}', { cause: "Not found" })
+            }
+        })
+        .then(text => {
+            try {
+                console.log("UPDATE DATA: "+`widgets/${widget}/src/data.txt`+" > "+widget);
+                console.log(text);
+
+                //if data is empty / null
+                //parse data from fields as default
+
+                data = JSON.parse(text)
+
+                var obj = JSON.stringify({
+                    "listener": "widget-load",
+                    "name": widget,
+                    "value": JSON.stringify(data)
+                })
+
+                if (widget != "all") {
+                    window.chrome.webview.postMessage(obj);
+                }
+
+                connection.invoke("SendMessage", obj).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+            } catch (ex) {
+                console.log('Could not parse.')
+            }
+        })
+        .catch((error) => {
+            //
+        })    
 }
 
 async function updateUI() {
@@ -148,6 +196,11 @@ function handleFieldSettings(data) {
     for (var field in data) {
         var setting = data[field];
 
+        //for number inputs
+        let min = 0;
+        let max = 0;
+        let step = 0;
+
         switch (setting["type"]) {
             case "dropdown":
                 // Handle dropdown
@@ -199,17 +252,102 @@ function handleFieldSettings(data) {
                 break;
 
             case "text":
-                var text = $(`
+                var textNumber = $(`
                     <h4>${setting["label"]}</h4>
                     <input type="text" id="text__${field}" placeholder="Type here..."></input>
                 `);
 
-                appendSetting(setting, text);
+                appendSetting(setting, textNumber);
 
                 $(`#text__${field}`).val(widgetData[field]);
                 $(`#text__${field}`).on('change', (evt) => {
                     console.log(evt);
                     var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+
+            case "number":
+                let numberMin = "";
+                let numberMax = "";
+                
+
+                if (!isNaN(setting["min"])) {
+                    numberMin = ` min="${setting["min"]}"`;
+                    min = parseFloat(setting["min"]);
+                }
+
+                if (!isNaN(setting["max"])) {
+                    numberMax = ` max="${setting["max"]}"`;
+                    max = parseFloat(setting["max"]);
+                }
+
+                var textNumber = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="number" id="number__${field}"  ${numberMin} ${numberMax} placeholder="Type here..."></input>
+                `);
+
+                appendSetting(setting, textNumber);
+
+                $(`#number__${field}`).val(widgetData[field]);
+                $(`#number__${field}`).on('change', (evt) => {
+                    console.log(evt);
+
+                    if (numberMin) {
+                        evt.currentTarget.value = Math.max(min, evt.currentTarget.value);
+                    }
+                    if (numberMax) {
+                        evt.currentTarget.value = Math.min(max, evt.currentTarget.value);
+                    }
+
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+            case "slider":
+                let ok = 0;
+
+                if (!isNaN(setting["min"])) {
+                    min = parseFloat(setting["min"]);
+                    ok++;
+                }
+
+                if (!isNaN(setting["max"])) {
+                    max = parseFloat(setting["max"]);
+                    ok++;
+                }
+
+                if (!isNaN(setting["step"])) {
+                    step = parseFloat(setting["step"]);
+                }
+                else {
+                    step = (max - min) / 10;
+                }
+
+                if (ok < 2) break;
+
+                var textSlider = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="range" id="slider__${field}" min="${min}" max="${max}" step="${step}" placeholder="Type here..."></input>
+                    <span id="slider__${field}_value">Value:</span>
+                `);
+
+                appendSetting(setting, textSlider);
+
+                $(`#slider__${field}`).val(widgetData[field]);
+                $(`#slider__${field}_value`).text(`Value: ${$(`#slider__${field}`).val()}`);
+                $(`#slider__${field}`).on('change', (evt) => {
+                    console.log(evt);
+                    var key = evt.currentTarget.id.split('_')[2];
+                    $(`#${evt.currentTarget.id}_value`).text(`Value: ${evt.currentTarget.value}`);
                     widgetData[key] = evt.currentTarget.value;
                     updateData(activeWidget);
                     $('iframe').attr('src', function (i, val) { return val; });
@@ -278,6 +416,9 @@ const connection = new signalR.HubConnectionBuilder()
 async function start() {
     try {
         await connection.start();
+
+        initOnloadData();
+
         console.log("SignalR Connected.");
     } catch (err) {
         console.log(err);
@@ -297,6 +438,15 @@ connection.on("ReceiveMessage", function (obj) {
         updateData(evt.name);
     }
 });
+
+function initOnloadData() {
+
+    $("#widget-select option").each(function () {
+        if ($(this).val() == "idle") return;
+        if ($(this).val() == "add") return;
+        updateData($(this).val());
+    });
+}
 
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
@@ -585,11 +735,10 @@ window.addEventListener('DOMContentLoaded', () => {
                         $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
                     }
                 });
-            })
-            .then(() => {
-                $('#widget-select').prepend(`<option disabled selected value="idle" id="idle">Select widget</option>`)
+                $('#widget-select').prepend(`<option disabled value="idle" id="idle">Select widget</option>`)
                 $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`idle`).selectmenu('refresh').trigger("selectmenuchange");
+                $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
+
             })
     }, 500)
 
@@ -602,8 +751,10 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 start()
             });
+
     }, 600);
 });
+
 
 $('#widget-select').on('selectmenuchange', (obj) => {
 
