@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.6-chronut'
+const CURRENTVERSION = 'BETAv0.6b2-chronut'
 
 var activeWidget = "";
 var groupList = [];
@@ -708,8 +708,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
 
             })
+            .then(() => {
+                activeWidget = "YouTube";
+                start();
+            })
     }, 500)
 
+    //set widget-select to the value from activeWidget.active next time
+    /*
     setTimeout(() => {
         fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
             .then(response => response.text())
@@ -717,10 +723,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
+                //
+                activeWidget = "YouTube";
                 start()
             });
 
-    }, 600);
+    }, 600);*/
 });
 
 
