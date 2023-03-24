@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv1.0'
+const CURRENTVERSION = 'BETAv0.6b2-chronut'
 
 var activeWidget = "";
 var groupList = [];
@@ -59,27 +59,30 @@ async function retrieveData(widgetName) {
             }
         })
         .then(text => {
+            let data = {};
             try {
-                widgetData = JSON.parse(text)
+                data = JSON.parse(text);                
             } catch (ex) {
                 console.log('Could not parse.')
-                widgetData = {};
             }
-            updateData(widgetName);
+            updateData(widgetName, data, false);
+            widgetData = data;
         })
         .catch((error) => {
             //
         })
 }
 
+
 //widgetData was empty
 //need to be on demand
-async function updateData(widgetName) {   
-    
+async function updateData(widgetName, data, active=true) {   
+
     var obj = JSON.stringify({
         "listener": "widget-load",
         "name": widgetName,
-        "value": JSON.stringify(widgetData)
+        "value": JSON.stringify(data),
+        "active": active
     })
 
     if (widgetName != "all") {
@@ -145,7 +148,7 @@ function handleFieldGroups(data, defaultData) {
 
     if (!compareKeys(widgetData, _widgetData)) {
         widgetData = _widgetData
-        updateData(activeWidget);
+        updateData(activeWidget, widgetData);
     }
 }
 
@@ -184,7 +187,7 @@ function handleFieldSettings(data) {
                 $(`#dropdown__${field}`).on('selectmenuchange', (evt) => {
                     var key = evt.currentTarget.id.split('_')[2]
                     widgetData[key] = $(evt.currentTarget).val()
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
@@ -204,7 +207,7 @@ function handleFieldSettings(data) {
                 $(`#checkbox__${field}`).on('change', (evt) => {
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.checked;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
@@ -222,7 +225,7 @@ function handleFieldSettings(data) {
                     console.log(evt);
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.value;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 })
 
@@ -264,7 +267,7 @@ function handleFieldSettings(data) {
 
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.value;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 })
 
@@ -307,7 +310,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2];
                     $(`#${evt.currentTarget.id}_value`).text(`Value: ${evt.currentTarget.value}`);
                     widgetData[key] = evt.currentTarget.value;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 })
 
@@ -592,7 +595,8 @@ $('#refresh-widget').click(() => {
         "listener": "refresh-widget",
         "name": activeWidget
     })
-
+    //disabling this until more reliable
+    /*
     $('#settings__editor').remove();
     $('.editor').append('<div id="settings__editor"></div>')
 
@@ -603,7 +607,7 @@ $('#refresh-widget').click(() => {
 
     setTimeout(() => {
         $('iframe')[0].contentWindow.location.reload('true');
-    }, 1000)
+    }, 1000)*/
 
     /* connection.on("ReceiveMessage", function (obj) {
         var evt = JSON.parse(obj);
@@ -647,6 +651,9 @@ $('#remove').click(() => {
 window.addEventListener('DOMContentLoaded', () => {
 
     $('#widget-select').selectmenu();
+
+
+    $("#app-version").text(CURRENTVERSION);
 
     // CHECK FOR UPDATES
     fetch(`https://mccw.studio/widgetstatus/sigmanuts.txt?version=${makeid(10)}`)
@@ -701,8 +708,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
 
             })
+            .then(() => {
+                activeWidget = "YouTube";
+                start();
+            })
     }, 500)
 
+    //set widget-select to the value from activeWidget.active next time
+    /*
     setTimeout(() => {
         fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
             .then(response => response.text())
@@ -710,10 +723,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
             })
             .then(() => {
+                //
+                activeWidget = "YouTube";
                 start()
             });
 
-    }, 600);
+    }, 600);*/
 });
 
 
