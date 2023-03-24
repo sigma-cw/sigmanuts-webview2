@@ -211,7 +211,9 @@ namespace sigmanuts_webview2
                 case "widget-load":
                     string widgetData = stuff.value;
                     string widgetName = stuff.name;
+                    bool active = stuff.active;
 
+                    if (!active) break;
                     string[] dataToWrite = { widgetData };
                     try
                     {

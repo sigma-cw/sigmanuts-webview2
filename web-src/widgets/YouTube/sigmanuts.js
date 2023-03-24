@@ -1,4 +1,4 @@
-var widgetName = window.location.pathname.split("/")[2];
+var widgetName = "YouTube";
 
 function decodeHtml(html) {
     var txt = document.createElement("textarea");
