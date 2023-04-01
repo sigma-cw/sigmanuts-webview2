@@ -639,7 +639,32 @@ preview-button span {
     display: none;
 }
 
-test-buttons{
+
+app-button {
+    cursor: pointer;
+}
+
+.tooltip
+{
+    position: relative;
+}
+
+    .tooltip:hover::after {
+        content: attr(data-tooltip);
+        padding: 0.2em 0.5em;
+        border-radius: 0.5em;
+        background: #000000dd;
+        color: white;
+        position: absolute;
+        width: max-content;
+        left: 50%;
+        top: 0;
+        transform: translateY(calc(-100% - 0.5em)) translateX(-50%);
+    }
+
+
+
+test-buttons {
     padding: 12px 16px;
     /* background: var(--var-foreground-color); */
     border-radius: 10px;

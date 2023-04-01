@@ -270,6 +270,11 @@ namespace sigmanuts_webview2
                     widgetView.CoreWebView2.Navigate(widgetUrl);
                     break;
 
+                case "refresh-widget-list":
+                    HandleWidgets();
+                    await appView.CoreWebView2.ExecuteScriptAsync($"location.reload();");
+                    break;
+
                 case "delete-widget":
                     string __name_ = stuff.name;
                     string widgetDir = Path.Combine(CacheFolderPath, @$".\localserver\widgets\{__name_}");
