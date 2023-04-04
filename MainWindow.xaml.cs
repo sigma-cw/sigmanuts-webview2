@@ -211,7 +211,9 @@ namespace sigmanuts_webview2
                 case "widget-load":
                     string widgetData = stuff.value;
                     string widgetName = stuff.name;
+                    bool active = stuff.active;
 
+                    if (!active) break;
                     string[] dataToWrite = { widgetData };
                     try
                     {
@@ -220,7 +222,7 @@ namespace sigmanuts_webview2
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.ToString());
-                    }
+                    }          
 
                     break;
 
@@ -266,6 +268,11 @@ namespace sigmanuts_webview2
                     Debug.WriteLine(_name_);
                     WidgetOperations.CreateWidget(_name_, appView);
                     widgetView.CoreWebView2.Navigate(widgetUrl);
+                    break;
+
+                case "refresh-widget-list":
+                    HandleWidgets();
+                    await appView.CoreWebView2.ExecuteScriptAsync($"location.reload();");
                     break;
 
                 case "delete-widget":

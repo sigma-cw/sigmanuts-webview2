@@ -1,6 +1,7 @@
 <html style="font-size: 10px;font-family: Roboto, Arial, sans-serif;" dark>
 <head>
     <meta http-equiv="Cache-control" content="no-cache">
+    <meta name="referrer" content="no-referrer" />
     <title>Sigmanuts | Youtube Basic Chat</title>
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
@@ -29,17 +30,17 @@
                 overflow-y: hidden
             }
 
-            .hidden {
-                display: none
-            }
+        .hidden {
+            display: none
+        }
 
-            textarea {
-                --paper-input-container-input_-_white-space: pre-wrap
-            }
+        textarea {
+            --paper-input-container-input_-_white-space: pre-wrap
+        }
 
-            .grecaptcha-badge {
-                visibility: hidden
-            }
+        .grecaptcha-badge {
+            visibility: hidden
+        }
 
         yt-live-chat-renderer {
             height: 100vh;
@@ -57,19 +58,17 @@
             flex-direction: column-reverse !important;
         }
 
-            yt-live-chat-renderer #menu {
-                display: none;
-            }
+        yt-live-chat-renderer #menu {
+            display: none;
+        }
 
-            #items.yt-live-chat-item-list-renderer 
-            {
-                flex:none !important;
-            }
+        #items.yt-live-chat-item-list-renderer {
+            flex: none !important;
+        }
 
-            div#menu
-            {
-                display: none !important;
-            }
+        div#menu {
+            display: none !important;
+        }
     </style>
 </head>
 <body>

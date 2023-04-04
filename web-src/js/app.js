@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.5'
+const CURRENTVERSION = 'BETAv0.6'
 
 var activeWidget = "";
 var groupList = [];
@@ -46,8 +46,9 @@ function appendSetting(setting, el) {
 //                          MAIN FUNCTIONS                                    //
 ////////////////////////////////////////////////////////////////////////////////
 
-async function retrieveData() {
-    fetch(`widgets/${activeWidget}/src/data.txt?version=${makeid(10)}`)
+async function retrieveData(widgetName) {
+    if (!widgetName) return;
+    fetch(`widgets/${widgetName}/src/data.txt?version=${makeid(10)}`)
         .then(response => {
             console.log(response)
             if (response.ok) {
@@ -58,32 +59,42 @@ async function retrieveData() {
             }
         })
         .then(text => {
+            let data = {};
             try {
-                widgetData = JSON.parse(text)
+                data = JSON.parse(text);                
             } catch (ex) {
                 console.log('Could not parse.')
-                widgetData = {};
             }
+
+
+            updateData(widgetName, data, false);
+            widgetData = data;
         })
         .catch((error) => {
             //
         })
 }
 
-function updateData(widget) {
+
+//widgetData was empty
+//need to be on demand
+async function updateData(widgetName, data, active=true) {   
+
     var obj = JSON.stringify({
         "listener": "widget-load",
-        "name": widget,
-        "value": JSON.stringify(widgetData)
+        "name": widgetName,
+        "value": JSON.stringify(data),
+        "active": active
     })
 
-    if (widget != "all") {
+    if (widgetName != "all") {
         window.chrome.webview.postMessage(obj);
     }
 
     connection.invoke("SendMessage", obj).catch(function (err) {
         return console.error(err.toString());
     });
+    return;
 }
 
 async function updateUI() {
@@ -109,8 +120,11 @@ async function updateUI() {
                 if (text != '[]') {
                     $('.empty').hide();
                 }
-                handleFieldGroups(JSON.parse(text));
-                handleFieldSettings(JSON.parse(text));
+                let data = JSON.parse(text);
+                console.log("Fields:");
+                console.log(data);
+                handleFieldGroups(data);
+                handleFieldSettings(data);
                 $('#settings__editor').accordion({
                     heightStyle: "content"
                 })
@@ -122,7 +136,6 @@ async function updateUI() {
 
 function handleFieldGroups(data, defaultData) {
     var _widgetData = {};
-    console.log(data)
     for (var field in data) {
         var setting = data[field];
 
@@ -136,17 +149,32 @@ function handleFieldGroups(data, defaultData) {
 
         _widgetData[field] = setting["value"];
     }
-
     if (!compareKeys(widgetData, _widgetData)) {
-        widgetData = _widgetData
-        updateData(activeWidget);
+        console.log("Different keys exist");
+
+        var mainKeys = Object.keys(widgetData).sort();
+        var tempKeys = Object.keys(_widgetData).sort();
+
+        tempKeys.forEach((item, index) => {
+            if (!widgetData[item]) {
+                console.log("Key: " + item);
+                widgetData[item] = _widgetData[item]
+            }
+        });
+        //widgetData = _widgetData
+        updateData(activeWidget, widgetData);
     }
 }
 
+
 function handleFieldSettings(data) {
-    console.log(data)
     for (var field in data) {
         var setting = data[field];
+
+        //for number inputs
+        let min = 0;
+        let max = 0;
+        let step = 0;
 
         switch (setting["type"]) {
             case "dropdown":
@@ -173,7 +201,7 @@ function handleFieldSettings(data) {
                 $(`#dropdown__${field}`).on('selectmenuchange', (evt) => {
                     var key = evt.currentTarget.id.split('_')[2]
                     widgetData[key] = $(evt.currentTarget).val()
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
@@ -193,25 +221,110 @@ function handleFieldSettings(data) {
                 $(`#checkbox__${field}`).on('change', (evt) => {
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.checked;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 });
                 break;
 
             case "text":
-                var text = $(`
+                var textNumber = $(`
                     <h4>${setting["label"]}</h4>
                     <input type="text" id="text__${field}" placeholder="Type here..."></input>
                 `);
 
-                appendSetting(setting, text);
+                appendSetting(setting, textNumber);
 
                 $(`#text__${field}`).val(widgetData[field]);
                 $(`#text__${field}`).on('change', (evt) => {
                     console.log(evt);
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.value;
-                    updateData(activeWidget);
+                    updateData(activeWidget, widgetData);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+
+            case "number":
+                let numberMin = "";
+                let numberMax = "";
+                
+
+                if (!isNaN(setting["min"])) {
+                    numberMin = ` min="${setting["min"]}"`;
+                    min = parseFloat(setting["min"]);
+                }
+
+                if (!isNaN(setting["max"])) {
+                    numberMax = ` max="${setting["max"]}"`;
+                    max = parseFloat(setting["max"]);
+                }
+
+                var textNumber = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="number" id="number__${field}"  ${numberMin} ${numberMax} placeholder="Type here..."></input>
+                `);
+
+                appendSetting(setting, textNumber);
+
+                $(`#number__${field}`).val(widgetData[field]);
+                $(`#number__${field}`).on('change', (evt) => {
+                    console.log(evt);
+
+                    if (numberMin) {
+                        evt.currentTarget.value = Math.max(min, evt.currentTarget.value);
+                    }
+                    if (numberMax) {
+                        evt.currentTarget.value = Math.min(max, evt.currentTarget.value);
+                    }
+
+                    var key = evt.currentTarget.id.split('_')[2];
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget, widgetData);
+                    $('iframe').attr('src', function (i, val) { return val; });
+                })
+
+                break;
+
+            case "slider":
+                let ok = 0;
+
+                if (!isNaN(setting["min"])) {
+                    min = parseFloat(setting["min"]);
+                    ok++;
+                }
+
+                if (!isNaN(setting["max"])) {
+                    max = parseFloat(setting["max"]);
+                    ok++;
+                }
+
+                if (!isNaN(setting["step"])) {
+                    step = parseFloat(setting["step"]);
+                }
+                else {
+                    step = (max - min) / 10;
+                }
+
+                if (ok < 2) break;
+
+                var textSlider = $(`
+                    <h4>${setting["label"]}</h4>
+                    <input type="range" id="slider__${field}" min="${min}" max="${max}" step="${step}" placeholder="Type here..."></input>
+                    <span id="slider__${field}_value">Value:</span>
+                `);
+
+                appendSetting(setting, textSlider);
+
+                $(`#slider__${field}`).val(widgetData[field]);
+                $(`#slider__${field}_value`).text(`Value: ${$(`#slider__${field}`).val()}`);
+                $(`#slider__${field}`).on('change', (evt) => {
+                    console.log(evt);
+                    var key = evt.currentTarget.id.split('_')[2];
+                    $(`#${evt.currentTarget.id}_value`).text(`Value: ${evt.currentTarget.value}`);
+                    widgetData[key] = evt.currentTarget.value;
+                    updateData(activeWidget, widgetData);
                     $('iframe').attr('src', function (i, val) { return val; });
                 })
 
@@ -263,6 +376,7 @@ function handleFieldSettings(data) {
                 break;
         }
     }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -278,6 +392,9 @@ const connection = new signalR.HubConnectionBuilder()
 async function start() {
     try {
         await connection.start();
+
+        //initOnloadData();
+
         console.log("SignalR Connected.");
     } catch (err) {
         console.log(err);
@@ -294,9 +411,21 @@ connection.on("ReceiveMessage", function (obj) {
     console.log(evt)
 
     if (evt.listener === "request-data") {
-        updateData(evt.name);
+        retrieveData(evt.name);
     }
 });
+/*
+function initOnloadData() {
+    
+    $("#widget-select option").each(function () {
+        console.log("INIT LOAD DATA "+name);
+
+        let name = $(this).val();
+        if (name != "idle" && name != "add") {
+            retrieveData(name);
+        }        
+    });
+}*/
 
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
@@ -481,7 +610,8 @@ $('#refresh-widget').click(() => {
         "listener": "refresh-widget",
         "name": activeWidget
     })
-
+    //disabling this until more reliable
+    /*
     $('#settings__editor').remove();
     $('.editor').append('<div id="settings__editor"></div>')
 
@@ -492,7 +622,7 @@ $('#refresh-widget').click(() => {
 
     setTimeout(() => {
         $('iframe')[0].contentWindow.location.reload('true');
-    }, 1000)
+    }, 1000)*/
 
     /* connection.on("ReceiveMessage", function (obj) {
         var evt = JSON.parse(obj);
@@ -530,13 +660,14 @@ $('#remove').click(() => {
 
     window.chrome.webview.postMessage(obj);
     activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "")
-    retrieveData()
+    retrieveData(activeWidget)
         .then(updateUI())
 });
 
 window.addEventListener('DOMContentLoaded', () => {
 
     $('#widget-select').selectmenu();
+    $("#app-version").text(CURRENTVERSION);
 
     // CHECK FOR UPDATES
     fetch(`https://mccw.studio/widgetstatus/sigmanuts.txt?version=${makeid(10)}`)
@@ -571,41 +702,47 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Fetch widget list
     setTimeout(() => {
-        fetch(`widgets/widgets.ini?version=${makeid(10)}`)
-            .then(response => response.text())
-            .then(text => {
-                var lines = text.split('\n')
-                console.log(lines)
-                lines.forEach(element => {
-                    if (element !== "") {
-                        var name = element.split("\\")
-                        name = name[name.length - 1];
-
-                        name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
-
-                        $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
-                    }
-                });
-            })
-            .then(() => {
-                $('#widget-select').prepend(`<option disabled selected value="idle" id="idle">Select widget</option>`)
-                $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`idle`).selectmenu('refresh').trigger("selectmenuchange");
-                $('.preview-nav').hide();
-            })
+        fetchWidgets();
     }, 500)
 
-    setTimeout(() => {
-        fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
-            .then(response => response.text())
-            .then(text => {
-                activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
-            })
-            .then(() => {
-                start()
-            });
-    }, 600);
 });
+
+function fetchWidgets() {
+    fetch(`widgets/widgets.ini?version=${makeid(10)}`)
+        .then(response => response.text())
+        .then(text => {
+            var lines = text.split('\n')
+            console.log(lines)
+            lines.forEach(element => {
+                if (element !== "") {
+                    var name = element.split("\\")
+                    name = name[name.length - 1];
+
+                    name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
+
+                    $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
+                }
+            });
+            $('#widget-select').prepend(`<option disabled value="idle" id="idle">Select widget</option>`)
+            $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
+
+            fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
+                .then(response => response.text())
+                .then(text => {
+                    activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
+                })
+                .then(() => {
+                    $('#widget-select').val(activeWidget);
+                    if (!$('#widget-select').val()) {
+                        activeWidget = "YouTube";
+                        $('#widget-select').val(activeWidget);
+                    }
+                    $('#widget-select').selectmenu('refresh').trigger("selectmenuchange");
+                    start();
+                })
+        })
+}
+
 
 $('#widget-select').on('selectmenuchange', (obj) => {
 
@@ -672,7 +809,7 @@ $('#widget-select').on('selectmenuchange', (obj) => {
     $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
 
     window.chrome.webview.postMessage(obj);
-    retrieveData()
+    retrieveData(activeWidget)
         .then(updateUI())
 });
 
@@ -710,6 +847,14 @@ $('#test-member').on('click', () => {
 });
 $('#test-gift').on('click', () => {
     sendTestMessage("test-gift");
+});
+
+$('#widget-reload').on('click', () => {
+    var obj = JSON.stringify({
+        "listener": "refresh-widget-list",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
 });
 
 $('#open-folder').on('click', () => {

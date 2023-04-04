@@ -107,10 +107,13 @@
                                 </span>
 
                                 <div class="widget-selector">
-                                    <span style="color: var(--var-icon-color-gray)"
-                                        class="material-symbols-rounded outline">
-                                        widgets
-                                    </span>
+                                    <app-button class="tooltip" data-tooltip="Refresh widget list">
+                                        <span id="widget-reload" style="color: var(--var-icon-color-gray)"
+                                              class="material-symbols-rounded outline">
+                                            widgets
+                                        </span>
+                                    </app-button>
+                                    
                                     <select name="widget-select" id="widget-select">
                                         <!-- Widget options will be appended here -->
                                     </select>
@@ -227,31 +230,31 @@
                                 <test-buttons>
                                     <!--<span id="text" style="margin-right: 10px">Test</span>-->
 
-                                    <test-button id="test-message">
+                                    <test-button id="test-message" class="tooltip" data-tooltip="Test Message">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
                                             chat
                                         </span>
                                     </test-button>
-                                    <test-button id="test-superchat" tooltip="Test Superchat">
+                                    <test-button id="test-superchat" class="tooltip" data-tooltip="Test Superchat">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
                                             local_atm
                                         </span>
                                     </test-button>
-                                    <test-button id="test-sticker">
+                                    <test-button id="test-sticker" class="tooltip" data-tooltip="Test Supersticker">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
                                             sentiment_very_satisfied
                                         </span>
                                     </test-button>
-                                    <test-button id="test-member">
+                                    <test-button id="test-member" class="tooltip" data-tooltip="Test Membership">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
                                             workspace_premium
                                         </span>
                                     </test-button>
-                                    <test-button id="test-gift">
+                                    <test-button id="test-gift" class="tooltip" data-tooltip="Test Membership Gift">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
                                             redeem
@@ -262,7 +265,7 @@
                             <div class="right">
 
                                 <preview-button id="copy-link">
-                                    <span id="text" style="margin-right: 10px">Copy chat link</span>
+                                    <span id="text" style="margin-right: 10px">Copy widget link</span>
                                     <span class="material-symbols-rounded outline">
                                         content_copy
                                     </span>
@@ -428,7 +431,7 @@
         </div>
 
         <div class="version">
-            <p>BETAv0.5</p>
+            <p id="app-version">BETAv1.0</p>
             <p id="update-text">Update available!</p>
         </div>
 

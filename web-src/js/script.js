@@ -5,9 +5,17 @@ function loadScript(scriptUrl) {
     document.body.appendChild(script);
 
     //disable scrolling and changing Top Chat
-    document.getElementById("item-scroller").style.overflowY = "hidden";
-    document.getElementById("trigger").style.display = "none";
-    document.getElementById("overflow").style.display = "none";
+    if (document.getElementById("item-scroller")) {
+        document.getElementById("item-scroller").style.overflowY = "hidden";
+    }
+    if (document.getElementById("trigger")) {
+        document.getElementById("trigger").style.display = "none";
+    }
+
+    //Youtube removed this part
+    if (document.getElementById("overflow")) {
+        document.getElementById("overflow").style.display = "none";
+    }
     
 
     return new Promise((res, rej) => {
@@ -538,7 +546,6 @@ function startStream() {
         .withAutomaticReconnect()
         .build();
 
-    //
     testConnection = connection;
 
 
@@ -820,9 +827,14 @@ function addTestSuperchat() {
     currentSuperTest = currentSuperTest % superColors.length;
     let superDetail = superColors[currentSuperTest];
     let message = "";
-    if (testMessageCounter % 2 == 1 && (superDetail.tier!=1000)) {
+    if (superDetail.tier == 1000) { }
+    else if (testMessageCounter % 3 == 1) {
         message = "This is a superchat message";
     }
+    else if (testMessageCounter % 3 == 2) {
+        message = `Lorem Ipsum is simply dummy text of the printing and typesetting industry. <img class="small-emoji emoji yt-formatted-string style-scope yt-live-chat-paid-message-renderer" src="https://www.youtube.com/s/gaming/emoji/0f0cae22/emoji_u1fae1.svg" id="emoji-191"> Lorem Ipsum is simply dummy text of the printing and typesetting industry.`; 
+    }
+
     let authorName = "Superchat Sender";
 
     let messageHTML = `<yt-live-chat-paid-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" ${message == "" ? `show-only-header=""` : ""} allow-animations="" style="--yt-live-chat-paid-message-primary-color:${superDetail.primary}; --yt-live-chat-paid-message-secondary-color:${superDetail.secondary}; --yt-live-chat-paid-message-header-color:${superDetail.textHeader}; --yt-live-chat-disable-highlight-message-author-name-color:${superDetail.textAuthor}; --yt-live-chat-paid-message-timestamp-color:rgba(0,0,0,0.501961); --yt-live-chat-paid-message-color:${superDetail.textMessage};">

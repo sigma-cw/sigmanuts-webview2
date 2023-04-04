@@ -79,6 +79,7 @@ connection.on("ReceiveMessage", function (obj) {
         });
         window.dispatchEvent(event)
     } else {
+        if (!evt.event) return;
         if(evt.listener === "message")
         {
             evt.event.data.text = decodeHtml(evt.event.data.text)
