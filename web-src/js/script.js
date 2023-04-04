@@ -5,9 +5,17 @@ function loadScript(scriptUrl) {
     document.body.appendChild(script);
 
     //disable scrolling and changing Top Chat
-    document.getElementById("item-scroller").style.overflowY = "hidden";
-    document.getElementById("trigger").style.display = "none";
-    document.getElementById("overflow").style.display = "none";
+    if (document.getElementById("item-scroller")) {
+        document.getElementById("item-scroller").style.overflowY = "hidden";
+    }
+    if (document.getElementById("trigger")) {
+        document.getElementById("trigger").style.display = "none";
+    }
+
+    //Youtube removed this part
+    if (document.getElementById("overflow")) {
+        document.getElementById("overflow").style.display = "none";
+    }
     
 
     return new Promise((res, rej) => {
@@ -539,7 +547,6 @@ function startStream() {
         .withAutomaticReconnect()
         .build();
 
-    //
     testConnection = connection;
 
 

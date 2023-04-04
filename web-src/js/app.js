@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.6b2-chronut'
+const CURRENTVERSION = 'BETAv0.6c-chronut'
 
 var activeWidget = "";
 var groupList = [];
@@ -65,6 +65,8 @@ async function retrieveData(widgetName) {
             } catch (ex) {
                 console.log('Could not parse.')
             }
+
+
             updateData(widgetName, data, false);
             widgetData = data;
         })
@@ -118,8 +120,11 @@ async function updateUI() {
                 if (text != '[]') {
                     $('.empty').hide();
                 }
-                handleFieldGroups(JSON.parse(text));
-                handleFieldSettings(JSON.parse(text));
+                let data = JSON.parse(text);
+                console.log("Fields:");
+                console.log(data);
+                handleFieldGroups(data);
+                handleFieldSettings(data);
                 $('#settings__editor').accordion({
                     heightStyle: "content"
                 })
@@ -131,7 +136,6 @@ async function updateUI() {
 
 function handleFieldGroups(data, defaultData) {
     var _widgetData = {};
-    console.log(data)
     for (var field in data) {
         var setting = data[field];
 
@@ -145,15 +149,25 @@ function handleFieldGroups(data, defaultData) {
 
         _widgetData[field] = setting["value"];
     }
-
     if (!compareKeys(widgetData, _widgetData)) {
-        widgetData = _widgetData
+        console.log("Different keys exist");
+
+        var mainKeys = Object.keys(widgetData).sort();
+        var tempKeys = Object.keys(_widgetData).sort();
+
+        tempKeys.forEach((item, index) => {
+            if (!widgetData[item]) {
+                console.log("Key: " + item);
+                widgetData[item] = _widgetData[item]
+            }
+        });
+        //widgetData = _widgetData
         updateData(activeWidget, widgetData);
     }
 }
 
+
 function handleFieldSettings(data) {
-    console.log(data)
     for (var field in data) {
         var setting = data[field];
 
@@ -362,6 +376,7 @@ function handleFieldSettings(data) {
                 break;
         }
     }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -651,8 +666,6 @@ $('#remove').click(() => {
 window.addEventListener('DOMContentLoaded', () => {
 
     $('#widget-select').selectmenu();
-
-
     $("#app-version").text(CURRENTVERSION);
 
     // CHECK FOR UPDATES
@@ -688,48 +701,46 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Fetch widget list
     setTimeout(() => {
-        fetch(`widgets/widgets.ini?version=${makeid(10)}`)
-            .then(response => response.text())
-            .then(text => {
-                var lines = text.split('\n')
-                console.log(lines)
-                lines.forEach(element => {
-                    if (element !== "") {
-                        var name = element.split("\\")
-                        name = name[name.length - 1];
-
-                        name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
-
-                        $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
-                    }
-                });
-                $('#widget-select').prepend(`<option disabled value="idle" id="idle">Select widget</option>`)
-                $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
-                $('#widget-select').val(`YouTube`).selectmenu('refresh').trigger("selectmenuchange");
-
-            })
-            .then(() => {
-                activeWidget = "YouTube";
-                start();
-            })
+        fetchWidgets();
     }, 500)
 
-    //set widget-select to the value from activeWidget.active next time
-    /*
-    setTimeout(() => {
-        fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
-            .then(response => response.text())
-            .then(text => {
-                activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
-            })
-            .then(() => {
-                //
-                activeWidget = "YouTube";
-                start()
-            });
-
-    }, 600);*/
 });
+
+function fetchWidgets() {
+    fetch(`widgets/widgets.ini?version=${makeid(10)}`)
+        .then(response => response.text())
+        .then(text => {
+            var lines = text.split('\n')
+            console.log(lines)
+            lines.forEach(element => {
+                if (element !== "") {
+                    var name = element.split("\\")
+                    name = name[name.length - 1];
+
+                    name = name.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "")
+
+                    $('#widget-select').append(`<option value="${name}" id="${name}">${name}</option>`)
+                }
+            });
+            $('#widget-select').prepend(`<option disabled value="idle" id="idle">Select widget</option>`)
+            $('#widget-select').append(`<option value="add" id="add">Create widget...</option>`)
+
+            fetch(`widgets/activeWidget.active?version=${makeid(10)}`)
+                .then(response => response.text())
+                .then(text => {
+                    activeWidget = text.replace(/\\"/g, '"').replace(/(\r\n|\n|\r)/gm, "");
+                })
+                .then(() => {
+                    $('#widget-select').val(activeWidget);
+                    if (!$('#widget-select').val()) {
+                        activeWidget = "YouTube";
+                        $('#widget-select').val(activeWidget);
+                    }
+                    $('#widget-select').selectmenu('refresh').trigger("selectmenuchange");
+                    start();
+                })
+        })
+}
 
 
 $('#widget-select').on('selectmenuchange', (obj) => {
@@ -832,6 +843,14 @@ $('#test-member').on('click', () => {
 });
 $('#test-gift').on('click', () => {
     sendTestMessage("test-gift");
+});
+
+$('#widget-reload').on('click', () => {
+    var obj = JSON.stringify({
+        "listener": "refresh-widget-list",
+        "value": null
+    })
+    window.chrome.webview.postMessage(obj);
 });
 
 $('#open-folder').on('click', () => {
