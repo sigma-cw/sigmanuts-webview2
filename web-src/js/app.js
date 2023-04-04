@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.6c-chronut'
+const CURRENTVERSION = 'BETAv0.6'
 
 var activeWidget = "";
 var groupList = [];
@@ -645,6 +645,7 @@ $('#remove').click(() => {
     /* $('#widget-select').prepend('<option value="idle" id="idle">Select widget</option>'); */
     $('#widget-select').val('idle');
     $('#widget-select').selectmenu("refresh");
+    $('.preview-nav').hide();
 
     var obj = JSON.stringify({
         "listener": "delete-widget",
@@ -790,6 +791,8 @@ $('#widget-select').on('selectmenuchange', (obj) => {
         $('#zip-upload').show();
     }
 
+    $('.preview-nav').show();
+
     $('#settings__editor').remove();
     $('.editor').append('<div id="settings__editor"></div>')
 
@@ -817,6 +820,7 @@ $('.backdrop-wrapper').on('click', (e) => {
         $('.backdrop-wrapper').hide();
     }
     $('#widget-select').val(`idle`).selectmenu('refresh').trigger("selectmenuchange");
+    $('.preview-nav').hide();
 });
 
 $('#copy-link').on('click', () => {

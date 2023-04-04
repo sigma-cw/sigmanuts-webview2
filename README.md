@@ -2,7 +2,7 @@
 
 **A *mostly* standalone app to serve widgets for your YouTube livestreams**
 
-![App](https://i.imgur.com/aqiPMew.png)
+![App](https://i.imgur.com/qUd63Zr.png)
 
 ## Features
 
@@ -58,6 +58,8 @@ In a broader sense, what we are doing is scraping, yes. At the same time, we do 
 Regardless of what you read here, you should decide for yourself whether you want to use the app. We have provided you with the information, and as such are not responsible for what you ultimately decide to do with this app.
 
 ## Documentation
+
+You can find the documentation [here](https://github.com/sigmacw/sigmanuts-webview2/wiki/Sigmanuts-API).
 
 ## Changelog
 

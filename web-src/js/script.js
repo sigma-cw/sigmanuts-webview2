@@ -514,7 +514,6 @@ function startStream() {
                         raiseStickerEvent(mutation, j, connection);
                         raiseBasicEvent(mutation, j, connection, "sticker-latest");
                     },160);
-                    
                 }
 
             }
