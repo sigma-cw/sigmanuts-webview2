@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.6d-chronut'
+const CURRENTVERSION = 'BETAv0.6e-chronut'
 
 var activeWidget = "";
 var groupList = [];
@@ -435,15 +435,34 @@ const iframeHideSeconds = 60;
 function hideIframe() {
     $('iframe').attr('src', "");
     $("#preview-iframe-alert").css("display", "flex");
+    $("#preview-iframe-button span#text").text("Turn on preview");
+    $("#preview-iframe-button span.material-symbols-rounded").text("visibility");
 }
 
-$("#preview-iframe-alert").on("click", function () { setIframeUrl(`widgets/${activeWidget}/widget.html`) });
+$("#preview-iframe-alert").on("click", function () {
+    setIframeUrl(`widgets/${activeWidget}/widget.html`)
+});
+
+$("#preview-iframe-button").on("click", function () {
+
+    if (!$('iframe').attr('src')) {
+        setIframeUrl(`widgets/${activeWidget}/widget.html`);
+        return;
+    }
+
+    hideIframe();
+    clearTimeout(iframeHideTimeout);
+});
 
 function setIframeUrl(url) {
     $('iframe').attr('src', url);
+
     clearTimeout(iframeHideTimeout);
     iframeHideTimeout = setTimeout(hideIframe, iframeHideSeconds * 1000);
+
     $("#preview-iframe-alert").css("display", "none");
+    $("#preview-iframe-button span#text").text("Turn off preview");
+    $("#preview-iframe-button span.material-symbols-rounded").text("visibility_off");
 }
 
 $('#youtube-button').click(() => {

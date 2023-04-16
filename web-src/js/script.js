@@ -1,4 +1,5 @@
 ﻿//console.log('HELLO');
+
 function loadScript(scriptUrl) {
     const script = document.createElement('script');
     script.src = scriptUrl;
@@ -16,7 +17,6 @@ function loadScript(scriptUrl) {
     if (document.getElementById("overflow")) {
         document.getElementById("overflow").style.display = "none";
     }
-    
 
     return new Promise((res, rej) => {
         script.onload = function () {
@@ -28,7 +28,7 @@ function loadScript(scriptUrl) {
     });
 }
 
-function raiseMessageEvent(mutation, j, connection) {
+function raiseMessageEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData);
     var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
@@ -128,12 +128,10 @@ function raiseMessageEvent(mutation, j, connection) {
 
     //window.boundEvent.raiseEvent('onEventReceived', obj);
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
-function raiseMembershipEvent(mutation, j, connection) {
+function raiseMembershipEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData);
     //var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
@@ -183,12 +181,10 @@ function raiseMembershipEvent(mutation, j, connection) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
-function raiseMembershipGiftEvent(mutation, j, connection) {
+function raiseMembershipGiftEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData["header"].children["header"].children["content"].children["header-content"].children["header-content-primary-column"].children["header-content-inner-column"].children[0].children["author-name"].innerText;
@@ -230,12 +226,10 @@ function raiseMembershipGiftEvent(mutation, j, connection) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
-function raiseMembershipRedemptionEvent(mutation, j, connection) {
+function raiseMembershipRedemptionEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     console.log(eventData)
     var authorName = eventData["content"].children[1].children["author-name"].innerText;
@@ -262,13 +256,11 @@ function raiseMembershipRedemptionEvent(mutation, j, connection) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
 
-function raiseSuperchatEvent(mutation, j, connection) {
+function raiseSuperchatEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
@@ -349,12 +341,10 @@ function raiseSuperchatEvent(mutation, j, connection) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
-function raiseStickerEvent(mutation, j, connection) {
+function raiseStickerEvent(mutation, j) {
     var eventData = mutation.addedNodes[j]['$']
     //console.log(eventData)
     var authorName = eventData["author-name-chip"].innerText;
@@ -433,12 +423,10 @@ function raiseStickerEvent(mutation, j, connection) {
 
     console.log(detail.event.stickerUrl)
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
-function raiseBasicEvent(mutation, j, connection, event) {
+function raiseBasicEvent(mutation, j, event) {
     let rawHtml = mutation.addedNodes[j].outerHTML;
     var detail = {
         "listener": "youtube-basic",
@@ -448,13 +436,11 @@ function raiseBasicEvent(mutation, j, connection, event) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail);
 }
 
 //this event is raised when the app launches/changes url
-function raiseUrlChangeEvent(connection, url) {
+function raiseUrlChangeEvent(url) {
     var detail = {
         "listener": "url-change",
         "event": {
@@ -463,11 +449,10 @@ function raiseUrlChangeEvent(connection, url) {
         }
     }
 
-    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-        return console.error(err.toString());
-    });
+    sendPayload(detail)
 }
 
+var connection;
 var testConnection;
 const messageDelay = 40;
 
@@ -486,45 +471,45 @@ function startStream() {
     const callback = async (mutationList, observer) => {
         console.log(mutationList);
         await sleep(messageDelay);
-        for (const mutation of mutationList) {
-            for (var j = 0; j < mutation.addedNodes.length; j++) {
-                if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
-                    raiseMessageEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "message");                    
+        for (let i = 0; i < mutationList.length; i++) {
+            for (var j = 0; j < mutationList[i].addedNodes.length; j++) {
+                if (mutationList[i].addedNodes[j].nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
+                    raiseMessageEvent(mutationList[i], j);
+                    raiseBasicEvent(mutationList[i], j, "message");                    
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
-                    raiseMembershipEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "member-latest");              
+                if (mutationList[i].addedNodes[j].nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
+                    raiseMembershipEvent(mutationList[i], j);
+                    raiseBasicEvent(mutationList[i], j, "member-latest");              
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
-                    raiseMembershipGiftEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "gift-latest");
+                if (mutationList[i].addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
+                    raiseMembershipGiftEvent(mutationList[i], j);
+                    raiseBasicEvent(mutationList[i], j, "gift-latest");
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
-                    raiseMembershipRedemptionEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "member-gifted");
+                if (mutationList[i].addedNodes[j].nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
+                    raiseMembershipRedemptionEvent(mutationList[i], j);
+                    raiseBasicEvent(mutationList[i], j, "member-gifted");
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
-                    raiseSuperchatEvent(mutation, j, connection);
-                    raiseBasicEvent(mutation, j, connection, "superchat-latest");
+                if (mutationList[i].addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
+                    raiseSuperchatEvent(mutationList[i], j);
+                    raiseBasicEvent(mutationList[i], j, "superchat-latest");
                 }
 
-                if (mutation.addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
+                if (mutationList[i].addedNodes[j].nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
                     setTimeout(()=>{
-                        raiseStickerEvent(mutation, j, connection);
-                        raiseBasicEvent(mutation, j, connection, "sticker-latest");
+                        raiseStickerEvent(mutationList[i], j);
+                        raiseBasicEvent(mutationList[i], j, "sticker-latest");
                     },160);
                     
                 }
 
             }
 
-            for (j = 0; j < mutation.removedNodes.length; j++) {
-                var removed_id = mutation.removedNodes[j].__data.id
+            for (j = 0; j < mutationList[i].removedNodes.length; j++) {
+                var removed_id = mutationList[i].removedNodes[j].__data.id
                 var detail = {
                     "listener": "delete-message",
                     "event": {
@@ -535,17 +520,14 @@ function startStream() {
                         }
                     }
                 }
-
-                connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
-                    return console.error(err.toString());
-                });
+                sendPayload(detail);
             }
         }
     };
 
     const observer = new MutationObserver(callback);
 
-    const connection = new signalR.HubConnectionBuilder()
+    connection = new signalR.HubConnectionBuilder()
         .withUrl("http://localhost:6970/stream")
         .configureLogging(signalR.LogLevel.Information)
         .withAutomaticReconnect()
@@ -569,7 +551,7 @@ function startStream() {
     });
 
     start().then(() => {
-        raiseUrlChangeEvent(connection, window.location.href);
+        raiseUrlChangeEvent(window.location.href);
         observer.observe(document.querySelector("yt-live-chat-item-list-renderer #items"), { subtree: false, childList: true });
     }) 
 
@@ -1234,8 +1216,16 @@ function sendBasicTest(htmlText, event) {
     sendTestPayload(detail);
 }
 
+function sendPayload(detail) {
+    //mutationPayloads.push(detail);
+    connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
+        return console.error(err.toString())
+    });
+}
+
 function sendTestPayload(detail) {
-    if (testConnection);
+    //pool the payloads and send them in interval
+    //testPayloads.push(detail);
     testConnection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
         return console.error(err.toString());
     });
