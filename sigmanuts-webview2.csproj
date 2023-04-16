@@ -190,6 +190,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="web-src\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="web-src\tutorial.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

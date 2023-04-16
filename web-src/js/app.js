@@ -1,4 +1,4 @@
-const CURRENTVERSION = 'BETAv0.6c-chronut'
+const CURRENTVERSION = 'BETAv0.6d-chronut'
 
 var activeWidget = "";
 var groupList = [];
@@ -202,7 +202,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2]
                     widgetData[key] = $(evt.currentTarget).val()
                     updateData(activeWidget, widgetData);
-                    $('iframe').attr('src', function (i, val) { return val; });
+                    setIframeUrl(`widgets/${activeWidget}/widget.html`);
                 });
                 break;
 
@@ -222,7 +222,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.checked;
                     updateData(activeWidget, widgetData);
-                    $('iframe').attr('src', function (i, val) { return val; });
+                    setIframeUrl(`widgets/${activeWidget}/widget.html`);
                 });
                 break;
 
@@ -240,7 +240,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.value;
                     updateData(activeWidget, widgetData);
-                    $('iframe').attr('src', function (i, val) { return val; });
+                    setIframeUrl(`widgets/${activeWidget}/widget.html`);
                 })
 
                 break;
@@ -282,7 +282,7 @@ function handleFieldSettings(data) {
                     var key = evt.currentTarget.id.split('_')[2];
                     widgetData[key] = evt.currentTarget.value;
                     updateData(activeWidget, widgetData);
-                    $('iframe').attr('src', function (i, val) { return val; });
+                    setIframeUrl(`widgets/${activeWidget}/widget.html`);
                 })
 
                 break;
@@ -325,7 +325,7 @@ function handleFieldSettings(data) {
                     $(`#${evt.currentTarget.id}_value`).text(`Value: ${evt.currentTarget.value}`);
                     widgetData[key] = evt.currentTarget.value;
                     updateData(activeWidget, widgetData);
-                    $('iframe').attr('src', function (i, val) { return val; });
+                    setIframeUrl(`widgets/${activeWidget}/widget.html`);
                 })
 
                 break;
@@ -429,6 +429,23 @@ function initOnloadData() {
 
 ///////////////////* SIDEBAR BUTTONS *//////////////////////////////////////////
 
+let iframeHideTimeout;
+const iframeHideSeconds = 60;
+
+function hideIframe() {
+    $('iframe').attr('src', "");
+    $("#preview-iframe-alert").css("display", "flex");
+}
+
+$("#preview-iframe-alert").on("click", function () { setIframeUrl(`widgets/${activeWidget}/widget.html`) });
+
+function setIframeUrl(url) {
+    $('iframe').attr('src', url);
+    clearTimeout(iframeHideTimeout);
+    iframeHideTimeout = setTimeout(hideIframe, iframeHideSeconds * 1000);
+    $("#preview-iframe-alert").css("display", "none");
+}
+
 $('#youtube-button').click(() => {
     setActivePage('youtube-button', 'youtube');
 });
@@ -518,6 +535,8 @@ $('#link-input').on('keypress', function (e) {
 });
 $('#search').click(() => {
     changeUrl();
+
+    $('.search-bar').removeClass("not-searched");
 });
 
 const searchIconName = $('#search>span').html();
@@ -803,7 +822,7 @@ $('#widget-select').on('selectmenuchange', (obj) => {
 
     activeWidget = $('#widget-select-button .ui-selectmenu-text').text().replace(/(\r\n|\n|\r)/gm, "");
 
-    $('iframe').attr('src', `widgets/${activeWidget}/widget.html`)
+    setIframeUrl(`widgets/${activeWidget}/widget.html`);
 
     window.chrome.webview.postMessage(obj);
     retrieveData(activeWidget)
@@ -826,7 +845,7 @@ $('#copy-link').on('click', () => {
     navigator.clipboard.writeText(copyField.value);
 
     $('#copy-link>#text').text("Copied");
-    setTimeout(() => { $('#copy-link>#text').text("Copy chat link"); }, 2000)
+    setTimeout(() => { $('#copy-link>#text').text("Copy widget link"); }, 2000)
 });
 
 $('#test-message').on('click', () => {
@@ -835,6 +854,11 @@ $('#test-message').on('click', () => {
 $('#test-superchat').on('click', () => {
     sendTestMessage("test-superchat");
 });
+for (let i = 1; i <= 7; i++) {
+    $('#test-superchat-'+i).on('click', () => {
+        sendTestMessage("test-superchat-"+i);
+    });
+}
 $('#test-sticker').on('click', () => {
     sendTestMessage("test-sticker");
 });
@@ -844,6 +868,20 @@ $('#test-member').on('click', () => {
 $('#test-gift').on('click', () => {
     sendTestMessage("test-gift");
 });
+$('#test-gift-5').on('click', () => {
+    sendTestMessage("test-gift-5");
+});
+$('#test-gift-10').on('click', () => {
+    sendTestMessage("test-gift-10");
+});
+$('#test-gift-20').on('click', () => {
+    sendTestMessage("test-gift-20");
+});
+$('#test-gift-50').on('click', () => {
+    sendTestMessage("test-gift-50");
+});
+
+
 
 $('#widget-reload').on('click', () => {
     var obj = JSON.stringify({
@@ -862,7 +900,6 @@ $('#open-folder').on('click', () => {
 });
 
 function sendTestMessage(type) {
-
     var obj = JSON.stringify({
         "listener": "test-message",
         "type": type

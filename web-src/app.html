@@ -122,8 +122,11 @@
 
                             <!-- <h4 style="font-size: 4rem; margin-top: -48px !important;">_</h4> -->
 
-                            <div class="search-bar">
+                            <div class="search-bar not-searched">
                                 <!-- <label for="link-input">Paste YouTube chat link here...</label> -->
+                                <div class="search-bar-notif tooltip" data-tooltip="Example link: &#13;&#10;https://www.youtube.com/live_chat?v=... &#13;&#10;https://youtube.com/live/... &#13;&#10;https://studio.youtube.com/... &#13;&#10;https://www.youtube.com/watch?v=...">
+                                    Update YouTube link
+                                </div>
                                 <input type="text" id="link-input" placeholder="Paste YouTube chat link here..."
                                     autocomplete="off">
                                 <search-button id="search">
@@ -143,7 +146,7 @@
                                 </label>
                                 <input style="display:none" type="file" id="zip" name="zip" accept=".7z,.zip,.rar">
 
-                                <button id="open-folder">
+                                <button id="open-folder" class="tooltip" data-tooltip="Open widgets folder">
                                     <span class="material-symbols-rounded outline">
                                         folder_open
                                     </span>
@@ -229,7 +232,6 @@
                                 <!-- <span>Preview</span> -->
                                 <test-buttons>
                                     <!--<span id="text" style="margin-right: 10px">Test</span>-->
-
                                     <test-button id="test-message" class="tooltip" data-tooltip="Test Message">
                                         <span id="text" style=""></span>
                                         <span class="material-symbols-rounded outline">
@@ -261,7 +263,80 @@
                                         </span>
                                     </test-button>
                                 </test-buttons>
-                            </div>
+
+                                <test-buttons style="padding: 4px 12px; gap: 4px">
+                                    <!--<span id="text" style="margin-right: 10px">Test</span>-->
+                                    <test-button id="test-superchat-1" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Blue">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(30,136,229,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-2" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Cyan">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(0,229,255,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-3" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Green">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(29,233,182,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-4" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Yellow">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(255,202,40,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-5" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Orange">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(245,124,0,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-6" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Magenta">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(233,30,99,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                    <test-button id="test-superchat-7" class="tooltip" style="height: 20px;" data-tooltip="Test Superchat Red">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded fill" style="color: rgba(230,33,23,1); font-size: 20px">
+                                            local_atm
+                                        </span>
+                                    </test-button>
+                                </test-buttons>
+
+                                <test-buttons style="font-size: 12px !important; padding: 6px 12px; gap: 4px;">
+                                    <test-button id="test-gift-5" class="tooltip" style="height: 20px; align-items: center; display: flex;" data-tooltip="Test Membership Gift x5">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded outline" style="font-size: 20px">
+                                            redeem
+                                        </span>x5
+                                    </test-button>
+                                    <test-button id="test-gift-10" class="tooltip" style="height: 20px; align-items: center; display: flex;" data-tooltip="Test Membership Gift x10">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded outline" style="font-size: 20px">
+                                            redeem
+                                        </span>x10
+                                    </test-button>
+                                    <test-button id="test-gift-20" class="tooltip" style="height: 20px; align-items: center; display: flex;" data-tooltip="Test Membership Gift x20">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded outline" style="font-size: 20px">
+                                            redeem
+                                        </span>x20
+                                    </test-button>
+                                    <test-button id="test-gift-50" class="tooltip" style="height: 20px; align-items: center; display: flex;" data-tooltip="Test Membership Gift x50">
+                                        <span id="text" style=""></span>
+                                        <span class="material-symbols-rounded outline" style="font-size: 20px">
+                                            redeem
+                                        </span>x50
+                                    </test-button>
+                                </test-buttons>
+</div>
                             <div class="right">
 
                                 <preview-button id="copy-link">
@@ -278,6 +353,10 @@
                         <div class="chat-container">
                             <iframe id="preview__iframe" name="preview__iframe"
                                 sandbox="allow-scripts allow-same-origin"></iframe>
+                            <div id="preview-iframe-alert">
+                                <span>Preview is turned off to reduce CPU usage.</span>
+                                <span>Click here to display preview.</span>
+                            </div>
                         </div>
 
                     </div>

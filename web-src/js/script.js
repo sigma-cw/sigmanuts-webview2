@@ -162,6 +162,7 @@ function raiseMembershipEvent(mutation, j, connection) {
     var authorPicture = eventData["header"].children["author-photo"].children["img"].src;
 
     var message = eventData.message.innerHTML;
+    let msgId = mutation.addedNodes[j].id;
 
     var detail = {
         "listener": "member-latest",
@@ -177,7 +178,8 @@ function raiseMembershipEvent(mutation, j, connection) {
             "sessionTop": false,
             "originalEventName": "member-latest",
             "profileImage": authorPicture,
-            "badge": memberBadge
+            "badge": memberBadge,
+            "msgId": msgId
         }
     }
 
@@ -322,6 +324,7 @@ function raiseSuperchatEvent(mutation, j, connection) {
         primary = "rgba(255,255,255,1)";
         secondary = "rgba(0,0,0,1)";
     }
+    let msgId = mutation.addedNodes[j].id;
 
     var detail = {
         "listener": "superchat-latest",
@@ -341,7 +344,8 @@ function raiseSuperchatEvent(mutation, j, connection) {
             "sessionTop": false,
             "originalEventName": "superchat-latest",
             "profileImage": authorPicture,
-            "badges": memberBadge
+            "badges": memberBadge,
+            "msgId": msgId
         }
     }
 
@@ -600,8 +604,12 @@ function testMessage(type = "test-message") {
     if (type == "test-message") {
         addTestMessage();
     }
-    if (type == "test-superchat") {
-        addTestSuperchat();
+    if (type.startsWith("test-superchat")) {
+        let tier = "";
+        if (type.length > "test-superchat".length) {
+            tier = type.charAt(type.length - 1);
+        }
+        addTestSuperchat(tier);
     }
     if (type == "test-sticker") {
         addTestSticker();
@@ -609,8 +617,12 @@ function testMessage(type = "test-message") {
     if (type == "test-member") {
         addTestMember();
     }
-    if (type == "test-gift") {
-        addTestGift();
+    if (type.startsWith("test-gift")) {
+        let amount = 1;
+        if (type.length > "test-gift".length) {
+            amount = type.replace("test-gift-", "");
+        }
+        addTestGift(amount);
     }
 
 }
@@ -625,14 +637,24 @@ let currentTestMessage = 0;
  * Long message
  * Verified user message
  */
-const testMessageDetails = [
+const TEST_MEMBER_BADGE = {
+    "type": "member",
+    "version": "1",
+    "url": "https://yt3.googleusercontent.com/zeHCFlNt83UNpIAFIEXYLoUDWNnFqSuHb1VqTlNJzGlVYxnjlNTegB56ofC_JcHutmYKaw3qmsU=s16-k-nd"
+};
+const TEST_MODERATOR_BADGE = {
+    "type": "member",
+    "version": "1",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/build/fill1/48px.svg"
+};
+const TEST_MESSAGE_DETAILS = [
     {
         name: "Broadcaster Name",
         message: `Hi! This is how channel owner chat will look like<img class="emoji yt-formatted-string style-scope yt-live-chat-text-message-renderer" src="https://yt3.ggpht.com/WxLUGtJzyLd4dcGaWnmcQnw9lTu9BW3_pEuCp6kcM2pxF5p5J28PvcYIXWh6uCm78LxGJVGn9g=w24-h24-c-k-nd" alt="yougotthis" data-emoji-id="UCkszU2WH9gy1mb0dV-11UJg/hf90Xv-jHeOR8gSxxrToBA" shared-tooltip-text=":yougotthis:" id="emoji-14">`,
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "owner",
-        badge: ""
+        badges: []
     },
     {
         name: "Moderator name",
@@ -640,10 +662,7 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "moderator",
-        badge: `<yt-icon class="style-scope yt-live-chat-author-badge-renderer"><svg viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;">
-                                <g class="style-scope yt-icon">
-                                    <path d="M9.64589146,7.05569719 C9.83346524,6.562372 9.93617022,6.02722257 9.93617022,5.46808511 C9.93617022,3.00042984 7.93574038,1 5.46808511,1 C4.90894765,1 4.37379823,1.10270499 3.88047304,1.29027875 L6.95744681,4.36725249 L4.36725255,6.95744681 L1.29027875,3.88047305 C1.10270498,4.37379824 1,4.90894766 1,5.46808511 C1,7.93574038 3.00042984,9.93617022 5.46808511,9.93617022 C6.02722256,9.93617022 6.56237198,9.83346524 7.05569716,9.64589147 L12.4098057,15 L15,12.4098057 L9.64589146,7.05569719 Z" class="style-scope yt-icon"></path>
-                                </g></svg><!--css-build:shady--></yt-icon>`
+        badges: [TEST_MODERATOR_BADGE]
     },
     {
         name: "Some cool member with a long name",
@@ -651,7 +670,7 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "member",
-        badge: `<img src="https://yt3.googleusercontent.com/zeHCFlNt83UNpIAFIEXYLoUDWNnFqSuHb1VqTlNJzGlVYxnjlNTegB56ofC_JcHutmYKaw3qmsU=s16-k-nd" class="style-scope yt-live-chat-author-badge-renderer" alt="Member (6 months)">`
+        badges: [TEST_MEMBER_BADGE]
     },
     {
         name: "Viewer A",
@@ -659,7 +678,7 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "",
-        badge:""
+        badges:[]
     },
     {
         name: "Some other viewer but with a longer name for some reason",
@@ -667,7 +686,7 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "",
-        badge: ""
+        badges: []
     },
     {
         name: "Verified Channel Name",
@@ -675,7 +694,7 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "",
-        badge: ""
+        badges: []
     },
     {
         name: "Member name",
@@ -683,13 +702,13 @@ const testMessageDetails = [
         authorPicture: testAuthorPhoto,
         authorExternalChannelId: "ChannelId",
         authorType: "member",
-        badge: `<img src="https://yt3.googleusercontent.com/zeHCFlNt83UNpIAFIEXYLoUDWNnFqSuHb1VqTlNJzGlVYxnjlNTegB56ofC_JcHutmYKaw3qmsU=s16-k-nd" class="style-scope yt-live-chat-author-badge-renderer" alt="Member (6 months)">`
-    },
+        badges: [TEST_MEMBER_BADGE]
+    }
 ];
 
 function addTestMessage() {
-    currentTestMessage = currentTestMessage % testMessageDetails.length;
-    let testMessageDetail = testMessageDetails[currentTestMessage];
+    currentTestMessage = currentTestMessage % TEST_MESSAGE_DETAILS.length;
+    let testMessageDetail = TEST_MESSAGE_DETAILS[currentTestMessage];
     let verifiedBadge = ``;
     if (testMessageDetail.name.includes("Verified")) {
         verifiedBadge = `<yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="Verified" type="verified" shared-tooltip-text="Verified"><div id="image" class="style-scope yt-live-chat-author-badge-renderer"><yt-icon class="style-scope yt-live-chat-author-badge-renderer"><svg viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g transform="scale(0.66)" class="style-scope yt-icon"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" class="style-scope yt-icon"></path></g></svg></yt-icon></div></yt-live-chat-author-badge-renderer>`;
@@ -704,7 +723,7 @@ function addTestMessage() {
             <!--css-build:shady--><span id="prepend-chat-badges" class="style-scope yt-live-chat-author-chip"></span><span id="author-name" dir="auto" class="${testMessageDetail.authorType} style-scope yt-live-chat-author-chip">${testMessageDetail.name}<span id="chip-badges" class="style-scope yt-live-chat-author-chip">${verifiedBadge}</span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                 <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" type="${testMessageDetail.authorType}">
                     <!--css-build:shady-->
-                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer">${testMessageDetail.badge}</div>
+                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer">${testMessageDetail.badges.length ? testMessageDetail.badges[0]:""}</div>
                 </yt-live-chat-author-badge-renderer>
             </span></yt-live-chat-author-chip>​<span id="message" dir="auto" class="style-scope yt-live-chat-text-message-renderer">${testMessageDetail.message}</span><span id="deleted-state" class="style-scope yt-live-chat-text-message-renderer"></span><a id="show-original" href="#" class="style-scope yt-live-chat-text-message-renderer"></a>
     </div>
@@ -717,7 +736,7 @@ function addTestMessage() {
                 "time": Date.now(),
                 "tags": {
                     "badge-info": "",
-                    "badges": (testMessageDetail.badge!=""?"https://yt3.googleusercontent.com/zeHCFlNt83UNpIAFIEXYLoUDWNnFqSuHb1VqTlNJzGlVYxnjlNTegB56ofC_JcHutmYKaw3qmsU=s16-k-nd":""),
+                    "badges": (testMessageDetail.badges.length ? testMessageDetail.badges[0] :""),
                     "client-nonce": "",
                     "color": "#FFFFFF",
                     "display-name": testMessageDetail.name,
@@ -733,14 +752,14 @@ function addTestMessage() {
                     "tmi-sent-ts": "",
                     "turbo": "",
                     "user-id": "userId",
-                    "user-type": ""
+                    "user-type": testMessageDetail.authorType
                 },
                 "nick": testMessageDetail.name,
                 "userId": "userId",
                 "displayName": testMessageDetail.name,
                 "displayColor": "#FFFFFF",
                 "profileImage": testMessageDetail.authorPicture,
-                "badges": [],
+                "badges": testMessageDetail.badges,
                 "channel": "",
                 "text": testMessageDetail.message,
                 "isAction": false,
@@ -757,7 +776,7 @@ function addTestMessage() {
 }
 
 let currentSuperTest = 0;
-const superColors =
+const TEST_SUPER_COLORS =
     [
         {
             "tier": 1000,
@@ -824,9 +843,14 @@ const superColors =
         },
     ];
 
-function addTestSuperchat() {
-    currentSuperTest = currentSuperTest % superColors.length;
-    let superDetail = superColors[currentSuperTest];
+function addTestSuperchat(tier = "") {
+    currentSuperTest = currentSuperTest % TEST_SUPER_COLORS.length;
+
+    if (tier == "") tier = currentSuperTest++;
+    else {
+        tier = tier - 1;
+    }
+    let superDetail = TEST_SUPER_COLORS[tier];
     let message = "";
     if (superDetail.tier == 1000) { }
     else if (testMessageCounter % 3 == 1) {
@@ -894,20 +918,20 @@ function addTestSuperchat() {
             "sessionTop": false,
             "originalEventName": "superchat-latest",
             "profileImage": testAuthorPhoto,
-            "badges": ""
+            "badges": "",
+            "msgId": `test-message-${testMessageCounter}`
         }
     };
     sendBasicTest(messageHTML, "superchat-latest");
     sendTestPayload(detail);
-    currentSuperTest++;
 }
 
-const stickerUrl = "https://cdn.discordapp.com/attachments/507526507384537093/1075354703581421600/topiBOOBA.gif";
+const STICKER_URL = "https://cdn.discordapp.com/attachments/507526507384537093/1075354703581421600/topiBOOBA.gif";
 
 function addTestSticker() {
-    currentSuperTest = currentSuperTest % superColors.length;
+    currentSuperTest = currentSuperTest % TEST_SUPER_COLORS.length;
     let authorName = "Super Sticker Sender";
-    let superDetail = superColors[currentSuperTest];
+    let superDetail = TEST_SUPER_COLORS[currentSuperTest];
     let messageHTML = `<yt-live-chat-paid-sticker-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" style="--yt-live-chat-paid-sticker-chip-background-color:${superDetail.primary}; --yt-live-chat-paid-sticker-chip-text-color:${superDetail.textHeader}; --yt-live-chat-paid-sticker-background-color:${superDetail.secondary}; --yt-live-chat-disable-highlight-message-author-name-color:${superDetail.textAuthor};">
                     <!--css-build:shady-->
                     <div id="card" class="style-scope yt-live-chat-paid-sticker-renderer">
@@ -932,7 +956,7 @@ function addTestSticker() {
                         </div>
                         <div id="sticker-container" class="style-scope yt-live-chat-paid-sticker-renderer sticker-loaded">
                             <yt-img-shadow id="sticker" notify-on-loaded="" tabindex="0" class="style-scope yt-live-chat-paid-sticker-renderer no-transition" style="background-color: transparent;" loaded="">
-                                <!--css-build:shady--><img id="img" class="style-scope yt-img-shadow" alt="POGCRAZY" width="72" height="72" src="${stickerUrl}"></yt-img-shadow>
+                                <!--css-build:shady--><img id="img" class="style-scope yt-img-shadow" alt="POGCRAZY" width="72" height="72" src="${STICKER_URL}"></yt-img-shadow>
                         </div>
                     </div>
                 </yt-live-chat-paid-sticker-renderer>`;
@@ -950,7 +974,7 @@ function addTestSticker() {
             },
             "tier": superDetail.tier,
             "month": "",
-            "stickerUrl": stickerUrl,
+            "stickerUrl": STICKER_URL,
             "message": "",
             "sessionTop": false,
             "originalEventName": "sticker-latest",
@@ -962,7 +986,7 @@ function addTestSticker() {
     currentSuperTest++;
 }
 
-const testBadge = "https://yt3.ggpht.com/rpkYUyUfZAo1shsoHgQEftP4qwgdjbDKQK1HO2sY2Odgk1UcwNS1u5rCgbcbAoC7AD4qYnuX=s16-c-k";
+const TEST_BADGE = "https://yt3.ggpht.com/rpkYUyUfZAo1shsoHgQEftP4qwgdjbDKQK1HO2sY2Odgk1UcwNS1u5rCgbcbAoC7AD4qYnuX=s16-c-k";
 
 function addTestMember() {
     let authorName = "New Member Name";
@@ -990,7 +1014,7 @@ function addTestMember() {
                                             <!--css-build:shady--><span id="author-name" dir="auto" class="member style-scope yt-live-chat-author-chip">${authorName}<span id="chip-badges" class="style-scope yt-live-chat-author-chip"></span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                                                 <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="New member" type="member" shared-tooltip-text="New member">
                                                     <!--css-build:shady-->
-                                                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${testBadge}" class="style-scope yt-live-chat-author-badge-renderer" alt="New member"></div>
+                                                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${TEST_BADGE}" class="style-scope yt-live-chat-author-badge-renderer" alt="New member"></div>
                                                 </yt-live-chat-author-badge-renderer>
                                             </span></yt-live-chat-author-chip>
                                         <dom-if restamp="" class="style-scope yt-live-chat-membership-item-renderer"><template is="dom-if"></template></dom-if>
@@ -1030,7 +1054,7 @@ function addTestMember() {
                                             <!--css-build:shady--><span id="author-name" dir="auto" class="moderator style-scope yt-live-chat-author-chip">${authorName}<span id="chip-badges" class="style-scope yt-live-chat-author-chip"></span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                                                 <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="Member (${month} months)" type="member" shared-tooltip-text="Member (${month} months)">
                                                     <!--css-build:shady-->
-                                                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${testBadge}" class="style-scope yt-live-chat-author-badge-renderer" alt="Member (1 year)"></div>
+                                                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${TEST_BADGE}" class="style-scope yt-live-chat-author-badge-renderer" alt="Member (1 year)"></div>
                                                     <tp-yt-paper-tooltip class="style-scope yt-live-chat-author-badge-renderer" role="tooltip" tabindex="-1" style="--paper-tooltip-delay-in:0ms; inset: -49.6094px auto auto 91.5547px;">
                                                         <!--css-build:shady-->
                                                         <div id="tooltip" class="style-scope tp-yt-paper-tooltip hidden" style-target="tooltip">
@@ -1072,17 +1096,17 @@ function addTestMember() {
             "originalEventName": "member-latest",
             "profileImage": testAuthorPhoto,
             "amount": month,
-            "badge": testBadge
+            "badge": TEST_BADGE,
+            "msgId": `test-message-${testMessageCounter}`
         }
     }
     sendBasicTest(messageHTML, "member-latest");
     sendTestPayload(detail);
 
 }
-const giftAmounts = [1,5,10];
-function addTestGift() {
+
+function addTestGift(amount = 1) {
     let authorName = "Membership Gifter";
-    let amount = giftAmounts[Math.floor(Math.random() * giftAmounts.length)];
     let message = `Gifted ${amount} Channel Name memberships`;
     let messageHTML = `<ytd-sponsorships-live-chat-gift-purchase-announcement-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}">
                     <!--css-build:shady-->
@@ -1103,7 +1127,7 @@ function addTestGift() {
                                                 <!--css-build:shady--><span id="author-name" dir="auto" class="member single-line style-scope yt-live-chat-author-chip">${authorName}<span id="chip-badges" class="style-scope yt-live-chat-author-chip"></span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                                                     <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="Member (2 months)" type="member" shared-tooltip-text="Member (2 months)">
                                                         <!--css-build:shady-->
-                                                        <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${testBadge}" alt="Member (2 months)"></div>
+                                                        <div id="image" class="style-scope yt-live-chat-author-badge-renderer"><img src="${TEST_BADGE}" alt="Member (2 months)"></div>
                                                     </yt-live-chat-author-badge-renderer>
                                                 </span></yt-live-chat-author-chip>
                                             <dom-if restamp="" class="style-scope ytd-sponsorships-live-chat-header-renderer"><template is="dom-if"></template></dom-if>
@@ -1137,15 +1161,15 @@ function addTestGift() {
             "originalEventName": "gift-latest",
             "profileImage": testAuthorPhoto,
             "amount": amount,
-            "badge": testBadge
+            "badge": TEST_BADGE
         }
     }
     sendBasicTest(messageHTML, "gift-latest");
     sendTestPayload(detail);
     currentSuperTest++;
-    let currentWaitTime = 100;
+    let currentWaitTime = 250;
     for (let i = 0; i < amount; i++) {
-        currentWaitTime += Math.floor(Math.random() * 500);
+        currentWaitTime += 25 + Math.floor(Math.random() * 200);
         setTimeout(() => { addTestGiftRedemption(i + 1); }, currentWaitTime);
     }
 }

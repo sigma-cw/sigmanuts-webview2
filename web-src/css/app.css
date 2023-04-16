@@ -214,10 +214,11 @@ h4 {
     height: 48px;
 }
 
+
 .search-bar input#link-input {
     background-color: var(--var-foreground-color);
     padding: 16px 120px 16px 24px;
-    ;
+
     font-size: 0.9rem;
     font-weight: 500;
     background: transparent;
@@ -229,6 +230,34 @@ h4 {
     transition: outline 0.5s ease;
     position: absolute;
     box-sizing: border-box;
+}
+
+.search-bar-notif {
+    transform: translate(24px, -100%);
+    position: absolute !important;
+    background: var(--var-accent-color);
+    color: var(--var-text-color);
+    border-radius: 8px 8px 0 0;
+    font-size: 12px;
+    padding: 1px 12px 2px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    cursor: default;
+}
+
+.search-bar-notif:hover::after {
+    width: 400px;
+    white-space: pre;
+    word-wrap: break-word;
+}
+
+
+.not-searched .search-bar-notif {
+    opacity: 1;
+}
+
+.not-searched input#link-input {
+    outline: solid 1px var(--var-accent-color);
 }
 
 .search-bar input#link-input:focus-visible {
@@ -273,9 +302,13 @@ search-button {
     }
 
 #link-error-notification {
-    color: #de0930;
+    color: white;
     margin-left: 24px;
     margin-top: -20px;
+    background: #de0930;
+    padding: 1px 12px 4px;
+    border-radius: 8px;
+    height: fit-content;
     z-index: 9;
     pointer-events: none;
 }
@@ -606,6 +639,7 @@ html .editor .ui-accordion-content .ui-button.ui-state-disabled:active {
 .chat-container {
     height: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 iframe {
@@ -613,6 +647,16 @@ iframe {
     height: 100%;
     border: none;
     overflow: hidden;
+}
+
+#preview-iframe-alert {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    cursor: pointer;
 }
 
 preview-button {
