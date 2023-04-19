@@ -887,9 +887,26 @@ html {
     --yt-live-chat-ninja-message-background-color: transparent;
 }
 
-html {
-    scrollbar-color: #606060 transparent
-}
+
+    html[light] {
+        --yt-live-chat-background-color: #fff;
+        --yt-live-chat-secondary-background-color: #fff;
+        --yt-live-chat-primary-text-color: #212121;
+        --yt-live-chat-secondary-text-color: #737373;
+    }
+
+    html:not([transparent]) body {
+        background: var(--yt-live-chat-background-color) !important;
+    }
+
+    html[transparent] body
+    {
+        background: transparent !important;
+    }
+
+    html {
+        scrollbar-color: #606060 transparent
+    }
 
 #inline-action-button-container
 {
