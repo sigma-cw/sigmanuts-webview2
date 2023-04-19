@@ -172,7 +172,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\YouTube\src\data.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <Content Include="web-src\widgets\YouTube\widget.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

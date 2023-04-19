@@ -1,3 +1,19 @@
 {
+    "colorMode": {
+        "type": "dropdown",
+        "label": "Color Mode",
+        "value": "dark",
+        "options": {
+            "dark": "dark",
+            "light": "light"
+        },
+        "group": "Settings"
+    },
 
+    "transparentBg": {
+        "type": "checkbox",
+        "label": "Transparent background",
+        "value": true,
+        "group": "Settings"
+    }
 }

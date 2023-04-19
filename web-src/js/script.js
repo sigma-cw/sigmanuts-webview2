@@ -28,13 +28,34 @@ function loadScript(scriptUrl) {
     });
 }
 
-function sendPastChats(amount = 20) {
+function sendPastChats(widgetName = "", widgetCode = "", amount = 20) {
     let pastChats = document.querySelector("#items.yt-live-chat-item-list-renderer").children;
     if (!pastChats.length) return;
+    var data = [];
+    if (isNaN(amount)) {
+        amount = 20;
+    }
+    if (!widgetName) {
+        data = undefined;
+    }
 
     for (let i = Math.max(pastChats.length - amount, 0); i < pastChats.length; i++) {
-        processNode(pastChats[i]);
+        processNode(pastChats[i], data);
     }
+
+    if (widgetName) {
+        for (let i = 0; i < data.length; i++) {
+            let detail = {
+                "listener": "chat-history",
+                "name": widgetName,
+                "code": widgetCode,
+                "value": data[i]
+            }
+            console.log(detail);
+            sendPayload(detail);
+        }
+    }
+    
 }
 
 function raiseMessageEvent(node) {
@@ -137,7 +158,7 @@ function raiseMessageEvent(node) {
 
     //window.boundEvent.raiseEvent('onEventReceived', obj);
 
-    sendPayload(detail);
+    return detail;
 }
 
 function raiseMembershipEvent(node) {
@@ -190,7 +211,7 @@ function raiseMembershipEvent(node) {
         }
     }
 
-    sendPayload(detail);
+    return detail;
 }
 
 function raiseMembershipGiftEvent(node) {
@@ -235,7 +256,7 @@ function raiseMembershipGiftEvent(node) {
         }
     }
 
-    sendPayload(detail);
+    return detail;
 }
 
 function raiseMembershipRedemptionEvent(node) {
@@ -265,7 +286,7 @@ function raiseMembershipRedemptionEvent(node) {
         }
     }
 
-    sendPayload(detail);
+    return detail;
 }
 
 
@@ -350,7 +371,7 @@ function raiseSuperchatEvent(node) {
         }
     }
 
-    sendPayload(detail);
+    return detail;
 }
 
 function raiseStickerEvent(node) {
@@ -432,7 +453,7 @@ function raiseStickerEvent(node) {
 
     console.log(detail.event.stickerUrl)
 
-    sendPayload(detail);
+    return detail;
 }
 
 function raiseBasicEvent(node, event) {
@@ -445,7 +466,7 @@ function raiseBasicEvent(node, event) {
         }
     }
 
-    sendPayload(detail);
+    return detail;
 }
 
 //this event is raised when the app launches/changes url
@@ -458,7 +479,7 @@ function raiseUrlChangeEvent(url) {
         }
     }
 
-    sendPayload(detail)
+    sendPayload(detail);
 }
 
 var connection;
@@ -543,13 +564,13 @@ function startStream() {
 
         observer.observe(document.querySelector("yt-live-chat-item-list-renderer #items"), { subtree: false, childList: true });
 
-        setTimeout(function () { sendPastChats(20); }, 100);
-
         let loggedIn = "";
         let authorNameDOM = document.querySelector("#input-container #author-name")
         if (authorNameDOM) {
             loggedIn = authorNameDOM.innerText;
         }
+
+        sendPastChats();
 
         if (loggedIn) {
             console.log("Logged in: " + loggedIn);
@@ -564,38 +585,61 @@ function startStream() {
 
 }
 
-function processNode(node) {
+function processNode(node, data = undefined) {
+
+    let detail, detailBasic;
     if (node.nodeName === "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
-        raiseMessageEvent(node);
-        raiseBasicEvent(node, "message");
+        detail = raiseMessageEvent(node);
+        detailBasic = raiseBasicEvent(node, "message");
     }
 
     if (node.nodeName === "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
-        raiseMembershipEvent(node);
-        raiseBasicEvent(node, "member-latest");
+        detail = raiseMembershipEvent(node);
+        detailBasic = raiseBasicEvent(node, "member-latest");
     }
 
     if (node.nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
-        raiseMembershipGiftEvent(node);
-        raiseBasicEvent(node, "gift-latest");
+        detail = raiseMembershipGiftEvent(node);
+        detailBasic = raiseBasicEvent(node, "gift-latest");
     }
 
     if (node.nodeName === "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-REDEMPTION-ANNOUNCEMENT-RENDERER") {
-        raiseMembershipRedemptionEvent(node);
-        raiseBasicEvent(node, "member-gifted");
+        detail = raiseMembershipRedemptionEvent(node);
+        detailBasic = raiseBasicEvent(node, "member-gifted");
     }
 
     if (node.nodeName === "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
-        raiseSuperchatEvent(node);
-        raiseBasicEvent(node, "superchat-latest");
+        detail = raiseSuperchatEvent(node);
+        detailBasic = raiseBasicEvent(node, "superchat-latest");
     }
 
+    //sticker is not available for history now
     if (node.nodeName === "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
-        setTimeout(() => {
-            raiseStickerEvent(node);
-            raiseBasicEvent(node, "sticker-latest");
-        }, 160);
+        if (!data) {
+            setTimeout(() => {
+                detail = raiseStickerEvent(node);
+                detailBasic = raiseBasicEvent(node, "sticker-latest");
+                sendPayload(detail);
+                sendPayload(detailBasic);
+            }, 160);            
+        }
+        else {
+            detail = raiseStickerEvent(node);
+            detailBasic = raiseBasicEvent(node, "sticker-latest");
+        }
+        
     }
+
+    if (!detail) return;
+
+    if (data) {
+        data.push(detail);
+        data.push(detailBasic);
+        return;
+    }
+
+    sendPayload(detail);
+    sendPayload(detailBasic);
 }
 
 //replaces emote image link with a higher resolution
@@ -1257,6 +1301,7 @@ function sendBasicTest(htmlText, event) {
 }
 
 function sendPayload(detail) {
+    if (!connection) return;
     connection.invoke("SendMessage", JSON.stringify(detail)).catch(function (err) {
         return console.error(err.toString())
     });

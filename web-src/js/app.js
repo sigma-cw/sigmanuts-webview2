@@ -413,7 +413,23 @@ connection.on("ReceiveMessage", function (obj) {
     if (evt.listener === "request-data") {
         retrieveData(evt.name);
     }
+    else if (evt.listener === "request-history") {
+        sendHistory(evt.name, evt.code, evt.amount);
+    }
 });
+
+function sendHistory(widgetName, widgetCode, amount) {
+    //ask mainwindow.cs to get script.js send events with history
+    var obj = JSON.stringify({
+        "listener": "request-history",
+        "name": widgetName,
+        "code": widgetCode,
+        "amount": amount
+    })
+    window.chrome.webview.postMessage(obj);
+    return;
+}
+
 /*
 function initOnloadData() {
     
