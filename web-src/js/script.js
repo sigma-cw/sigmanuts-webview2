@@ -1,4 +1,4 @@
-﻿//console.log('HELLO');
+//console.log('HELLO');
 
 function loadScript(scriptUrl) {
     const script = document.createElement('script');
