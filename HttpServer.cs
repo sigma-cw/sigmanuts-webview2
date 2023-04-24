@@ -88,6 +88,8 @@ class SimpleHTTPServer
         {".xml", "text/xml"},
         {".xpi", "application/x-xpinstall"},
         {".zip", "application/zip"},
+        {".svg", "image/svg+xml"},
+        {".svgz", "image/svg+xml"}
         #endregion
     };
     private Thread _serverThread;

@@ -295,6 +295,14 @@ namespace sigmanuts_webview2
                     Process.Start("explorer.exe",Path.Combine(CacheFolderPath, @".\localserver\widgets\"));
                     break;
 
+                case "request-history":
+                    string __history_name = stuff.name;
+                    string __history_code = stuff.code;
+                    string __history_amount = stuff.amount;
+
+                    webView.CoreWebView2.ExecuteScriptAsync($"sendPastChats('{__history_name}', '{__history_code}', {__history_amount})");
+                    break;
+
                 default:
                     break;
             }

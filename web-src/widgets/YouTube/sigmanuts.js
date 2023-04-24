@@ -1,4 +1,8 @@
+const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const CHAT_HISTORY_AMOUNT = 20;
+
 var widgetName = window.location.pathname.split("/")[2];
+var widgetCode = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)] + "-" + Math.floor(Math.random() * 100000);
 
 function decodeHtml(html) {
     var txt = document.createElement("textarea");
@@ -11,6 +15,21 @@ function requestData() {
         "listener": "request-data",
         "name": widgetName
     })
+
+    connection.invoke("SendMessage", obj).catch(function (err) {
+        return console.error(err.toString());
+    }).then(() => { requestHistory() });
+}
+
+function requestHistory() {
+    var obj = JSON.stringify({
+        "listener": "request-history",
+        "name": widgetName,
+        "code": widgetCode,
+        "amount": CHAT_HISTORY_AMOUNT
+    })
+
+    console.log(obj);
 
     connection.invoke("SendMessage", obj).catch(function (err) {
         return console.error(err.toString());
@@ -78,8 +97,17 @@ connection.on("ReceiveMessage", function (obj) {
             }
         });
         window.dispatchEvent(event)
-    } else {
+    }
+    else {
+        if (evt.listener === "chat-history") {
+            if (evt.name != widgetName || evt.code != widgetCode) {
+                return;
+            }
+            evt = evt.value;
+        }
+
         if (!evt.event) return;
+        
         if(evt.listener === "message")
         {
             evt.event.data.text = decodeHtml(evt.event.data.text)
@@ -90,6 +118,7 @@ connection.on("ReceiveMessage", function (obj) {
                 listener: evt.listener
             }
         });
+        
         window.dispatchEvent(event)
     }
 });
