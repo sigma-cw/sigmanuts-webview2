@@ -61,7 +61,8 @@ function sendPastChats(widgetName = "", widgetCode = "", amount = 20) {
 function raiseMessageEvent(node) {
     var eventData = node['$']
     //console.log(eventData);
-    var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    //var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    var authorName = eventData.content.querySelector("#author-name").data;
 
     //add profile picture
     var authorPicture = eventData["author-photo"].$["img"].src;
@@ -779,6 +780,21 @@ function addTestMessage() {
     if (testMessageDetail.name.includes("Verified")) {
         verifiedBadge = `<yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" aria-label="Verified" type="verified" shared-tooltip-text="Verified"><div id="image" class="style-scope yt-live-chat-author-badge-renderer"><yt-icon class="style-scope yt-live-chat-author-badge-renderer"><svg viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;"><g transform="scale(0.66)" class="style-scope yt-icon"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" class="style-scope yt-icon"></path></g></svg></yt-icon></div></yt-live-chat-author-badge-renderer>`;
     }
+
+    let badge = "";
+    if (testMessageDetail.authorType == "moderator") {
+        badge = `<yt-icon class="style-scope yt-live-chat-author-badge-renderer"><svg viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%;">
+                    <g class="style-scope yt-icon">
+                        <path d="M9.64589146,7.05569719 C9.83346524,6.562372 9.93617022,6.02722257 9.93617022,5.46808511 C9.93617022,3.00042984 7.93574038,1 5.46808511,1 C4.90894765,1 4.37379823,1.10270499 3.88047304,1.29027875 L6.95744681,4.36725249 L4.36725255,6.95744681 L1.29027875,3.88047305 C1.10270498,4.37379824 1,4.90894766 1,5.46808511 C1,7.93574038 3.00042984,9.93617022 5.46808511,9.93617022 C6.02722256,9.93617022 6.56237198,9.83346524 7.05569716,9.64589147 L12.4098057,15 L15,12.4098057 L9.64589146,7.05569719 Z" class="style-scope yt-icon"></path>
+                    </g>
+                </svg>
+                <!--css-build:shady-->
+            </yt-icon>`;
+    }
+    else if (testMessageDetail.badges.length) {
+        badge = `<img src="${testMessageDetail.badges[0].url}" class="style-scope yt-live-chat-author-badge-renderer">`;
+    }
+
     let messageHTML =
         `<yt-live-chat-text-message-renderer class="style-scope yt-live-chat-item-list-renderer" id="test-message-${testMessageCounter}" ${(testMessageDetail.authorType == "owner") ?"author-is-owner":""} author-type="${testMessageDetail.authorType}">
     <!--css-build:shady-->
@@ -789,7 +805,7 @@ function addTestMessage() {
             <!--css-build:shady--><span id="prepend-chat-badges" class="style-scope yt-live-chat-author-chip"></span><span id="author-name" dir="auto" class="${testMessageDetail.authorType} style-scope yt-live-chat-author-chip">${testMessageDetail.name}<span id="chip-badges" class="style-scope yt-live-chat-author-chip">${verifiedBadge}</span></span><span id="chat-badges" class="style-scope yt-live-chat-author-chip">
                 <yt-live-chat-author-badge-renderer class="style-scope yt-live-chat-author-chip" type="${testMessageDetail.authorType}">
                     <!--css-build:shady-->
-                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer">${testMessageDetail.badges.length ? testMessageDetail.badges[0]:""}</div>
+                    <div id="image" class="style-scope yt-live-chat-author-badge-renderer">${badge}</div>
                 </yt-live-chat-author-badge-renderer>
             </span></yt-live-chat-author-chip>​<span id="message" dir="auto" class="style-scope yt-live-chat-text-message-renderer">${testMessageDetail.message}</span><span id="deleted-state" class="style-scope yt-live-chat-text-message-renderer"></span><a id="show-original" href="#" class="style-scope yt-live-chat-text-message-renderer"></a>
     </div>
