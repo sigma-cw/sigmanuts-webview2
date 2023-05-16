@@ -61,7 +61,8 @@ function sendPastChats(widgetName = "", widgetCode = "", amount = 20) {
 function raiseMessageEvent(node) {
     var eventData = node['$']
     //console.log(eventData);
-    var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    //var authorName = eventData.content.childNodes[1].childNodes[2].childNodes[0].data;
+    var authorName = eventData.content.querySelector("#author-name").data;
 
     //add profile picture
     var authorPicture = eventData["author-photo"].$["img"].src;
